@@ -84,7 +84,7 @@ Inside that directory, you can run several commands:
 We suggest that you begin by typing:
 
     {click.style(f'cd {name}', bg='blue', fg='white')}
-    {click.style('make start-dev', bg='blue', fg='white')}
+    {click.style('make start', bg='blue', fg='white')}
 
 {click.style('Happy hacking!', blink=True, bold=True)}
 """

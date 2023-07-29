@@ -13,7 +13,7 @@ Available templates:
 ## Quick Overview
 
 ```console
-pip install fastapi-gen
+pip3 install fastapi-gen
 fastapi-gen my_app
 cd my_app
 make start-dev
@@ -22,12 +22,12 @@ make start-dev
 or 
 
 ```console
-pipx fastapi-gen my_app
+pipx run fastapi-gen my_app
 cd my_app
 make start-dev
 ```
 
-If you've previously installed `fastapi-gen` globally via `pip install fastapi-gen`, we recommend you reinstall the package using `pip install fastapi-gen` or `pipx upgrade fastapi-gen` to ensure that you use the latest version.
+If you've previously installed `fastapi-gen` globally via `pip3 install fastapi-gen`, we recommend you reinstall the package using `pip3 install --upgrade --force-reinstall fastapi-gen` or `pipx upgrade fastapi-gen` to ensure that you use the latest version.
 
 Then open http://localhost:8000/docs to see your app OpenAPI documentation.
 
@@ -45,14 +45,14 @@ Create a project, and you’re good to go.
 ### basic template
 
 ```console
-pip install fastapi-gen
+pip3 install fastapi-gen
 fastapi-gen my_app
 ```
 
 or
 
 ```console
-pip install fastapi-gen 
+pip3 install fastapi-gen
 fastapi-gen my_app --template hello_world
 ```
 
