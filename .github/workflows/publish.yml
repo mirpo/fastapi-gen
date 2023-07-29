@@ -1,0 +1,44 @@
+name: Publish
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - run: |
+          pip install --upgrade pip    
+          pip install hatch
+          hatch build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./dist
+          if-no-files-found: error
+
+  pypi-publish:
+    needs: ['build']
+    environment: 'publish'
+
+    name: upload release to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          packages_dir: artifact/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          verbose: true

@@ -1,0 +1,172 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+  "src",
+]
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+
+[project]
+name = "fastapi-gen"
+dynamic = ["version"]
+description = "Set up a modern REST API by running one command."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = [
+  "fastapi", "cli", "hello world","huggingface", "langchain", "summarization", 
+  "nlp", "ner", "named-entity recognition", "text generation", "llama", "llama.cpp",
+]
+authors = [
+  { name = "Miroslav Pokrovskii", email = "miroslavpokrovskiy@gmail.com" },
+]
+classifiers = [
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: AsyncIO",
+    "Framework :: FastAPI",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "click==8.1.6",
+  "colorama==0.4.6",
+  "importlib_resources==6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy==1.4.1",
+  "ruff==0.0.280",
+  "black==23.7.0",
+]
+
+[project.urls]
+Documentation = "https://github.com/mirpo/fastapi-gen#readme"
+Issues = "https://github.com/mirpo/fastapi-gen/issues"
+Source = "https://github.com/mirpo/fastapi-gen"
+
+[project.scripts]
+fastapi-gen = "cli.__main__:main"
+
+[tool.hatch.version]
+path = "src/cli/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.10", "3.11"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "mypy==1.4.1",
+  "ruff==0.0.280",
+  "black==23.7.0",
+]
+
+[tool.hatch.envs.lint.scripts]
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+[tool.black]
+target-version = ["py311"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105", "S106", "S107", 
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "S603", "S607", "S101", "PLR2004",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.isort]
+known-first-party = ["cli"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]

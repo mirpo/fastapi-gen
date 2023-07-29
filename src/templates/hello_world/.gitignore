@@ -161,7 +161,3 @@ cython_debug/
 .vscode
 .ruff_cache
 .DS_Store
-
-src/templates/**/.pytest_cache
-src/templates/**/__pycache__
-src/templates/**/venv

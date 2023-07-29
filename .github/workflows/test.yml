@@ -1,0 +1,52 @@
+name: Test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  lint-n-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        python-version: ['3.10', '3.11']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-test
+      - name: Install dependencies
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        run: |
+          pip install --upgrade pip
+          pip install -e .[dev]
+          make lint   
+      - name: Lint
+        run: |
+          make lint
+      - name: Install app
+        run: |
+          pip install -e .
+          cd ../..
+      - name: Create project using default template
+        run: |
+          fastapi-gen hello_world
+          cd hello_world
+          make test
+          cd ..
+      - name: Create project using "hello_world" template
+        run: |
+          fastapi-gen hello_world_v2 --template hello_world
+          cd hello_world_v2
+          make test
+          cd ..
