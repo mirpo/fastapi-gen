@@ -8,7 +8,9 @@ If something doesn’t work, please [file an issue](https://github.com/mirpo/fas
 Available templates:
 
 1. Default - basic template with GET/POST examples.
-2. More to come!
+2. Nlp - natural language processing template with examples how to use Hugginface summarization, named-entity recognition and text generation using LLM.
+
+More to come!
 
 ## Quick Overview
 
@@ -54,6 +56,13 @@ or
 ```console
 pip3 install fastapi-gen
 fastapi-gen my_app --template hello_world
+```
+
+### NLP template
+
+```console
+pip install fastapi-gen
+fastapi-gen my_app --template nlp
 ```
 
 Inside the newly created project, you can run some built-in commands:

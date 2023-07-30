@@ -50,3 +50,9 @@ jobs:
           cd hello_world_v2
           make test
           cd ..
+      - name: Create project using "nlp" template
+        run: |
+          fastapi-gen nlp --template nlp
+          cd nlp
+          make test
+          cd ..
