@@ -1,5 +1,3 @@
-import os
-
 from fastapi import FastAPI, HTTPException
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from transformers import pipeline
@@ -39,8 +37,6 @@ def summarize(text: str | None = None):
 
 @app.get("/ner")
 def ner(text: str | None = None):
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
     if text is None:
         raise HTTPException(status_code=400, detail="Text must be specified.")
 
@@ -66,7 +62,7 @@ def text_generation(text: str | None = None):
     text = text.strip()
 
     text_generator = pipeline(
-        model="gpt2",
+        model=settings.text_generation_model,
         do_sample=settings.text_generation_do_sample,
         model_kwargs={"temperature": settings.text_generation_temperature},
     )
