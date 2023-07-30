@@ -1,0 +1,11 @@
+fastapi==0.100.0
+transformers==4.31.0
+pydantic-settings==2.0.2
+torch==2.0.1
+uvicorn==0.23.1
+# dev
+mypy==1.4.1
+ruff==0.0.280
+black==23.7.0
+pytest==7.4.0
+httpx==0.24.1
