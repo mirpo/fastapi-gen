@@ -8,7 +8,10 @@ If something doesn’t work, please [file an issue](https://github.com/mirpo/fas
 Available templates:
 
 1. Default - basic template with GET/POST examples.
-2. Nlp - natural language processing template with examples how to use Hugginface summarization, named-entity recognition and text generation using LLM.
+2. Nlp - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
+3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
+
+*Important note* - Langchain template requires hardware to run and will automatically download required models, be patient.
 
 More to come!
 
@@ -63,6 +66,13 @@ fastapi-gen my_app --template hello_world
 ```console
 pip install fastapi-gen
 fastapi-gen my_app --template nlp
+```
+
+### Langchain template
+
+```console
+pip install fastapi-gen
+fastapi-gen my_app --template Langchain
 ```
 
 Inside the newly created project, you can run some built-in commands:

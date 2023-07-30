@@ -56,3 +56,10 @@ jobs:
           cd nlp
           make test
           cd ..
+      - name: Create project using "langchain" template
+        run: |
+          fastapi-gen langchain_app --template langchain
+          cd langchain_app
+          make test
+          cd ..
+      

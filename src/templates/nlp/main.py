@@ -62,6 +62,7 @@ def text_generation(text: str | None = None):
     text = text.strip()
 
     text_generator = pipeline(
+        task="text-generation",
         model=settings.text_generation_model,
         do_sample=settings.text_generation_do_sample,
         model_kwargs={"temperature": settings.text_generation_temperature},
