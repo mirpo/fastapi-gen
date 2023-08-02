@@ -25,8 +25,11 @@ def replace_string_in_file(file_path, old_string, new_string):
         file.write(modified_content)
 
 
+_choices = ["hello_world", "nlp", "langchain"]
+
+
 @click.command()
-@click.option("-t", "--template", default="hello_world", type=click.Choice(["hello_world", "nlp"]), help="template")
+@click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
 @click.argument("name")
 @click.version_option(version=__version__, prog_name="create-fast-api")
 def fastapi_create(name: str, template: str):
