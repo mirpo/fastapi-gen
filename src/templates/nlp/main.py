@@ -6,7 +6,7 @@ from transformers import pipeline
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # `.env.prod` takes priority over `.env_dev`
-        env_file=(".env_dev", ".env.prod")
+        env_file=(".env_dev", ".env.prod"),
     )
     summarize_model: str
     ner_model: str

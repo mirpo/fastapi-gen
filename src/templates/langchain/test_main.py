@@ -23,7 +23,6 @@ def test_text_generation_200():
 
     assert response.is_success
     assert (
-        # ruff: disable=E501
         response.json()["answer"]
         == """The moon is a celestial body, and it is not a planet. It is an object of the solar system.
  (The Moon is also called a "planet" because it orbits the sun.)
@@ -44,7 +43,7 @@ def test_question_answering_200():
     question = "What Tom likes?"
 
     response = client.get(
-        f"/question-answering?context={urllib.parse.quote(context)}&question={urllib.parse.quote(question)}"
+        f"/question-answering?context={urllib.parse.quote(context)}&question={urllib.parse.quote(question)}",
     )
 
     assert response.is_success
