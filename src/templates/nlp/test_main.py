@@ -35,7 +35,6 @@ Charting a world map requires global knowledge of the earth, its oceans, and its
 
     assert response.is_success
     assert (
-        # ruff: disable=E501
         response.json()["summary_text"]
         == "maps rendered in two dimensions by necessity distort the display of the three-dimensional surface of the earth . this is true of any map, but these distortions reach extremes in a world map . from prehistory through the Middle ages, creating an accurate world map would have been impossible ."
     )
