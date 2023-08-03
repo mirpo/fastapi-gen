@@ -2,13 +2,25 @@
 
 Create FastAPI apps with no build configuration.
 
+<a href="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml?query=workflow%3Atest+event%3Apush+branch%3Amaster" target="_blank">
+    <img src="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml/badge.svg?branch=master" alt="Test">
+</a>
+<a href="https://pypi.org/project/fastapi-gen" target="_blank">
+    <img src="https://img.shields.io/pypi/v/fastapi-gen?color=%2334D058&label=pypi%20package" alt="Package version">
+</a>
+<a href="https://pypi.org/project/fastapi-gen" target="_blank">
+    <img src="https://img.shields.io/pypi/pyversions/fastapi-gen.svg?color=%2334D058" alt="Supported Python versions">
+</a>
+
+---
+
 FastApi Gen works on macOS and Linux.<br>
 If something doesn’t work, please [file an issue](https://github.com/mirpo/fastapi-gen/issues/new).
 
 Available templates:
 
 1. Default - basic template with GET/POST examples.
-2. Nlp - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
+2. NLP - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
 3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
 
 *Important note* - Langchain template requires hardware to run and will automatically download required models, be patient.
