@@ -22,8 +22,11 @@ Available templates:
 1. Default - basic template with GET/POST examples.
 2. NLP - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
 3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
+4. Llama - template with examples how to use llama.cpp and llama-cpp-python with local Llama 2 for question asnwering.
 
-*Important note* - Langchain template requires hardware to run and will automatically download required models, be patient.
+*Important notes*:
+- Langchain template requires hardware to run and will automatically download required models, be patient.
+- Llama template will download around 4GB model from Hugginface and >4GB of RAM.
 
 More to come!
 
@@ -85,6 +88,13 @@ fastapi-gen my_app --template nlp
 ```console
 pip install fastapi-gen
 fastapi-gen my_app --template Langchain
+```
+
+### Llama template
+
+```console
+pip install fastapi-gen
+fastapi-gen my_app --template llama
 ```
 
 Inside the newly created project, you can run some built-in commands:
