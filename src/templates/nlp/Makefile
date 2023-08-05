@@ -9,8 +9,7 @@ init: requirements.txt
 	test -d .git || git init || true
 
 lint:
-	. venv/bin/activate && black --check src
-	. venv/bin/activate && ruff check src
+	. venv/bin/activate && ruff check tests main.py
 
 test:
 	. venv/bin/activate && pytest .

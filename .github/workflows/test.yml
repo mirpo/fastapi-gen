@@ -42,24 +42,28 @@ jobs:
         run: |
           fastapi-gen hello_world
           cd hello_world
+          make lint
           make test
           cd ..
       - name: Create project using "hello_world" template
         run: |
           fastapi-gen hello_world_v2 --template hello_world
           cd hello_world_v2
+          make lint
           make test
           cd ..
       - name: Create project using "nlp" template
         run: |
           fastapi-gen nlp --template nlp
           cd nlp
+          make lint
           make test
           cd ..
       - name: Create project using "langchain" template
         run: |
           fastapi-gen langchain_app --template langchain
           cd langchain_app
+          make lint
           make test
           cd ..
       

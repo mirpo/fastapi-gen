@@ -26,6 +26,24 @@ def replace_string_in_file(file_path, old_string, new_string):
 
 _choices = ["hello_world", "nlp", "langchain"]
 
+def _create_dir(path: str):
+    try:
+        os.makedirs(path)
+        click.echo(f"Folder '{path}' created successfully.")
+    except OSError as e:
+        click.echo(f"Error creating folder: {e}")
+
+def _walk_resources(package: str, path: str = ""):
+    for file in resources.files(package).iterdir():
+        if file.name in ["__pycache__", ".pytest_cache", "venv"]:
+            continue
+
+        if file.is_dir():
+            _create_dir(os.path.join(path, file.name))
+            _walk_resources(f"{package}.{file.name}", os.path.join(path, file.name))
+        else:
+            with open(os.path.join(path, file.name), "w") as f:
+                f.write(resources.read_text(package, file.name))
 
 @click.command()
 @click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
@@ -46,23 +64,12 @@ def fastapi_create(name: str, template: str):
         click.echo(f"Error. Folder {new_project_path} already exists.")
         sys.exit(1)
 
-    try:
-        os.makedirs(new_project_path)
-        click.echo(f"Folder '{new_project_path}' created successfully.")
-    except OSError as e:
-        click.echo(f"Error creating folder: {e}")
-
-    package = f"templates.{template}"
-    for file in resources.files(package).iterdir():
-        if file.name in ["__pycache__", ".pytest_cache", "venv"]:
-            continue
-
-        with open(os.path.join(new_project_path, file.name), "w") as f:
-            f.write(resources.read_text(package, file.name))
+    _create_dir(new_project_path)
+    _walk_resources(f"templates.{template}", new_project_path)
 
     os.chdir(new_project_path)
 
-    replace_string_in_file(os.path.join(new_project_path, "test_main.py"), f"src.templates.{template}", name)
+    replace_string_in_file(os.path.join(new_project_path, "tests", "test_main.py"), f"src.templates.{template}", name)
 
     try:
         subprocess.run(["make", "init"], check=True)
