@@ -1,6 +1,6 @@
 # FastApi Gen
 
-Create FastAPI apps with no build configuration.
+Create LLM-enabled FastAPI applications without build configuration.
 
 <a href="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml?query=workflow%3Atest+event%3Apush+branch%3Amaster" target="_blank">
     <img src="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml/badge.svg?branch=master" alt="Test">
@@ -16,19 +16,6 @@ Create FastAPI apps with no build configuration.
 
 FastApi Gen works on macOS and Linux.<br>
 If something doesn’t work, please [file an issue](https://github.com/mirpo/fastapi-gen/issues/new).
-
-Available templates:
-
-1. Default - basic template with GET/POST examples.
-2. NLP - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
-3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
-4. Llama - template with examples how to use llama.cpp and llama-cpp-python with local Llama 2 for question asnwering.
-
-*Important notes*:
-- Langchain template requires hardware to run and will automatically download required models, be patient.
-- Llama template will download around 4GB model from Hugginface and >4GB of RAM.
-
-More to come!
 
 ## Quick Overview
 
@@ -51,6 +38,19 @@ If you've previously installed `fastapi-gen` globally via `pip3 install fastapi-
 
 Then open http://localhost:8000/docs to see your app OpenAPI documentation.
 
+Available templates:
+
+1. Default - basic template with GET/POST examples.
+2. NLP - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
+3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
+4. Llama - template with examples how to use llama.cpp and llama-cpp-python with local Llama 2 for question asnwering.
+
+*Important notes*:
+- Langchain template requires hardware to run and will automatically download required models, be patient.
+- Llama template will download around 4GB model from Hugginface and >4GB of RAM.
+
+Each template includes not only code, but also **tests**.
+
 ### Get Started Immediately
 
 You **don’t** need to install or configure depencendeices like FastApi or Pytest.<br>
@@ -62,7 +62,7 @@ Create a project, and you’re good to go.
 
 **You’ll need to have Python 3.7+ or later version on your local development machine**. We recommend using the latest LTS version. You can use [pyenv](https://github.com/pyenv/pyenv) (macOS/Linux) to switch Python versions between different projects.
 
-### basic template
+### Basic template
 
 ```console
 pip3 install fastapi-gen
