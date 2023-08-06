@@ -1,4 +1,4 @@
-fastapi==0.100.0
+fastapi==0.101.0
 transformers==4.31.0
 python-dotenv==1.0.0
 torch==2.0.1
