@@ -66,4 +66,11 @@ jobs:
           make lint
           make test
           cd ..
+      - name: Create project using "llama" template
+        run: |
+          fastapi-gen llama_app --template llama
+          cd llama_app
+          make lint
+          make test
+          cd ..
       
