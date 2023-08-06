@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "src/templates/hello_world"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "src/templates/langchain"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "src/templates/nlp"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "src/templates/llama"
+    schedule:
+      interval: "weekly"
