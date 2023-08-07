@@ -1,4 +1,4 @@
-fastapi==0.100.0
+fastapi==0.101.0
 uvicorn[standard]==0.23.2
 # dev
 ruff==0.0.280
