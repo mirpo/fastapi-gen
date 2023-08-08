@@ -4,6 +4,6 @@ pydantic-settings==2.0.2
 torch==2.0.1
 uvicorn==0.23.2
 # dev
-ruff==0.0.280
+ruff==0.0.282
 pytest==7.4.0
 httpx==0.24.1
