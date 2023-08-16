@@ -1,9 +1,9 @@
-fastapi==0.101.0
+fastapi==0.101.1
 transformers==4.31.0
 python-dotenv==1.0.0
 torch==2.0.1
 uvicorn==0.23.2
-langchain==0.0.262
+langchain==0.0.266
 # dev
 ruff==0.0.284
 pytest==7.4.0
