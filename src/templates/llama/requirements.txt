@@ -1,7 +1,7 @@
-fastapi==0.101.0
+fastapi==0.101.1
 llama-cpp-python==0.1.77
-pydantic-settings==2.0.2
+pydantic-settings==2.0.3
 # dev
-ruff==0.0.284
+ruff==0.0.285
 pytest==7.4.0
 httpx==0.24.1
