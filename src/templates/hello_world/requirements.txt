@@ -1,6 +1,6 @@
 fastapi==0.103.1
 uvicorn[standard]==0.23.2
 # dev
-ruff==0.0.287
+ruff==0.0.289
 pytest==7.4.2
-httpx==0.24.1
+httpx==0.25.0
