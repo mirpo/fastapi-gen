@@ -1,7 +1,7 @@
 fastapi==0.103.1
 transformers==4.33.1
 pydantic-settings==2.0.3
-torch==2.0.1
+torch==2.1.0
 uvicorn==0.23.2
 # dev
 ruff==0.0.287
