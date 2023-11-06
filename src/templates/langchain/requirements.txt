@@ -2,7 +2,7 @@ fastapi==0.103.1
 transformers==4.33.1
 python-dotenv==1.0.0
 torch==2.0.1
-uvicorn==0.23.2
+uvicorn==0.24.0.post1
 langchain==0.0.285
 # dev
 ruff==0.0.287
