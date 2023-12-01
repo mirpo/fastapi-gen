@@ -1,10 +1,10 @@
-fastapi==0.103.1
-transformers==4.33.1
+fastapi==0.104.1
+transformers==4.35.2
 python-dotenv==1.0.0
-torch==2.0.1
-uvicorn==0.23.2
-langchain==0.0.285
+torch==2.1.1
+uvicorn==0.24.0.post1
+langchain==0.0.344
 # dev
-ruff==0.0.287
-pytest==7.4.2
-httpx==0.24.1
+ruff==0.1.6
+pytest==7.4.3
+httpx==0.25.2
