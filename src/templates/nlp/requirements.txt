@@ -1,9 +1,9 @@
-fastapi==0.103.1
-transformers==4.33.1
-pydantic-settings==2.0.3
-torch==2.0.1
-uvicorn==0.23.2
+fastapi==0.110.1
+transformers==4.40.0
+pydantic-settings==2.2.1
+torch==2.2.2
+uvicorn==0.29.0
 # dev
-ruff==0.0.287
-pytest==7.4.2
-httpx==0.24.1
+ruff==0.4.0
+pytest==8.1.1
+httpx==0.27.0
