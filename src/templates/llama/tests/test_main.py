@@ -17,7 +17,7 @@ def test_text_generation_400():
 
 def test_text_generation_200():
     questions = {
-        "How are you today?": "I am doing well, thank you for asking. How about you?",
+        "How are you today?": "I am doing well, thank you for asking. How about yourself?",
         "Name the planets in the solar system?": "1. Mercury\n2. Venus\n3. Earth\n4. Mars\n5. Jupiter\n6. Saturn\n7. Uranus\n8. Neptune",
     }
 

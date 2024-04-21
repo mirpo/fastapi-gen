@@ -3,8 +3,8 @@
 PORT=8000
 HOST=127.0.0.1
 
-MODEL_URL=https://huggingface.co/TheBloke/Nous-Hermes-Llama-2-7B-GGML/resolve/main/nous-hermes-llama-2-7b.ggmlv3.q4_0.bin
-OUTPUT_FILE=./models/nous-hermes-llama-2-7b.ggmlv3.q4_0.bin
+MODEL_URL=https://huggingface.co/TheBloke/Nous-Hermes-Llama-2-7B-GGUF/resolve/main/nous-hermes-llama-2-7b.Q2_K.gguf
+OUTPUT_FILE=./models/nous-hermes-llama-2-7b.Q2_K.gguf
 
 init: requirements.txt download
 	test -d venv || python3 -m venv venv
