@@ -6,5 +6,5 @@ uvicorn==0.29.0
 langchain==0.0.285
 # dev
 ruff==0.4.1
-pytest==7.4.4
+pytest==8.1.1
 httpx==0.27.0
