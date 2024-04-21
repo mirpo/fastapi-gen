@@ -5,6 +5,6 @@ torch==2.0.1
 uvicorn==0.23.2
 langchain==0.0.285
 # dev
-ruff==0.0.287
+ruff==0.4.1
 pytest==7.4.2
 httpx==0.24.1
