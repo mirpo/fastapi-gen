@@ -2,5 +2,47 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "prConcurrentLimit": 50,
+  "prHourlyLimit": 5,
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "matchPackageNames": [
+        "dev/ruff",
+        "ruff"
+      ],
+      "groupName": "dev python tools"
+    },
+    {
+      "matchPackageNames": [
+        "langchain",
+        "llama-cpp-python"
+      ],
+      "groupName": "langchain and llama-cpp-python"
+    },
+    {
+      "matchPackagePatterns": [
+        "pytest",
+        "python-dotenv",
+        "fastapi",
+        "httpx",
+        "importlib_resources",
+        "pydantic-settings",
+        "torch",
+        "transformers",
+        "uvicorn"
+      ],
+      "groupName": "other python deps"
+    }
   ]
 }
