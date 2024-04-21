@@ -11,7 +11,7 @@
   "prHourlyLimit": 5,
   "packageRules": [
     {
-      "matchPackagePatterns": [
+      "matchManagers": [
         "github-actions"
       ],
       "groupName": "github actions"
@@ -40,7 +40,9 @@
         "pydantic-settings",
         "torch",
         "transformers",
-        "uvicorn"
+        "uvicorn",
+        "click",
+        "colorama"
       ],
       "groupName": "other python deps"
     }
