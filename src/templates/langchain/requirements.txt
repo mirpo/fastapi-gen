@@ -3,7 +3,7 @@ transformers==4.40.0
 python-dotenv==1.0.1
 torch==2.2.2
 uvicorn==0.29.0
-langchain==0.0.285
+langchain==0.1.11
 # dev
 ruff==0.4.1
 pytest==8.1.1
