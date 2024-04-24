@@ -1,5 +1,5 @@
 fastapi==0.110.2
-transformers==4.40.0
+transformers==4.40.1
 python-dotenv==1.0.1
 torch==2.2.2
 uvicorn==0.29.0
