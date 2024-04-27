@@ -5,5 +5,5 @@ torch==2.3.0
 uvicorn==0.29.0
 # dev
 ruff==0.4.2
-pytest==8.1.1
+pytest==8.1.2
 httpx==0.27.0
