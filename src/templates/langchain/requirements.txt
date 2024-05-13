@@ -4,7 +4,7 @@ python-dotenv==1.0.1
 torch==2.3.0
 uvicorn==0.29.0
 langchain==0.1.17
-langchain-community==0.0.37
+langchain-community==0.0.38
 # dev
 ruff==0.4.3
 pytest==8.2.0
