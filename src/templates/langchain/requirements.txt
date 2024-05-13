@@ -6,6 +6,6 @@ uvicorn==0.29.0
 langchain==0.1.17
 langchain-community==0.0.38
 # dev
-ruff==0.4.3
+ruff==0.4.4
 pytest==8.2.0
 httpx==0.27.0
