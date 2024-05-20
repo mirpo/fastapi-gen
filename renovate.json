@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "schedule": [
-    "on monday"
+    "on sunday"
   ],
   "extends": [
     "config:recommended"
@@ -29,9 +29,15 @@
     {
       "matchPackageNames": [
         "langchain",
+        "langchain-community"
+      ],
+      "groupName": "langchain deps"
+    },
+    {
+      "matchPackageNames": [
         "llama-cpp-python"
       ],
-      "groupName": "langchain and llama-cpp-python"
+      "groupName": "llama-cpp-python dep"
     },
     {
       "matchPackagePatterns": [
