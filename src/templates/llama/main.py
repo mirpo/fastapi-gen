@@ -36,5 +36,10 @@ def text_generation(question: str | None = None):
     ### Response:
 
     """
-    answer = llm(prompt, max_tokens=100, temperature=settings.llm_temperature, echo=True)
+    answer = llm(
+        prompt,
+        max_tokens=100,
+        temperature=settings.llm_temperature,
+        echo=True,
+    )
     return {"answer": answer["choices"][0]["text"].split("### Response:")[1].strip(), "question": question}

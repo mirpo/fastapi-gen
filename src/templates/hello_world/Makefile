@@ -12,7 +12,7 @@ lint:
 	. venv/bin/activate && ruff check tests main.py
 
 test:
-	. venv/bin/activate && pytest .
+	. venv/bin/activate && pytest -vv .
 
 start:
 	. venv/bin/activate && uvicorn main:app --reload --host $(HOST) --port $(PORT)
