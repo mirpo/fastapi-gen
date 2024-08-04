@@ -1,6 +1,6 @@
 fastapi==0.112.0
 llama-cpp-python==0.2.85
-pydantic-settings==2.3.4
+pydantic-settings==2.4.0
 # dev
 ruff==0.5.6
 pytest==8.3.1
