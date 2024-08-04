@@ -1,7 +1,7 @@
 fastapi==0.112.0
 transformers==4.42.4
 python-dotenv==1.0.1
-torch==2.3.1
+torch==2.4.0
 uvicorn==0.30.5
 langchain==0.2.12
 langchain-community==0.2.11
