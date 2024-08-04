@@ -69,7 +69,7 @@ def test_text_generation_400():
 
 
 def test_text_generation_200():
-    text = "William Henry Gates III (born October 28, 1955) is an"
+    text = "Once upon a time"
 
     response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
 

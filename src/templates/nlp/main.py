@@ -1,7 +1,10 @@
+import numpy as np
+import torch
 from fastapi import FastAPI, HTTPException
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from transformers import pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
 
+set_seed(42)
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -61,12 +64,46 @@ def text_generation(text: str | None = None):
 
     text = text.strip()
 
-    text_generator = pipeline(
-        task="text-generation",
-        model=settings.text_generation_model,
-        do_sample=settings.text_generation_do_sample,
-        model_kwargs={"temperature": settings.text_generation_temperature},
-    )
-    result = text_generator(text)
+    seed = 42
+    set_seed(seed)
+    np.random.default_rng(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
-    return {"generated_text": result[0]["generated_text"], "original_text": text}
+    # Disable non-deterministic algorithms
+    torch.use_deterministic_algorithms(True)
+
+    # Set environment variable for deterministic behavior
+    import os
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
+    # Initialize tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(settings.text_generation_model)
+    model = AutoModelForCausalLM.from_pretrained(settings.text_generation_model)
+
+    # Ensure we're using CPU for consistency across platforms
+    model = model.to("cpu")
+
+    # Tokenize input
+    input_ids = tokenizer.encode(text, return_tensors="pt")
+
+    # Generate text
+    with torch.no_grad():
+        output = model.generate(
+            input_ids,
+            max_length=50,
+            num_return_sequences=1,
+            do_sample=True,
+            temperature=0.7,
+            top_k=50,
+            top_p=0.95,
+            no_repeat_ngram_size=3,
+            repetition_penalty=1.2,
+            pad_token_id=tokenizer.eos_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+    # Decode and return the generated text
+    generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+    return {"generated_text": generated_text, "original_text": text}
