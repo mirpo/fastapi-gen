@@ -1,5 +1,5 @@
 fastapi==0.112.0
-uvicorn[standard]==0.30.3
+uvicorn==0.30.5
 # dev
 ruff==0.5.6
 pytest==8.3.2

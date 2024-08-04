@@ -74,7 +74,7 @@ def test_text_generation_200():
     response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
 
     assert response.is_success
-    # don't blame me :) it's gpt2
+    # don't blame me :) it's openai-community/gpt2
     assert (
         response.json()["generated_text"]
         == "William Henry Gates III (born October 28, 1955) is an American actor, writer, and director. He is best known for his role as the character of Dr. Henry Gates in the film The Man Who Fell to Earth. He also appeared in"
