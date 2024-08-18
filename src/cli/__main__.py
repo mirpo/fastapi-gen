@@ -5,6 +5,7 @@ import sys
 from importlib import resources
 
 import click
+
 from cli.__about__ import __version__
 
 _pattern = r"^[a-zA-Z0-9_]+$"

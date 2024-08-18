@@ -62,7 +62,7 @@ classifiers = [
 dependencies = ["click==8.1.7", "colorama==0.4.6", "importlib_resources==6.4.3"]
 
 [project.optional-dependencies]
-dev = ["ruff==0.5.7"]
+dev = ["ruff==0.6.1"]
 
 [project.urls]
 Documentation = "https://github.com/mirpo/fastapi-gen#readme"
@@ -89,6 +89,8 @@ skip-string-normalization = true
 [tool.ruff]
 target-version = "py311"
 line-length = 120
+
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
   "ANN",     # Type hints related, let mypy handle these.
@@ -114,12 +116,12 @@ unfixable = [
   "F401",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]

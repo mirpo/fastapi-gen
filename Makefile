@@ -4,4 +4,4 @@ lint:
 	ruff check src
 
 lint-fix:
-	ruff --fix src
+	ruff check --fix src
