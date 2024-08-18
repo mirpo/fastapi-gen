@@ -41,6 +41,12 @@
     },
     {
       "matchPackagePatterns": [
+        "transformers"
+      ],
+      "groupName": "transformers dep"
+    },
+    {
+      "matchPackagePatterns": [
         "pytest",
         "python-dotenv",
         "fastapi",
