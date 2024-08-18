@@ -30,7 +30,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -e .[dev]
-          make lint   
       - name: Lint
         run: |
           make lint
