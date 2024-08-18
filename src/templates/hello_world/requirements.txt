@@ -1,5 +1,5 @@
-fastapi==0.112.0
-uvicorn==0.30.5
+fastapi==0.112.1
+uvicorn==0.30.6
 # dev
 ruff==0.5.7
 pytest==8.3.2
