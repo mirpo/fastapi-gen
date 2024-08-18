@@ -54,7 +54,6 @@
         "importlib_resources",
         "pydantic-settings",
         "torch",
-        "transformers",
         "uvicorn",
         "click",
         "colorama"
