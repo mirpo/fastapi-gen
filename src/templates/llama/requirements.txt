@@ -1,5 +1,5 @@
 fastapi==0.112.0
-llama-cpp-python==0.2.87
+llama-cpp-python==0.2.88
 pydantic-settings==2.4.0
 # dev
 ruff==0.5.7
