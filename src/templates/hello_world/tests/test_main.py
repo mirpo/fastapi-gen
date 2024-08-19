@@ -12,6 +12,18 @@ def test_root_200():
     assert response.json() == {"message": "Hello World"}
 
 
+def test_version_pydantic_setting_200():
+    response = client.get("/version-pydantic-settings")
+
+    assert response.is_success
+    assert response.json() == {"package": "pydantic-settings", "version": "1.0.0"}
+
+def test_version_dotenv_200():
+    response = client.get("/version-dotenv")
+
+    assert response.is_success
+    assert response.json() == {"package": "dotenv", "version": "1.0.0"}
+
 def test_create_item_200():
     response = client.post(
         "/items/",

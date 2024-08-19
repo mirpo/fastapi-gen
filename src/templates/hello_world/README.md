@@ -2,6 +2,12 @@
 
 This project was bootstrapped with [FastApi Gen](https://github.com/mirpo/fastapi-gen).
 
+Includes examples of usage:
+1. `dotenv`
+2. `pydantic-settings`
+3. GET / POST / PUT 
+4. Returning `JSON`
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -15,5 +21,5 @@ The page will automatically reload if you make changes to the code.
 
 ### `make test`
 
-Runs tests.<br>
+Runs tests.
 By default, runs tests related to files changed since the last commit.
