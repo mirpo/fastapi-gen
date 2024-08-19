@@ -1,8 +1,21 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 app = FastAPI()
 
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        # `.env.prod` takes priority over `.env_dev`
+        env_file=(".env_dev", ".env.prod"),
+    )
+    api_version: str
+
+settings = Settings()
+load_dotenv(".env_dev")
 
 class Item(BaseModel):
     name: str
@@ -18,6 +31,19 @@ async def root():
     """
     return {"message": "Hello World"}
 
+@app.get("/version-pydantic-settings")
+async def version_pydantic_settings():
+    """
+    Example how use GET env variables using pydantic-settings package
+    """
+    return {"package": "pydantic-settings", "version": settings.api_version}
+
+@app.get("/version-dotenv")
+async def version_dotenv():
+    """
+    Example how use GET env variables using dotenv package
+    """
+    return {"package": "dotenv", "version": os.getenv("API_VERSION")}
 
 @app.post("/items/")
 async def create_item(item: Item) -> Item:
