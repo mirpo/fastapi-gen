@@ -1,6 +1,6 @@
 fastapi==0.112.1
 transformers==4.42.4
-python-dotenv==1.0.1
+pydantic-settings==2.4.0
 torch==2.4.0
 uvicorn==0.30.6
 langchain==0.2.14
