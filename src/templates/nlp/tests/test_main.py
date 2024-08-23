@@ -3,11 +3,9 @@ import urllib.parse
 
 from fastapi.testclient import TestClient
 
-from src.templates.nlp.main import app, settings
+from src.templates.nlp.main import app
 
 client = TestClient(app)
-settings.text_generation_do_sample = False  # disable model randomization to get predictable test results
-
 
 def test_summarize_400_1():
     response = client.get("/summarize")
@@ -77,5 +75,5 @@ def test_text_generation_200():
     # don't blame me :) it's openai-community/gpt2
     assert (
         response.json()["generated_text"]
-        == "William Henry Gates III (born October 28, 1955) is an American actor, writer, and director. He is best known for his role as the character of Dr. Henry Gates in the film The Man Who Fell to Earth. He also appeared in"
+        == """William Henry Gates III (born October 28, 1955) is an American actor, director, producer, and screenwriter. He is best known for his role as the lead in the 90s television series The Crown, which was nominated for an Academy Award for Best Supporting Actor.\nThe Crown is a 30-part television drama series that premiered on ABC in 8 episodes in October of 7,12,20,31,42 and 43. The series was aired on the ABC network from"""
     )

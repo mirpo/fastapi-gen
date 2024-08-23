@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from transformers import pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
 
+set_seed(42)
+device = "cpu"
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -11,8 +13,6 @@ class Settings(BaseSettings):
     summarize_model: str
     ner_model: str
     text_generation_model: str
-    text_generation_temperature: float
-    text_generation_do_sample: bool
 
 
 app = FastAPI()
@@ -32,7 +32,10 @@ def summarize(text: str | None = None):
     result = summarizer(text)
     result[0]["original_text"] = text
 
-    return {"summary_text": result[0]["summary_text"], "original_text": text}
+    return {
+        "prompt": text,
+        "summary_text": result[0]["summary_text"],
+    }
 
 
 @app.get("/ner")
@@ -47,7 +50,7 @@ def ner(text: str | None = None):
 
     for item in result:
         # I round here scores, because on different platforms you can get
-        # sligtly different values for the same word, for example "0.9735824465751648" ~ "0.973582804203033"
+        # slightly different values for the same word, for example "0.9735824465751648" ~ "0.973582804203033"
         # In prod round(item["score"], 5) can be replaced with float(item["score"])
         item["score"] = round(float(item["score"]), 5)
 
@@ -61,12 +64,20 @@ def text_generation(text: str | None = None):
 
     text = text.strip()
 
-    text_generator = pipeline(
-        task="text-generation",
-        model=settings.text_generation_model,
-        do_sample=settings.text_generation_do_sample,
-        model_kwargs={"temperature": settings.text_generation_temperature},
-    )
-    result = text_generator(text)
+    tokenizer = AutoTokenizer.from_pretrained(settings.text_generation_model)
+    model = AutoModelForCausalLM.from_pretrained(settings.text_generation_model).to(device)
 
-    return {"generated_text": result[0]["generated_text"], "original_text": text}
+    inputs = tokenizer.encode(text, return_tensors="pt").to(device)
+    outputs = model.generate(
+        inputs,
+        max_new_tokens=100,
+        max_length=150,          # You can adjust this as needed
+        no_repeat_ngram_size=2,  # Prevents repeating n-grams of this size
+        early_stopping=True,
+    )
+    result = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return {
+        "prompt": text,
+        "generated_text": result,
+    }
