@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from langchain import LLMChain, PromptTemplate
 from langchain_community.llms import HuggingFacePipeline
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from transformers import pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
 
+set_seed(42)
+device = "cpu"
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -11,8 +13,6 @@ class Settings(BaseSettings):
         env_file=(".env_dev", ".env.prod"),
     )
     text_generation_model: str
-    text_generation_temperature: float
-    text_generation_do_sample: bool
 
 
 app = FastAPI()
@@ -23,16 +23,18 @@ def text_generation(text: str | None = None):
     if text is None:
         raise HTTPException(status_code=400, detail="Text must be specified.")
 
+    tokenizer = AutoTokenizer.from_pretrained(settings.text_generation_model)
+    model = AutoModelForCausalLM.from_pretrained(settings.text_generation_model).to(device)
+
     pipe = pipeline(
         "text-generation",
-        model=settings.text_generation_model,
-        do_sample=settings.text_generation_do_sample,
+        model=model,
+        tokenizer= tokenizer,
         max_new_tokens=100,
+        max_length=150,          # You can adjust this as needed
+        no_repeat_ngram_size=2,  # Prevents repeating n-grams of this size
         early_stopping=True,
-        no_repeat_ngram_size=2,
-        model_kwargs={"temperature": settings.text_generation_temperature},
     )
-
     local_llm = HuggingFacePipeline(pipeline=pipe)
 
     template = """
@@ -43,7 +45,10 @@ def text_generation(text: str | None = None):
     chain = LLMChain(llm=local_llm, verbose=True, prompt=prompt)
     result = chain.run(text).strip()
 
-    return {"answer": result, "text": text}
+    return {
+        "prompt": text,
+        "answer": result,
+    }
 
 
 @app.get("/question-answering")
@@ -51,16 +56,18 @@ def question_answering(context: str | None = None, question: str | None = None):
     if context is None or question is None:
         raise HTTPException(status_code=400, detail="Context and question must be specified.")
 
+    tokenizer = AutoTokenizer.from_pretrained(settings.text_generation_model)
+    model = AutoModelForCausalLM.from_pretrained(settings.text_generation_model).to(device)
+
     pipe = pipeline(
         "text-generation",
-        model=settings.text_generation_model,
-        do_sample=False,
+        model=model,
+        tokenizer= tokenizer,
         max_new_tokens=100,
+        max_length=150,          # You can adjust this as needed
+        no_repeat_ngram_size=2,  # Prevents repeating n-grams of this size
         early_stopping=True,
-        no_repeat_ngram_size=2,
-        model_kwargs={"temperature": 0.1},
     )
-
     local_llm = HuggingFacePipeline(pipeline=pipe)
 
     template = """
@@ -72,4 +79,8 @@ Answer:"""
     chain = LLMChain(llm=local_llm, verbose=True, prompt=prompt)
     result = chain.run({"context": context, "question": question}).strip()
 
-    return {"answer": result, "context": context, "question": question}
+    return {
+        "context": context,
+        "question": question,
+        "answer": result,
+    }

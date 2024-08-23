@@ -4,7 +4,10 @@
     "on sunday"
   ],
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":pinVersions"
   ],
   "labels": [
     "dependencies"
@@ -12,6 +15,11 @@
   "osvVulnerabilityAlerts": true,
   "prConcurrentLimit": 50,
   "prHourlyLimit": 5,
+  "vulnerabilityAlerts": {
+    "schedule": [
+      "at any time"
+    ]
+  },
   "packageRules": [
     {
       "matchManagers": [
@@ -22,7 +30,9 @@
     {
       "matchPackageNames": [
         "dev/ruff",
-        "ruff"
+        "ruff",
+        "pytest",
+        "httpx"
       ],
       "groupName": "dev python tools"
     },
@@ -41,16 +51,15 @@
     },
     {
       "matchPackagePatterns": [
-        "transformers"
+        "transformers",
+        "accelerate"
       ],
       "groupName": "transformers dep"
     },
     {
       "matchPackagePatterns": [
-        "pytest",
         "python-dotenv",
         "fastapi",
-        "httpx",
         "importlib_resources",
         "pydantic-settings",
         "torch",
@@ -58,7 +67,7 @@
         "click",
         "colorama"
       ],
-      "groupName": "other python deps"
+      "groupName": "all python deps"
     }
   ]
 }
