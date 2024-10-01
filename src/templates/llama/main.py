@@ -19,7 +19,7 @@ settings = Settings()
 
 @cache
 def _get_llm():
-    return Llama(model_path=settings.llm_model, verbose=True)
+    return Llama(model_path=settings.llm_model, seed=0, verbose=True)
 
 @app.get("/question-answering")
 def text_generation(question: str | None = None):

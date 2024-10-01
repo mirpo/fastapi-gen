@@ -17,7 +17,7 @@ def test_text_generation_400():
 
 def test_text_generation_200():
     questions = {
-        "How are you today?": "I am doing well, thank you for asking! 😊  As an AI, I don't have feelings like humans do, but I'm ready to assist you with any questions or tasks you may have.",
+        "How are you today?": "I am doing well, thank you for asking. As an AI, I don't have feelings, but I'm ready to assist you with any questions or tasks you may have. 😊",
         "What are the Solar System planets in order?": "1. Mercury\n    2. Venus\n    3. Earth\n    4. Mars\n    5. Jupiter\n    6. Saturn\n    7. Uranus\n    8. Neptune\n\n    This is the order of the planets from the Sun outwards.",
     }
 
