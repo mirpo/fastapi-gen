@@ -2,7 +2,7 @@ fastapi==0.115.0
 transformers[torch]==4.44.2
 pydantic-settings==2.5.2
 torch==2.4.1
-uvicorn==0.30.6
+uvicorn==0.31.0
 accelerate==0.34.2
 # dev
 ruff==0.6.8
