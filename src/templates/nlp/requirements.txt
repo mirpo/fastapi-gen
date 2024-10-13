@@ -3,7 +3,7 @@ transformers[torch]==4.45.2
 pydantic-settings==2.5.2
 torch==2.4.1
 uvicorn==0.31.1
-accelerate==0.34.2
+accelerate==1.0.1
 # dev
 ruff==0.6.9
 pytest==8.3.3
