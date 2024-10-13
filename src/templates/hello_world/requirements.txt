@@ -1,5 +1,5 @@
-fastapi==0.115.0
-uvicorn==0.31.0
+fastapi==0.115.2
+uvicorn==0.31.1
 python-dotenv==1.0.1
 pydantic-settings==2.5.2
 # dev
