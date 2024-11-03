@@ -1,11 +1,11 @@
 fastapi==0.115.4
-transformers[torch]==4.46.0
+transformers[torch]==4.46.1
 pydantic-settings==2.6.1
 torch==2.5.1
 uvicorn==0.32.0
 langchain==0.3.7
 langchain-community==0.3.5
-accelerate==1.0.1
+accelerate==1.1.0
 # dev
 ruff==0.7.2
 pytest==8.3.3
