@@ -2,7 +2,7 @@
 
 Create LLM-enabled FastAPI applications without build configuration.
 
-<a href="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml?query=workflow%3Atest+event%3Apush+branch%3Amaster" target="_blank"><img src="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml/badge.svg?branch=master" alt="Test"></a>
+<a href="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml?query=workflow%3Atest+event%3Apush+branch%main" target="_blank"><img src="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml/badge.svg?branch=main" alt="Test"></a>
 <a href="https://pypi.org/project/fastapi-gen" target="_blank"><img src="https://img.shields.io/pypi/v/fastapi-gen?color=%2334D058&label=pypi%20package" alt="Package version"></a>
 <a href="https://pypi.org/project/fastapi-gen" target="_blank"><img src="https://img.shields.io/pypi/pyversions/fastapi-gen.svg?color=%2334D058" alt="Supported Python versions"></a>
 
@@ -107,4 +107,4 @@ By default, runs tests related to files changed since the last commit.
 
 ## License
 
-`fastapi-gen` is distributed under the terms of the [MIT](https://github.com/mirpo/fastapi-gen/blob/master/LICENSE) license.
+`fastapi-gen` is distributed under the terms of the [MIT](https://github.com/mirpo/fastapi-gen/blob/main/LICENSE) license.
