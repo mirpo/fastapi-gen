@@ -7,6 +7,6 @@ langchain==0.3.13
 langchain-community==0.3.13
 accelerate==1.1.1
 # dev
-ruff==0.8.4
+ruff==0.8.6
 pytest==8.3.4
 httpx==0.28.1
