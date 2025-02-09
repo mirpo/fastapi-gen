@@ -53,9 +53,12 @@ def test_ner_200():
 
     assert response.is_success
     assert response.json() == [
-        {"entity_group": "PER", "score": 0.97358, "word": "William Henry Gates III", "start": 0, "end": 23},
-        {"entity_group": "MISC", "score": 0.99954, "word": "American", "start": 54, "end": 62},
-        {"entity_group": "ORG", "score": 0.99871, "word": "Microsoft", "start": 159, "end": 168},
+        {"entity": "B-PER", "score": 0.99945, "index": 1, "word": "William", "start": 0, "end": 7},
+        {"entity": "I-PER", "score": 0.99613, "index": 2, "word": "Henry", "start": 8, "end": 13},
+        {"entity": "I-PER", "score": 0.99958, "index": 3, "word": "Gates", "start": 14, "end": 19},
+        {"entity": "I-PER", "score": 0.89917, "index": 4, "word": "III", "start": 20, "end": 23},
+        {"entity": "B-MISC", "score": 0.99954, "index": 14, "word": "American", "start": 54, "end": 62},
+        {"entity": "B-ORG", "score": 0.99871, "index": 34, "word": "Microsoft", "start": 159, "end": 168},
     ]
 
 
@@ -72,8 +75,8 @@ def test_text_generation_200():
     response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
 
     assert response.is_success
-    # don't blame me :) it's openai-community/gpt2
+    # don"t blame me :) it's openai-community/gpt2
     assert (
         response.json()["generated_text"]
-        == """William Henry Gates III (born October 28, 1955) is an American actor, director, producer, and screenwriter. He is best known for his role as the lead in the 90s television series The Crown, which was nominated for an Academy Award for Best Supporting Actor.\nThe Crown is a 30-part television drama series that premiered on ABC in 8 episodes in October of 7,12,20,31,42 and 43. The series was aired on the ABC network from"""
+        == """William Henry Gates III (born October 28, 1955) is an American actor, director, producer, and screenwriter. He is best known for his role as the lead in the 2015 film The Hateful Eight, which was nominated for an Academy Award for Best Actor.\nThe Hateful Eight is a 2015 American film directed by James Cameron. It is based on the novel by the same name by Stephen King. The film was nominated for an Academy Award for Best Picture.\nThe film was released on September"""
     )

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
+from transformers import AutoModelForCausalLM, AutoModelForTokenClassification, AutoTokenizer, pipeline, set_seed
 
 set_seed(42)
 device = "cpu"
@@ -45,7 +45,10 @@ def ner(text: str | None = None):
 
     text = text.strip()
 
-    nlp = pipeline("ner", model=settings.ner_model, aggregation_strategy="simple")
+    tokenizer = AutoTokenizer.from_pretrained(settings.ner_model)
+    model = AutoModelForTokenClassification.from_pretrained(settings.ner_model)
+
+    nlp = pipeline("ner", model=model, tokenizer=tokenizer)
     result = nlp(text)
 
     for item in result:
@@ -71,9 +74,7 @@ def text_generation(text: str | None = None):
     outputs = model.generate(
         inputs,
         max_new_tokens=100,
-        max_length=150,          # You can adjust this as needed
-        no_repeat_ngram_size=2,  # Prevents repeating n-grams of this size
-        early_stopping=True,
+        max_length=150,
     )
     result = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
