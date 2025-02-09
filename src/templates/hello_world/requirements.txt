@@ -3,6 +3,6 @@ uvicorn==0.34.0
 python-dotenv==1.0.1
 pydantic-settings==2.7.1
 # dev
-ruff==0.9.4
+ruff==0.9.5
 pytest==8.3.4
 httpx==0.28.1
