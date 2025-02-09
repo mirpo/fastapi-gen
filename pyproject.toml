@@ -62,7 +62,7 @@ classifiers = [
 dependencies = ["click==8.1.8", "colorama==0.4.6", "importlib_resources==6.5.2"]
 
 [project.optional-dependencies]
-dev = ["ruff==0.9.4"]
+dev = ["ruff==0.9.5"]
 
 [project.urls]
 Documentation = "https://github.com/mirpo/fastapi-gen#readme"
