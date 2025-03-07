@@ -1,4 +1,4 @@
-fastapi==0.115.10
+fastapi==0.115.11
 transformers[torch]==4.46.3
 pydantic-settings==2.8.1
 torch==2.6.0
