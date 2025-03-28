@@ -1,4 +1,4 @@
-fastapi==0.115.11
+fastapi==0.115.12
 llama-cpp-python==0.3.8
 pydantic-settings==2.8.1
 # dev
