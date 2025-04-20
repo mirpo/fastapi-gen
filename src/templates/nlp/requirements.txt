@@ -5,6 +5,6 @@ torch==2.6.0
 uvicorn==0.34.0
 accelerate==1.6.0
 # dev
-ruff==0.11.5
+ruff==0.11.6
 pytest==8.3.5
 httpx==0.28.1
