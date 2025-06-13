@@ -4,7 +4,7 @@ pydantic-settings==2.9.1
 torch==2.7.1
 uvicorn==0.34.3
 langchain==0.3.25
-langchain-community==0.3.24
+langchain-community==0.3.25
 accelerate==1.7.0
 # dev
 ruff==0.11.13
