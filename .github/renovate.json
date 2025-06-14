@@ -7,7 +7,8 @@
     "config:recommended",
     ":dependencyDashboard",
     ":semanticCommits",
-    ":pinVersions"
+    ":pinVersions",
+    ":preserveSemverRanges"
   ],
   "labels": [
     "dependencies"
