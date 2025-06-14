@@ -45,7 +45,7 @@ def ner(text: str | None = None):
 
     text = text.strip()
 
-    nlp = pipeline("ner", model=settings.ner_model, aggregation_strategy="simple")
+    nlp = pipeline("ner", model=settings.ner_model, tokenizer=settings.ner_model)
     result = nlp(text)
 
     for item in result:

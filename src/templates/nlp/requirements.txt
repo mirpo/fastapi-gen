@@ -1,7 +1,8 @@
 fastapi==0.115.12
-transformers[torch]==4.46.3
+transformers[torch]==4.52.4
+sentencepiece==0.2.0
 pydantic-settings==2.9.1
-torch==2.7.1
+torch==2.6.0
 uvicorn==0.34.3
 accelerate==1.7.0
 # dev
