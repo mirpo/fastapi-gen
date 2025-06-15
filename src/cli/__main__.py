@@ -5,7 +5,6 @@ import sys
 from importlib import resources
 
 import click
-
 from cli.__about__ import __version__
 
 _pattern = r"^[a-zA-Z0-9_]+$"
@@ -36,6 +35,7 @@ def _create_dir(path: str):
 
 def _walk_resources(package: str, path: str = ""):
     for file in resources.files(package).iterdir():
+        print(f"Processing {file.name} in package {package}") # noqa: T201
         if file.name in ["__pycache__", ".pytest_cache", "venv"]:
             continue
 

@@ -12,6 +12,12 @@ def test_root_200():
     assert response.json() == {"message": "Hello World"}
 
 
+def test_health_check_200():
+    response = client.get("/health")
+
+    assert response.is_success
+    assert response.json() == {"status": "healthy", "version": "1.0.0"}
+
 def test_version_pydantic_setting_200():
     response = client.get("/version-pydantic-settings")
 
@@ -76,6 +82,15 @@ def test_update_item_422():
     # or
     assert response.status_code == 422
 
+def test_update_item_400_negative_id():
+    response = client.put(
+        "/items/-1",
+        json={"name": "foobar", "description": "the foo bar", "price": "1.23"},
+    )
+
+    assert response.status_code == 400
+    assert "Item ID must be positive" in response.json()["error"]
+
 
 def test_read_item200_1():
     response = client.get("/items/1")
@@ -89,3 +104,17 @@ def test_read_item200_2():
 
     assert response.is_success
     assert response.json() == {"item_id": 1, "q": "super-query"}
+
+def test_read_item_400_negative_id():
+    response = client.get("/items/-1")
+
+    assert response.status_code == 400
+    assert "Item ID must be positive" in response.json()["error"]
+
+def test_create_item_422_invalid_price():
+    response = client.post(
+        "/items/",
+        json={"name": "foobar", "description": "the foo bar", "price": -1.23},
+    )
+
+    assert response.status_code == 422
