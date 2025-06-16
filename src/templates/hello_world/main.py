@@ -3,7 +3,7 @@ import os
 from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -25,6 +25,14 @@ def get_settings():
     Dependency to get settings instance
     """
     return settings
+
+
+def write_log(message: str):
+    """
+    Background task to write log message
+    """
+    with open("app.log", "a") as log_file:
+        log_file.write(f"{datetime.datetime.now(datetime.UTC)}: {message}\n")
 
 class Item(BaseModel):
     name: str
@@ -94,3 +102,12 @@ async def read_item(item_id: int, q: str | None = None):
     if q:
         return {"item_id": item_id, "q": q}
     return {"item_id": item_id}
+
+
+@app.post("/send-notification/")
+async def send_notification(background_tasks: BackgroundTasks):
+    """
+    Example how to use background tasks
+    """
+    background_tasks.add_task(write_log, "notification sent")
+    return {"message": "Notification sent in background"}

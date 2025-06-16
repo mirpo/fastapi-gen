@@ -105,3 +105,10 @@ def test_read_item200_2():
 
     assert response.is_success
     assert response.json() == {"item_id": 1, "q": "super-query"}
+
+
+def test_send_notification_200():
+    response = client.post("/send-notification/")
+
+    assert response.is_success
+    assert response.json() == {"message": "Notification sent in background"}
