@@ -33,6 +33,13 @@ def test_version_dotenv_200():
     assert response.is_success
     assert response.json() == {"package": "dotenv", "version": "1.0.0"}
 
+
+def test_config_200():
+    response = client.get("/config")
+
+    assert response.is_success
+    assert response.json() == {"api_version": "1.0.0", "source": "dependency_injection"}
+
 def test_create_item_200():
     response = client.post(
         "/items/",

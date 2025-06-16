@@ -1,8 +1,9 @@
+import datetime
 import os
-from datetime import datetime
+from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -17,6 +18,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 load_dotenv(".env_dev")
+
+
+def get_settings():
+    """
+    Dependency to get settings instance
+    """
+    return settings
 
 class Item(BaseModel):
     name: str
@@ -38,7 +46,7 @@ async def health_check():
     """
     Health check endpoint with timestamp
     """
-    return {"status": "healthy", "timestamp": datetime.now()}
+    return {"status": "healthy", "timestamp": datetime.datetime.now(datetime.UTC)}
 
 @app.get("/version-pydantic-settings")
 async def version_pydantic_settings():
@@ -53,6 +61,14 @@ async def version_dotenv():
     Example how use GET env variables using dotenv package
     """
     return {"package": "dotenv", "version": os.getenv("API_VERSION")}
+
+
+@app.get("/config")
+async def get_config(settings: Annotated[Settings, Depends(get_settings)]):
+    """
+    Example how to use dependency injection with settings
+    """
+    return {"api_version": settings.api_version, "source": "dependency_injection"}
 
 @app.post("/items/")
 async def create_item(item: Item) -> Item:
