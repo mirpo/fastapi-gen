@@ -12,6 +12,15 @@ def test_root_200():
     assert response.json() == {"message": "Hello World"}
 
 
+def test_health_check_200():
+    response = client.get("/health")
+
+    assert response.is_success
+    json_response = response.json()
+    assert json_response["status"] == "healthy"
+    assert "timestamp" in json_response
+
+
 def test_version_pydantic_setting_200():
     response = client.get("/version-pydantic-settings")
 

@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -30,6 +31,14 @@ async def root():
     Example how use GET and return JSON
     """
     return {"message": "Hello World"}
+
+
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint with timestamp
+    """
+    return {"status": "healthy", "timestamp": datetime.now()}
 
 @app.get("/version-pydantic-settings")
 async def version_pydantic_settings():
