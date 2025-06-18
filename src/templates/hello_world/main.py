@@ -5,7 +5,7 @@ from typing import Annotated
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 app = FastAPI()
@@ -52,10 +52,10 @@ def write_log(message: str):
         log_file.write(f"{datetime.datetime.now(datetime.UTC)}: {message}\n")
 
 class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
+    name: str = Field(..., min_length=1, max_length=100, description="Item name")
+    description: str | None = Field(None, max_length=500, description="Item description")
+    price: float = Field(..., gt=0, description="Item price must be greater than 0")
+    tax: float | None = Field(None, ge=0, le=100, description="Tax percentage (0-100)")
 
 
 @app.get("/")

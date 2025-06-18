@@ -66,6 +66,29 @@ def test_create_item_422():
     assert response.status_code == 422
 
 
+def test_create_item_validation_errors():
+    # Test empty name
+    response = client.post(
+        "/items/",
+        json={"name": "", "price": 10.0},
+    )
+    assert response.status_code == 422
+
+    # Test negative price
+    response = client.post(
+        "/items/",
+        json={"name": "test", "price": -5.0},
+    )
+    assert response.status_code == 422
+
+    # Test invalid tax range
+    response = client.post(
+        "/items/",
+        json={"name": "test", "price": 10.0, "tax": 150.0},
+    )
+    assert response.status_code == 422
+
+
 def test_update_item_200():
     response = client.put(
         "/items/1",
