@@ -112,3 +112,17 @@ def test_send_notification_200():
 
     assert response.is_success
     assert response.json() == {"message": "Notification sent in background"}
+
+
+def test_error_example_no_error():
+    response = client.get("/error-example")
+
+    assert response.is_success
+    assert response.json() == {"message": "No error occurred"}
+
+
+def test_error_example_custom_error():
+    response = client.get("/error-example?trigger_error=true")
+
+    assert response.status_code == 418
+    assert response.json() == {"message": "Custom error occurred: example error"}

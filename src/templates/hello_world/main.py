@@ -3,11 +3,28 @@ import os
 from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, Depends, FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 app = FastAPI()
+
+
+class CustomError(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+
+@app.exception_handler(CustomError)
+async def custom_exception_handler(_request: Request, exc: CustomError):
+    """
+    Custom exception handler example
+    """
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Custom error occurred: {exc.name}"},
+    )
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -111,3 +128,14 @@ async def send_notification(background_tasks: BackgroundTasks):
     """
     background_tasks.add_task(write_log, "notification sent")
     return {"message": "Notification sent in background"}
+
+
+@app.get("/error-example")
+async def error_example(*, trigger_error: bool = False):
+    """
+    Example endpoint that can trigger custom exception
+    """
+    if trigger_error:
+        msg = "example error"
+        raise CustomError(msg)
+    return {"message": "No error occurred"}
