@@ -1,6 +1,6 @@
 # FastApi Gen
 
-Create LLM-enabled FastAPI applications without build configuration.
+Create production-ready FastAPI applications with modern best practices - from simple APIs to LLM-enabled applications, all without build configuration.
 
 <a href="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml?query=workflow%3Atest+event%3Apush+branch%main" target="_blank"><img src="https://github.com/mirpo/fastapi-gen/actions/workflows/test.yml/badge.svg?branch=main" alt="Test"></a>
 <a href="https://pypi.org/project/fastapi-gen" target="_blank"><img src="https://img.shields.io/pypi/v/fastapi-gen?color=%2334D058&label=pypi%20package" alt="Package version"></a>
@@ -32,12 +32,34 @@ If you've previously installed `fastapi-gen` globally via `pip3 install fastapi-
 
 Then open http://localhost:8000/docs to see your app OpenAPI documentation.
 
-Available templates:
+## Available Templates
 
-1. Default - basic template with GET/POST examples.
-2. NLP - natural language processing template with examples how to use local Hugginface models for summarization, named-entity recognition and text generation using LLM.
-3. Langchain - template with examples how to use LangChain with local Hugginface models (LLMs) for text generation and question answering.
-4. Llama - template with examples how to use llama.cpp and llama-cpp-python with local Llama 2 for question asnwering.
+### 📚 **Hello World** (Default) - Complete FastAPI Learning Template
+- ✅ **REST API fundamentals** - GET/POST/PUT operations with proper validation
+- ✅ **Configuration management** - Both `pydantic-settings` and `dotenv` examples
+- ✅ **Dependency injection** - Clean architecture patterns with `Depends()`
+- ✅ **Background tasks** - Asynchronous processing with logging
+- ✅ **Custom exception handling** - Professional error responses
+- ✅ **Input validation** - Advanced Pydantic Field constraints
+- ✅ **Health monitoring** - Built-in health check endpoint
+- ✅ **Comprehensive tests** - Complete test coverage for all features
+
+*Perfect for learning FastAPI or starting new projects* • [View Template Features →](src/templates/hello_world/README.md)
+
+### 🤖 **NLP** - Natural Language Processing
+Natural language processing template with examples for local Hugging Face models:
+- Text summarization, named-entity recognition, and LLM text generation
+- Production-ready model serving patterns
+
+### 🔗 **Langchain** - LLM Integration  
+Template with LangChain integration for local Hugging Face models:
+- Text generation and question answering with LLMs
+- Advanced prompt engineering examples
+
+### 🦙 **Llama** - Local Llama Models
+Template using llama.cpp and llama-cpp-python:
+- Local Llama 2 model integration for question answering
+- Optimized for performance and memory usage
 
 *Important notes*:
 - Langchain template requires hardware to run and will automatically download required models, be patient.
@@ -47,10 +69,18 @@ Each template includes not only code, but also **tests**.
 
 ### Get Started Immediately
 
-You **don’t** need to install or configure depencendeices like FastApi or Pytest.<br>
+You **don’t** need to install or configure dependencies like FastAPI, Pydantic, or Pytest.<br>
 They are preconfigured and hidden so that you can focus on the code.
 
 Create a project, and you’re good to go.
+
+**What you get out of the box:**
+- 🔧 **Zero configuration** - Ready-to-run development environment
+- 📝 **Production patterns** - Industry-standard project structure  
+- 🧪 **Testing setup** - Comprehensive test suites with examples
+- 🔍 **Code quality** - Linting and formatting with Ruff
+- 📚 **Documentation** - Auto-generated OpenAPI docs
+- 🐳 **Deployment ready** - Makefile with common commands
 
 ## Creating an App
 
