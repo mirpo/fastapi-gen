@@ -64,10 +64,16 @@ Natural language processing template with examples for local Hugging Face models
 - Text summarization, named-entity recognition, and LLM text generation
 - Production-ready model serving patterns
 
-### 🔗 **Langchain** - LLM Integration  
-Template with LangChain integration for local Hugging Face models:
-- Text generation and question answering with LLMs
-- Advanced prompt engineering examples
+### 🔗 **Langchain** - Production-Ready LLM Integration  
+Modern LangChain template with enterprise-grade features:
+- ✅ **Optimized Model Loading** - Startup caching and efficient memory management
+- ✅ **Modern LangChain Patterns** - Updated imports and best practices
+- ✅ **Flexible API Design** - Both REST and request body endpoints with Pydantic models
+- ✅ **Smart Configuration** - Auto device detection (CPU/GPU) and configurable parameters
+- ✅ **Production Monitoring** - Health checks, logging, and error handling
+- ✅ **Real Service Testing** - Comprehensive tests using actual model inference
+- ✅ **Text Generation & QA** - Dual endpoints for different LLM use cases
+- ✅ **Backward Compatibility** - Maintains existing GET endpoints while adding modern POST APIs
 
 ### 🦙 **Llama** - Local Llama Models
 Template using llama.cpp and llama-cpp-python:
