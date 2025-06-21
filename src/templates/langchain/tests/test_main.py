@@ -1,50 +1,135 @@
 # ruff: noqa: E501
-import re
-import urllib.parse
-
+import pytest
+from unittest.mock import Mock, patch, AsyncMock
 from fastapi.testclient import TestClient
 
-from src.templates.langchain.main import app
+from src.templates.langchain.main import app, get_langchain_service, LangChainService, Settings
 
-client = TestClient(app)
+# Mock the LangChain service for testing
+@pytest.fixture
+def mock_langchain_service():
+    mock_service = Mock(spec=LangChainService)
+    mock_service.generate_text.return_value = "Mocked text generation result"
+    mock_service.answer_question.return_value = "Mocked QA result"
+    return mock_service
+
+@pytest.fixture
+def client_with_mock(mock_langchain_service):
+    app.dependency_overrides[get_langchain_service] = lambda: mock_langchain_service
+    with TestClient(app) as client:
+        yield client
+    app.dependency_overrides.clear()
 
 
-def test_text_generation_400():
-    response = client.get("/text-generation")
+def test_health_check():
+    with TestClient(app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+        assert "model" in data
+        assert "device" in data
 
-    assert response.is_client_error
-    assert response.json() == {"detail": "Text must be specified."}
+def test_text_generation_get_missing_param():
+    with TestClient(app) as client:
+        response = client.get("/text-generation")
+        assert response.status_code == 422  # Validation error for missing required parameter
 
 
-def test_text_generation_200():
+def test_text_generation_get_success(client_with_mock):
     text = "what is the moon"
-    response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
+    response = client_with_mock.get(f"/text-generation?text={text}")
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["prompt"] == text
+    assert data["answer"] == "Mocked text generation result"
+    assert "model_used" in data
+
+def test_text_generation_post_success(client_with_mock):
+    payload = {"text": "what is the moon"}
+    response = client_with_mock.post("/text-generation", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["prompt"] == payload["text"]
+    assert data["answer"] == "Mocked text generation result"
+    assert "model_used" in data
+
+def test_question_answering_get_missing_params():
+    with TestClient(app) as client:
+        response = client.get("/question-answering")
+        assert response.status_code == 422  # Validation error for missing required parameters
+        
+        response = client.get("/question-answering?context=some context")
+        assert response.status_code == 422  # Still missing question parameter
 
 
-    result = re.sub(r"[^a-zA-Z0-9 ]+", "", response.json()["answer"].strip())
-    assert response.is_success
-    assert (
-        result == "what is the moon    1 100 km2 Moon is 20km3 The moon is about 30050 kilometers4 the Moon has a diameter of 407560 miles5 It is a satellite of the Earth6 it is not a planet7 its orbit is elliptical8 Its orbit has an eccentricity of about9 There is no atmosphere on the surface of11"
-    )
-
-def test_question_answering_400():
-    response = client.get("/question-answering")
-
-    assert response.is_client_error
-    assert response.json() == {"detail": "Context and question must be specified."}
-
-
-def test_question_answering_200():
+def test_question_answering_get_success(client_with_mock):
     context = "Tom likes coding and designing complex distributed systems."
     question = "What Tom likes?"
+    
+    response = client_with_mock.get(f"/question-answering?context={context}&question={question}")
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["context"] == context
+    assert data["question"] == question
+    assert data["answer"] == "Mocked QA result"
+    assert "model_used" in data
 
-    response = client.get(
-        f"/question-answering?context={urllib.parse.quote(context)}&question={urllib.parse.quote(question)}",
-    )
+def test_question_answering_post_success(client_with_mock):
+    payload = {
+        "context": "Tom likes coding and designing complex distributed systems.",
+        "question": "What Tom likes?"
+    }
+    response = client_with_mock.post("/question-answering", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["context"] == payload["context"]
+    assert data["question"] == payload["question"]
+    assert data["answer"] == "Mocked QA result"
+    assert "model_used" in data
 
-    result = re.sub(r"[^a-zA-Z0-9 ]+", "", response.json()["answer"].strip())
-    assert response.is_success
-    assert (
-        result
-        == "Context Tom likes coding and designing complex distributed systemsQuestion What Tom likesAnswer He likes to code and design complex systems 1 What is the difference between a computer and a machine 200 wordsA computer is a device that can be programmed to perform a task It is an electronic device which can store data process information and execute instructions A machine is any object that performs a specific task and is capable of carrying out a particular task or function Computer and machine are two different things Machine is used to carry out tasks that"
-    )
+def test_langchain_service_initialization():
+    """Test that LangChainService can be initialized with settings"""
+    settings = Settings(text_generation_model="test-model")
+    service = LangChainService(settings)
+    assert service.settings == settings
+    assert service.tokenizer is None
+    assert service.model is None
+    assert service.pipeline is None
+    assert service.llm is None
+
+@patch('src.templates.langchain.main.AutoTokenizer')
+@patch('src.templates.langchain.main.AutoModelForCausalLM')
+@patch('src.templates.langchain.main.pipeline')
+async def test_langchain_service_initialize(mock_pipeline, mock_model, mock_tokenizer):
+    """Test LangChainService initialization with mocked dependencies"""
+    settings = Settings(text_generation_model="test-model")
+    service = LangChainService(settings)
+    
+    # Mock the components
+    mock_tokenizer.from_pretrained.return_value = Mock()
+    mock_model.from_pretrained.return_value = Mock()
+    mock_model.from_pretrained.return_value.to.return_value = Mock()
+    mock_pipeline.return_value = Mock()
+    
+    await service.initialize()
+    
+    # Verify initialization was called
+    mock_tokenizer.from_pretrained.assert_called_once_with("test-model")
+    mock_model.from_pretrained.assert_called_once_with("test-model")
+    mock_pipeline.assert_called_once()
+
+def test_settings_device_detection():
+    """Test device detection logic in settings"""
+    # Test auto detection
+    settings = Settings(text_generation_model="test-model", device="auto")
+    device = settings.get_device()
+    assert device in ["cpu", "cuda"]
+    
+    # Test explicit device
+    settings = Settings(text_generation_model="test-model", device="cpu")
+    assert settings.get_device() == "cpu"
