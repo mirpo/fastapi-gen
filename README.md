@@ -46,6 +46,19 @@ Then open http://localhost:8000/docs to see your app OpenAPI documentation.
 
 *Perfect for learning FastAPI or starting new projects* • [View Template Features →](src/templates/hello_world/README.md)
 
+### 🚀 **Advanced** - Production-Ready Template
+Complete template with enterprise-grade features and patterns:
+- ✅ **JWT Authentication** - User registration, login, and protected routes
+- ✅ **Database Integration** - SQLAlchemy 2.0 with async support (SQLite/PostgreSQL)
+- ✅ **Rate Limiting** - DDoS protection with configurable limits per endpoint
+- ✅ **Caching System** - In-memory caching with Redis integration ready
+- ✅ **WebSocket Support** - Real-time communication and messaging
+- ✅ **File Upload** - Secure file handling with validation and cloud storage ready
+- ✅ **Enhanced Security** - CORS, input validation, and production-ready patterns
+- ✅ **Comprehensive Tests** - Authentication, CRUD, WebSocket, and integration tests
+
+*Perfect for production applications requiring advanced features* • [View Template Features →](src/templates/advanced/README.md)
+
 ### 🤖 **NLP** - Natural Language Processing
 Natural language processing template with examples for local Hugging Face models:
 - Text summarization, named-entity recognition, and LLM text generation
@@ -98,6 +111,13 @@ or
 ```console
 pip3 install fastapi-gen
 fastapi-gen my_app --template hello_world
+```
+
+### Advanced template
+
+```console
+pip3 install fastapi-gen
+fastapi-gen my_app --template advanced
 ```
 
 ### NLP template

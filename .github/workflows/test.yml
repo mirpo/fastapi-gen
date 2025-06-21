@@ -51,6 +51,13 @@ jobs:
           make lint
           make test
           cd ..
+      - name: Create project using "advanced" template
+        run: |
+          fastapi-gen advanced --template advanced
+          cd advanced
+          make lint
+          make test
+          cd ..
       - name: Create project using "nlp" template
         run: |
           fastapi-gen nlp --template nlp
