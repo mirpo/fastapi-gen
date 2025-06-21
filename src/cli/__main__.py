@@ -25,7 +25,7 @@ def replace_string_in_file(file_path, old_string, new_string):
         file.write(modified_content)
 
 
-_choices = ["hello_world", "nlp", "langchain", "llama"]
+_choices = ["hello_world", "advanced", "nlp", "langchain", "llama"]
 
 def _create_dir(path: str):
     try:
