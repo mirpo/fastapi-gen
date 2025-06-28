@@ -14,7 +14,7 @@ passlib[bcrypt]==1.7.4
 slowapi==0.1.9
 
 # File uploads
-python-multipart==0.0.18
+python-multipart==0.0.20
 
 # WebSocket support (included in FastAPI, but explicit for clarity)
 websockets==15.0.1
