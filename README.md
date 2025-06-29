@@ -59,10 +59,16 @@ Complete template with enterprise-grade features and patterns:
 
 *Perfect for production applications requiring advanced features* • [View Template Features →](src/templates/advanced/README.md)
 
-### 🤖 **NLP** - Natural Language Processing
-Natural language processing template with examples for local Hugging Face models:
-- Text summarization, named-entity recognition, and LLM text generation
-- Production-ready model serving patterns
+### 🤖 **NLP** - Comprehensive Natural Language Processing
+Production-ready NLP template with enterprise-grade features and 8 NLP capabilities:
+- ✅ **Comprehensive NLP Pipeline** - Summarization, NER, text generation, QA, embeddings, sentiment, zero-shot classification, and similarity
+- ✅ **Production-Ready Architecture** - Startup model loading, device auto-detection (CPU/GPU/MPS), and memory optimization
+- ✅ **Modern API Design** - Both GET and POST endpoints with Pydantic validation and structured responses
+- ✅ **Smart Configuration** - Environment-based config with multiple model options per task
+- ✅ **Advanced Features** - Sentence embeddings, zero-shot classification, and semantic similarity
+- ✅ **Performance Optimization** - Efficient model caching, concurrent request handling, and hardware acceleration
+- ✅ **Production Monitoring** - Health checks, model status tracking, and comprehensive logging
+- ✅ **Real Service Testing** - Tests using actual model inference for end-to-end validation
 
 ### 🔗 **Langchain** - Production-Ready LLM Integration  
 Modern LangChain template with enterprise-grade features:
