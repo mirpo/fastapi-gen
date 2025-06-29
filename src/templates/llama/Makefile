@@ -3,8 +3,8 @@
 PORT=8000
 HOST=127.0.0.1
 
-MODEL_URL=https://huggingface.co/unsloth/gemma-2-it-GGUF/resolve/main/gemma-2-2b-it.q8_0.gguf
-OUTPUT_FILE=./models/gemma-2-2b-it.q8_0.gguf
+MODEL_URL=https://huggingface.co/unsloth/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf?download=true
+OUTPUT_FILE=./models/gemma-3-1b-it-Q4_K_M.gguf
 
 init: requirements.txt download
 	test -d venv || python3 -m venv venv
@@ -41,6 +41,6 @@ download-curl:
 	curl -L $(MODEL_URL) -o $(OUTPUT_FILE) 
 
 download-wget:
-	wget -L $(OUTPUT_FILE) -O $(MODEL_URL)
+	wget -O $(OUTPUT_FILE) $(MODEL_URL)
 
 download: check-curl

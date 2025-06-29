@@ -17,7 +17,7 @@ This template provides a production-ready FastAPI service with modern LangChain 
 - **Type safety**: Full Pydantic integration for request/response models
 
 ### ✅ **Flexible API Design**
-- **Dual endpoints**: Both GET (backward compatibility) and POST (modern) endpoints
+- **Dual endpoints**: Both GET and POST (modern) endpoints
 - **Request validation**: Pydantic models for type-safe input validation
 - **Response models**: Structured responses with model metadata
 - **Parameter customization**: Override generation parameters per request
@@ -59,7 +59,7 @@ Content-Type: application/json
   "temperature": 0.7
 }
 
-# Legacy GET endpoint (backward compatibility)
+# Legacy GET endpoint
 GET /text-generation?text=What is artificial intelligence?
 ```
 
@@ -75,7 +75,7 @@ Content-Type: application/json
   "max_new_tokens": 50
 }
 
-# Legacy GET endpoint (backward compatibility)
+# Legacy GET endpoint
 GET /question-answering?context=AI is...&question=What is AI?
 ```
 

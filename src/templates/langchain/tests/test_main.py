@@ -28,7 +28,7 @@ def test_text_generation_get_missing_param(client):
 
 
 def test_text_generation_get_success(client):
-    """Test text generation with GET method (backward compatibility)"""
+    """Test text generation with GET method"""
     text = "what is the moon"
     response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
 
@@ -79,7 +79,7 @@ def test_question_answering_get_missing_params(client):
 
 
 def test_question_answering_get_success(client):
-    """Test question answering with GET method (backward compatibility)"""
+    """Test question answering with GET method"""
     context = "Tom likes coding and designing complex distributed systems."
     question = "What does Tom like?"
 
