@@ -1,169 +1,271 @@
-# NLP FastAPI Template
+<div align="center">
 
-This project was bootstrapped with [FastApi Gen](https://github.com/mirpo/fastapi-gen) using the **nlp** template.
+# 🤖 NLP - Comprehensive AI Language Processing Template
 
-## 🚀 Features
+**Production-ready FastAPI with 8 NLP capabilities using modern Transformers**
 
-This template provides a production-ready FastAPI service with comprehensive NLP capabilities using modern Transformers:
+*This project was bootstrapped with [FastAPI Gen](https://github.com/mirpo/fastapi-gen)*
 
-### ✅ **Comprehensive NLP Pipeline**
-- **Text Summarization**: Advanced text summarization using T5-small
-- **Named Entity Recognition**: Extract entities (persons, organizations, locations) from text
-- **Text Generation**: Creative text generation with SmolLM
-- **Question Answering**: Extractive QA using DistilBERT
-- **Sentence Embeddings**: Generate dense vector representations using MiniLM
-- **Sentiment Analysis**: Classify text sentiment (positive/negative) with DistilBERT
-- **Zero-shot Classification**: Classify text into arbitrary categories without training
-- **Text Similarity**: Calculate semantic similarity between texts
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
+[![Transformers](https://img.shields.io/badge/🤗%20Transformers-4.0+-orange.svg)](https://huggingface.co/transformers)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org)
 
-### ✅ **Production-Ready Architecture**
-- **Startup model loading**: All models load once during application startup, not on every request
-- **Device auto-detection**: Automatically uses GPU (CUDA/MPS) when available, falls back to CPU
-- **Memory efficient**: Reuses model instances across requests for optimal performance
-- **Service-based design**: Clean separation of concerns with dedicated NLP service class
+</div>
 
-### ✅ **Modern API Design**
-- **Dual endpoints**: Both GET and POST (modern) endpoints
-- **Request validation**: Pydantic models for type-safe input validation with constraints
-- **Response models**: Structured responses with model metadata and confidence scores
-- **Parameter customization**: Override generation parameters per request
-- **Comprehensive error handling**: Graceful error responses with detailed messages
+---
 
-### ✅ **Smart Configuration**
-- **Environment-based config**: `.env_dev` and `.env_prod` file support
-- **Multiple model options**: Easy configuration for different models per task
-- **Configurable parameters**: Generation settings, device selection, and model paths
-- **Flexible device targeting**: Auto-detection or manual CPU/GPU/MPS selection
+## 🎯 What You'll Build
 
-### ✅ **Production Monitoring**
-- **Health endpoint**: `/health` with detailed model initialization status
-- **Structured logging**: Comprehensive logging with proper log levels
-- **Model status tracking**: Real-time monitoring of all loaded models
-- **Performance optimization**: Efficient model loading and caching
+A **comprehensive NLP service** with 8 powerful AI capabilities:
 
-### ✅ **Enhanced Testing**
-- **Session-scoped fixtures**: Efficient test execution with shared model loading
-- **Real service testing**: Tests use actual model inference, not mocks
-- **Comprehensive coverage**: All endpoints, parameters, validation, and edge cases
-- **Performance validation**: Ensures real-world functionality works correctly
+🧠 **8 NLP Capabilities** → Complete text processing pipeline  
+🏗️ **Production Architecture** → Startup model loading, device auto-detection  
+🎛️ **Smart Configuration** → Environment-based config, multiple models  
+⚡ **Performance Optimized** → Model caching, concurrent handling, hardware acceleration  
+💊 **Production Monitoring** → Health checks, model status, logging  
+🧪 **Real AI Testing** → Actual model inference validation  
+
+## ⚡ Quick Start in 30 Seconds
+
+```bash
+# You're already here! Initialize the environment:
+make init  # Sets up Python environment and dependencies
+
+# Start the app:
+make start
+
+# The app will download models on first startup (be patient!)
+# Open: http://localhost:8000/docs
+```
+
+🚀 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
+
+> ⏱️ **First startup:** Downloads models (~1-2GB total), takes 3-5 minutes depending on internet speed.
+
+## 🧠 8 NLP Capabilities
+
+<details>
+<summary><strong>📝 Text Summarization</strong></summary>
+
+**Advanced text summarization using T5-small:**
+- ✅ **Extractive & Abstractive** - Generate concise summaries from long text
+- ✅ **Configurable Length** - Control summary length with max_length parameter
+- ✅ **Quality Models** - T5-small for balanced speed and quality
+- ✅ **Batch Processing** - Handle multiple texts efficiently
+
+**Try it:**
+```bash
+curl -X POST "http://localhost:8000/summarize" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Your long text here...", "max_length": 150}'
+```
+
+</details>
+
+<details>
+<summary><strong>🏷️ Named Entity Recognition (NER)</strong></summary>
+
+**Extract entities from text:**
+- ✅ **Entity Types** - Persons, organizations, locations, and more
+- ✅ **Confidence Scores** - Get confidence levels for each entity
+- ✅ **Position Tracking** - Know where entities appear in text
+- ✅ **Multiple Models** - Choose between speed and accuracy
+
+**Extracted Entities:**
+- PER (Person names)
+- ORG (Organizations)
+- LOC (Locations)
+- MISC (Miscellaneous entities)
+
+</details>
+
+<details>
+<summary><strong>✍️ Text Generation</strong></summary>
+
+**Creative text generation with SmolLM:**
+- ✅ **Prompt Completion** - Continue text from given prompts
+- ✅ **Parameter Control** - Temperature, max tokens, and more
+- ✅ **Efficient Models** - SmolLM for fast generation
+- ✅ **Reproducible Output** - Seed control for consistent results
+
+**Generation Controls:**
+- Temperature (creativity level)
+- Max new tokens (length control)
+- Top-p sampling for quality
+
+</details>
+
+<details>
+<summary><strong>❓ Question Answering</strong></summary>
+
+**Context-based question answering:**
+- ✅ **Extractive QA** - Find answers within provided context
+- ✅ **Confidence Scores** - Get answer confidence levels
+- ✅ **Position Tracking** - Know where answers are found
+- ✅ **DistilBERT Model** - Fast and accurate processing
+
+**Perfect for:**
+- Document question answering
+- Knowledge base queries
+- FAQ automation
+
+</details>
+
+<details>
+<summary><strong>🔢 Sentence Embeddings</strong></summary>
+
+**Generate dense vector representations:**
+- ✅ **Semantic Vectors** - Convert text to numerical representations
+- ✅ **Batch Processing** - Handle multiple texts in one request
+- ✅ **MiniLM Model** - Optimized for speed and quality
+- ✅ **Similarity Ready** - Perfect for semantic search and clustering
+
+**Use Cases:**
+- Semantic search
+- Document clustering
+- Recommendation systems
+- Content similarity
+
+</details>
+
+<details>
+<summary><strong>😊 Sentiment Analysis</strong></summary>
+
+**Classify text sentiment:**
+- ✅ **Binary Classification** - Positive/Negative sentiment
+- ✅ **Confidence Scores** - Numerical confidence levels
+- ✅ **Fast Processing** - DistilBERT for speed
+- ✅ **Production Ready** - Handles various text types
+
+**Applications:**
+- Customer feedback analysis
+- Social media monitoring
+- Product reviews
+- Content moderation
+
+</details>
+
+<details>
+<summary><strong>🎯 Zero-shot Classification</strong></summary>
+
+**Classify text without training data:**
+- ✅ **Custom Categories** - Define your own classification labels
+- ✅ **No Training Required** - Classify into arbitrary categories
+- ✅ **Ranked Results** - Get probability scores for all labels
+- ✅ **Flexible Input** - Any text, any categories
+
+**Example Use Cases:**
+- Content categorization
+- Intent classification
+- Topic modeling
+- Dynamic labeling
+
+</details>
+
+<details>
+<summary><strong>🔍 Text Similarity</strong></summary>
+
+**Calculate semantic similarity between texts:**
+- ✅ **Similarity Scores** - Numerical similarity from 0 to 1
+- ✅ **Semantic Understanding** - Beyond keyword matching
+- ✅ **Fast Computation** - Optimized embeddings
+- ✅ **Pairwise Comparison** - Compare any two texts
+
+**Perfect for:**
+- Duplicate detection
+- Content matching
+- Recommendation systems
+- Search ranking
+
+</details>
 
 ## 📡 API Endpoints
 
-### Health Check
+### 🏥 Health & Status
 ```http
-GET /health
+GET /health                 # Service status, device info, model loading status
 ```
-Returns service status, device information, and model loading status.
 
-### Text Summarization
+### 📝 Text Processing
 ```http
-# Modern POST endpoint (recommended)
+# Text Summarization
 POST /summarize
-Content-Type: application/json
-
 {
-  "text": "Long text to summarize here...",
+  "text": "Long text to summarize...",
   "max_length": 150
 }
 
-# Legacy GET endpoint
-GET /summarize?text=Long%20text%20here&max_length=100
-```
-
-### Named Entity Recognition
-```http
-# Modern POST endpoint (recommended)
+# Named Entity Recognition  
 POST /ner
-Content-Type: application/json
-
 {
   "text": "John Smith works at Microsoft in Seattle."
 }
 
-# Legacy GET endpoint
-GET /ner?text=John%20Smith%20works%20at%20Microsoft
-```
-
-### Text Generation
-```http
-# Modern POST endpoint (recommended)
+# Text Generation
 POST /text-generation
-Content-Type: application/json
-
 {
-  "text": "The future of artificial intelligence is",
+  "text": "The future of AI is",
   "max_new_tokens": 100,
   "temperature": 0.7
 }
 
-# Legacy GET endpoint
-GET /text-generation?text=The%20future%20is&max_new_tokens=50
-```
-
-### Question Answering
-```http
-# Modern POST endpoint (recommended)
+# Question Answering
 POST /question-answering
-Content-Type: application/json
-
 {
-  "context": "John is a software engineer who lives in San Francisco.",
-  "question": "Where does John live?"
+  "context": "AI is a field of computer science...",
+  "question": "What is AI?"
 }
-
-# Legacy GET endpoint
-GET /question-answering?context=John%20lives%20in%20SF&question=Where%20does%20John%20live
 ```
 
-### Sentence Embeddings
+### 🔢 Advanced Analysis
 ```http
+# Sentence Embeddings
 POST /embeddings
-Content-Type: application/json
-
 {
-  "texts": ["Hello world", "How are you today?"]
+  "texts": ["Hello world", "How are you?"]
 }
-```
 
-### Sentiment Analysis
-```http
+# Sentiment Analysis
 POST /sentiment
-Content-Type: application/json
-
 {
-  "text": "I love this product! It's amazing."
+  "text": "I love this product!"
 }
-```
 
-### Zero-shot Classification
-```http
+# Zero-shot Classification
 POST /classify
-Content-Type: application/json
-
 {
   "text": "I love programming in Python",
-  "candidate_labels": ["technology", "sports", "cooking", "programming"]
+  "candidate_labels": ["technology", "sports", "cooking"]
 }
-```
 
-### Text Similarity
-```http
+# Text Similarity
 POST /similarity
-Content-Type: application/json
-
 {
   "text1": "The cat is sleeping",
   "text2": "A cat is taking a nap"
 }
 ```
 
-## ⚙️ Configuration
+## 🛠️ Development Commands
 
-Configure models and parameters via environment variables:
+<details>
+<summary><strong>Available Make Commands</strong></summary>
 
+| Command | Description |
+|---------|-------------|
+| `make init` | 🚀 Set up Python environment and install dependencies |
+| `make start` | ▶️ Run app in development mode with auto-reload |
+| `make test` | 🧪 Run comprehensive test suite with real AI |
+| `make lint` | 🔍 Run code quality checks with Ruff |
+
+</details>
+
+## 🔧 Configuration & Setup
+
+### Environment Configuration
+
+Create `.env_dev` file:
 ```bash
-# .env_dev or .env_prod
-
 # Model configurations
 SUMMARIZE_MODEL="t5-small"
 NER_MODEL="dslim/bert-base-NER"
@@ -180,163 +282,237 @@ TEMPERATURE=0.7
 TOP_P=0.9
 ```
 
-### Model Alternatives
+### Model Options & Alternatives
 
-| Task                   | Default Model                                     | Alternatives                                                               | Notes                                             |
-| ---------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------- |
-| **Summarization**      | `t5-small`                                        | `facebook/bart-large-cnn`, `google/pegasus-xsum`                           | T5-small fastest, BART better quality             |
-| **NER**                | `dslim/bert-base-NER`                             | `dslim/bert-large-NER`, `dbmdz/bert-large-cased-finetuned-conll03-english` | Base version balanced speed/accuracy              |
-| **Text Generation**    | `HuggingFaceTB/SmolLM-135M`                       | `openai-community/gpt2`, `microsoft/DialoGPT-small`                        | SmolLM very efficient                             |
-| **Question Answering** | `distilbert-base-cased-distilled-squad`           | `distilbert-base-uncased-distilled-squad`                                  | Cased version better for names                    |
-| **Embeddings**         | `all-MiniLM-L6-v2`                                | `all-mpnet-base-v2`, `paraphrase-multilingual-MiniLM-L12-v2`               | MiniLM best speed/quality ratio                   |
-| **Sentiment**          | `distilbert-base-uncased-finetuned-sst-2-english` | `cardiffnlp/twitter-roberta-base-sentiment-latest`                         | DistilBERT faster                                 |
-| **Zero-shot**          | `typeform/distilbert-base-uncased-mnli`           | `facebook/bart-large-mnli`, `microsoft/DialoGPT-medium`                   | DistilBERT smaller and CI-friendly                |
+<details>
+<summary><strong>📝 Summarization Models</strong></summary>
 
-## Available Scripts
+| Model | Size | Speed | Quality | Use Case |
+|-------|------|-------|---------|----------|
+| `t5-small` (default) | 240MB | Fast | Good | Development, balanced |
+| `facebook/bart-large-cnn` | 1.6GB | Slower | Excellent | Production, news |
+| `google/pegasus-xsum` | 2.3GB | Slowest | Excellent | Academic papers |
 
-### `make init`
-Sets up the development environment:
-- Creates Python virtual environment
-- Installs dependencies from requirements.txt
-- Initializes git repository
+</details>
 
-### `make start`
-Runs the app in development mode.  
-Open [http://localhost:8000/docs](http://localhost:8000/docs) to view OpenAPI documentation.
+<details>
+<summary><strong>🏷️ NER Models</strong></summary>
 
-### `make test`
-Runs the comprehensive test suite with real model inference.
+| Model | Size | Language | Accuracy |
+|-------|------|----------|----------|
+| `dslim/bert-base-NER` (default) | 400MB | English | High |
+| `dslim/bert-large-NER` | 1.3GB | English | Higher |
+| `dbmdz/bert-large-cased-finetuned-conll03-english` | 1.3GB | English | Very High |
 
-**Note**: Tests automatically use CPU mode to avoid memory issues. To test with GPU locally:
-```bash
-unset CI && DEVICE=auto make test
-```
+</details>
 
-### `make lint`
-Runs code quality checks with Ruff.
+<details>
+<summary><strong>✍️ Text Generation Models</strong></summary>
 
-## 🔧 Development Notes
+| Model | Size | Speed | Quality |
+|-------|------|-------|---------|
+| `SmolLM-135M` (default) | 270MB | Very Fast | Good |
+| `openai-community/gpt2` | 500MB | Fast | Better |
+| `microsoft/DialoGPT-small` | 345MB | Fast | Conversational |
 
-### Model Loading Strategy
-- **Startup Loading**: All models are loaded during application startup (not on first request)
-- **Memory Management**: Models stay in memory for the lifetime of the application
-- **Device Optimization**: Automatic detection and utilization of available hardware (GPU/CPU/MPS)
-- **Concurrent Requests**: Single model instances handle multiple concurrent requests efficiently
-
-### Performance Characteristics
-- **Cold Start**: ~30-60 seconds (depending on models and device)
-- **Warm Inference**: <1 second for most operations
-- **Memory Usage**: ~2-4GB RAM (varies by selected models)
-- **GPU Acceleration**: Automatic when available (CUDA/MPS)
+</details>
 
 ### Hardware Requirements
-- **Minimum**: 8GB RAM, CPU-only operation
-- **Recommended**: 16GB RAM, GPU with 4GB+ VRAM
-- **Apple Silicon**: Excellent performance with MPS acceleration
-- **CUDA**: NVIDIA GPUs automatically detected and utilized
-- **CI/Testing**: Automatically uses CPU in CI environments to avoid memory issues
+
+- **Minimum:** 8GB RAM, CPU-only operation
+- **Recommended:** 16GB+ RAM, GPU with 4GB+ VRAM
+- **GPU Support:** 
+  - CUDA (NVIDIA) automatically detected
+  - MPS (Apple Silicon) excellent performance
+  - CPU fallback always available
+
+## 🏗️ Production Architecture
+
+### Smart Model Loading
+
+**Optimized startup patterns:**
+- ✅ **Startup Loading** - All models load during app startup (not on first request)
+- ✅ **Device Detection** - Automatic GPU/CPU/MPS detection and utilization
+- ✅ **Memory Management** - Models stay in memory for application lifetime
+- ✅ **Concurrent Handling** - Single model instances handle multiple requests
+- ✅ **Error Recovery** - Graceful handling of model loading failures
+
+### Performance Characteristics
+
+| Phase | Duration | Memory Usage | Notes |
+|-------|----------|--------------|-------|
+| **Cold Start** | 30-60s | ~2-4GB | Model download and loading |
+| **Warm Inference** | <1s | ~2-4GB | Most operations under 1 second |
+| **GPU Acceleration** | <500ms | 2-6GB VRAM | When available |
+| **Concurrent Requests** | Parallel | Shared | Multiple requests use same models |
 
 ## 🧪 Testing Philosophy
 
-This template uses real service testing instead of mocks to ensure:
-- ✅ Actual model loading and inference work correctly
-- ✅ Transformers pipeline integration functions properly
-- ✅ API contracts are validated end-to-end
-- ✅ Performance characteristics are realistic
-- ✅ Cross-platform compatibility (CPU/GPU/MPS)
+**Real AI validation approach:**
 
-Tests run the actual service with the configured models, providing confidence that your application will work in production.
-
-## 🔧 CI/CD Configuration
-
-### GitHub Actions Setup
-For CI environments, the template automatically detects and uses CPU-only mode to avoid memory issues:
-
-```yaml
-# .github/workflows/test.yml
-env:
-  CI: true
-  DEVICE: cpu  # Force CPU usage in CI
-```
-
-The service automatically detects `CI` or `GITHUB_ACTIONS` environment variables and switches to CPU mode.
-
-### Local Testing with CPU
-To test locally with CPU mode (matching CI behavior):
 ```bash
-export DEVICE=cpu
 make test
+# Tests use actual model inference (not mocks)
+# Automatically uses CPU in CI environments
+# First run downloads models (takes longer)
+# Subsequent runs are fast (cached models)
 ```
+
+**Comprehensive test coverage:**
+- ✅ **Model Loading** - Validates all 8 models load correctly
+- ✅ **Inference Testing** - Tests actual AI capabilities
+- ✅ **Cross-platform** - CPU/GPU/MPS compatibility
+- ✅ **Error Handling** - Invalid inputs and edge cases
+- ✅ **Performance** - Response times and memory usage
+- ✅ **API Contracts** - Request/response validation
+
+### CI/CD Integration
+
+**GitHub Actions ready:**
+```yaml
+env:
+  CI: true          # Automatically detected
+  DEVICE: cpu       # Forces CPU usage in CI
+```
+
+The service automatically detects CI environments and switches to CPU mode to avoid memory issues.
+
+## 📁 Project Structure
+
+```
+nlp/
+├── main.py              # FastAPI app with 8 NLP capabilities
+├── tests/
+│   ├── test_main.py     # Real AI integration tests
+│   ├── conftest.py      # Test configuration and fixtures
+│   └── __init__.py
+├── requirements.txt     # Dependencies (transformers, torch, etc.)
+├── .env_dev            # Environment configuration
+├── Makefile            # Development commands
+└── README.md           # This file
+```
+
+## 🎓 NLP Learning Path
+
+### Mastering AI Text Processing
+
+1. **🔧 Setup & Configuration**
+   - Run `make init` to set up environment
+   - Check `/health` endpoint for model status
+   - Experiment with different models in configuration
+
+2. **📝 Text Processing Basics**
+   - Try text summarization with different lengths
+   - Extract entities from various text types
+   - Generate text with different creativity levels
+
+3. **❓ Advanced Analysis**
+   - Test question answering with different contexts
+   - Analyze sentiment of various text samples
+   - Create embeddings for semantic search
+
+4. **🎯 Classification & Similarity**
+   - Use zero-shot classification for custom categories
+   - Calculate text similarity for content matching
+   - Combine multiple capabilities for complex workflows
+
+5. **⚡ Performance Optimization**
+   - Monitor memory usage across models
+   - Test GPU vs CPU performance
+   - Optimize batch processing for efficiency
+
+6. **🧪 Real Testing**
+   - Run `make test` to see AI validation
+   - Study test patterns for production usage
+   - Understand model loading and inference strategies
 
 ## 🚀 Production Deployment
 
-### Performance Optimization
-- **Model Selection**: Choose smaller models for faster inference (e.g., DistilBERT vs BERT)
-- **Device Utilization**: Use GPU acceleration when available
-- **Batch Processing**: Group similar requests for better throughput
-- **Memory Management**: Monitor memory usage and adjust model selection accordingly
+### 🔒 Security Best Practices
 
-### Scaling Considerations
-- **Horizontal Scaling**: Each instance loads models independently
-- **Load Balancing**: Distribute requests across multiple instances
-- **Caching**: Consider caching frequent embeddings or classifications
-- **Model Optimization**: Use quantized or distilled models for production
+- [ ] Implement API key authentication for all endpoints
+- [ ] Add rate limiting based on model complexity
+- [ ] Validate and sanitize all text inputs
+- [ ] Set up comprehensive request/response logging
+- [ ] Configure CORS for specific domains
+- [ ] Monitor model usage and associated costs
 
-### Security Best Practices
-- **Input Validation**: Built-in request validation prevents malformed inputs
-- **Rate Limiting**: Consider adding rate limiting for production deployments
-- **Model Verification**: Ensure model files are from trusted sources
-- **Access Control**: Implement authentication for sensitive deployments
+### ⚡ Performance Optimization
 
-## 🔄 Advanced Usage Examples
+- [ ] Choose optimal models for your use case (speed vs quality)
+- [ ] Use GPU acceleration when available
+- [ ] Implement request batching for similar operations
+- [ ] Add intelligent caching for frequent requests
+- [ ] Monitor memory usage and optimize model selection
+- [ ] Consider model quantization for production speed
 
-### Batch Processing
-```python
-# Embed multiple texts efficiently
-response = client.post("/embeddings", json={
-    "texts": ["Text 1", "Text 2", "Text 3", ...]
-})
-```
+### 🛠️ Scaling Considerations
 
-### Custom Model Configuration
-```python
-# Use different models by updating .env_dev
-SUMMARIZE_MODEL="facebook/bart-large-cnn"  # Higher quality
-NER_MODEL="dslim/bert-large-NER"          # Better accuracy
-```
+- [ ] Set up horizontal scaling with multiple instances
+- [ ] Implement load balancing across model servers
+- [ ] Configure monitoring for all 8 NLP capabilities
+- [ ] Plan for model updates and versioning
+- [ ] Set up backup inference endpoints
+- [ ] Integrate with model monitoring and analytics tools
 
-### Similarity Search
-```python
-# Calculate semantic similarity
-response = client.post("/similarity", json={
-    "text1": "Machine learning is fascinating",
-    "text2": "AI and ML are interesting topics"
-})
-# Returns similarity score between 0-1
-```
+## 🔄 Extension Ideas
 
-### Zero-shot Classification
-```python
-# Classify without training data
-response = client.post("/classify", json={
-    "text": "The stock market is performing well today",
-    "candidate_labels": ["finance", "sports", "technology", "politics"]
-})
-# Returns ranked labels with confidence scores
-```
+<details>
+<summary><strong>🧠 Advanced NLP Features</strong></summary>
 
-## 📊 Model Information
+**Ready to implement:**
+- Multi-language support with language detection
+- Custom fine-tuned models for domain-specific tasks
+- Document processing with OCR integration
+- Speech-to-text and text-to-speech capabilities
+- Advanced prompt engineering and templates
 
-### Default Model Sizes
-- **T5-small**: ~240MB, 60M parameters
-- **DistilBERT models**: ~250MB, 66M parameters each
-- **SmolLM-135M**: ~270MB, 135M parameters
-- **DistilBERT-mnli**: ~250MB, 66M parameters
-- **all-MiniLM-L6-v2**: ~90MB, 22M parameters
+</details>
 
-### Total Resource Usage
-- **Models on Disk**: ~1.5-2GB total
-- **Memory Usage**: ~2-4GB RAM when loaded
-- **GPU Memory**: 2-6GB VRAM (if using GPU acceleration)
+<details>
+<summary><strong>🔍 Search & Retrieval</strong></summary>
 
-This template provides a comprehensive NLP service that can handle most common text processing tasks while maintaining excellent performance and production readiness.
+**AI-powered search features:**
+- Vector database integration (Pinecone, Weaviate)
+- Semantic search with embeddings
+- Retrieval Augmented Generation (RAG)
+- Document indexing and search
+- Similarity-based recommendation systems
+
+</details>
+
+<details>
+<summary><strong>📊 Analytics & Insights</strong></summary>
+
+**Business intelligence features:**
+- Text analytics dashboards
+- Trend analysis and topic modeling
+- Automated content categorization
+- Sentiment tracking over time
+- Custom classification for business domains
+
+</details>
+
+## 🚀 Next Steps
+
+### Explore Other AI Templates
+
+- 🔗 **LLM Integration** - Try the [LangChain template](../langchain/README.md) for conversational AI
+- 🦙 **Local LLM** - Check out [Llama template](../llama/README.md) for local inference
+- 🚀 **Enterprise Features** - Add auth with [Advanced template](../advanced/README.md)
+
+### Learn More About NLP
+- 📚 [Hugging Face Transformers](https://huggingface.co/docs/transformers)
+- 🎓 [NLP Course](https://huggingface.co/course/chapter1/1)
+- 🔬 [Sentence Transformers](https://www.sbert.net/)
+- ⚡ [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
+
+---
+
+<div align="center">
+
+**8 powerful NLP capabilities in one production-ready service** 🤖
+
+*Want conversational AI? Try the [🔗 LangChain template](../langchain/README.md)*
+
+</div>
