@@ -183,7 +183,7 @@ async def text_generation_get(
     text: str,
     service: LangChainService = Depends(get_langchain_service),
 ) -> GenerationResponse:
-    """Generate text based on query parameter (backward compatibility)"""
+    """Generate text based on query parameter"""
     request = TextGenerationRequest(text=text)
     return await text_generation(request, service)
 
@@ -220,6 +220,6 @@ async def question_answering_get(
     question: str,
     service: LangChainService = Depends(get_langchain_service),
 ) -> QAResponse:
-    """Answer questions based on query parameters (backward compatibility)"""
+    """Answer questions based on query parameters"""
     request = QuestionAnsweringRequest(context=context, question=question)
     return await question_answering(request, service)
