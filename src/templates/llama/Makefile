@@ -3,8 +3,8 @@
 PORT=8000
 HOST=127.0.0.1
 
-MODEL_URL=https://huggingface.co/unsloth/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf?download=true
-OUTPUT_FILE=./models/gemma-3-1b-it-Q4_K_M.gguf
+MODEL_URL=https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q4_K_M.gguf
+OUTPUT_FILE=./models/SmolLM2-135M-Instruct-Q4_K_M.gguf
 
 init: requirements.txt download
 	test -d venv || python3 -m venv venv

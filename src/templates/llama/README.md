@@ -67,7 +67,7 @@ Configure the model and parameters via environment variables:
 
 ```bash
 # .env_dev or .env_prod
-LLM_MODEL="./models/gemma-3-1b-it-q4_0.gguf"
+LLM_MODEL="./models/SmolLM2-135M-Instruct-Q4_K_M.gguf"
 LLM_TEMPERATURE=0.7
 LLM_MAX_TOKENS=100
 LLM_N_CTX=2048           # Context window size
@@ -92,7 +92,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 Downloads the model and sets up the environment:
 - Creates Python virtual environment
 - Installs dependencies from requirements.txt
-- Downloads the default Gemma 3 1B model (~4GB)
+- Downloads the default SmolLM2 135M model (~0.11GB)
 
 ### `make start`
 Runs the app in development mode.  
@@ -110,11 +110,11 @@ Downloads the model file (automatically detects curl/wget).
 ## 🔧 Model Management
 
 ### Default Model
-The template uses **Gemma 3 1B Instruct** quantized to Q4_0 format:
-- **Size**: ~4GB download
-- **Memory**: ~1-2GB RAM usage
-- **Performance**: Fast inference on CPU, even faster with GPU
-- **Quality**: Good balance of speed and output quality
+The template uses **SmolLM2 135M Instruct** quantized to Q4_K_M format:
+- **Size**: ~0.11GB download
+- **Memory**: ~200MB RAM usage
+- **Performance**: Very fast inference on CPU, optimized for speed
+- **Quality**: Compact model optimized for efficiency and quick responses
 
 ### Using Different Models
 1. **Download your model** (GGUF format) to the `./models/` directory
