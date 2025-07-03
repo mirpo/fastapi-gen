@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 Advanced - Enterprise FastAPI Template
+# Advanced - Enterprise FastAPI Template
 
 **Production-ready FastAPI with enterprise-grade features**
 
@@ -15,18 +15,18 @@
 
 ---
 
-## 🎯 What You'll Build
+## What You'll Build
 
 A **complete enterprise-grade FastAPI application** ready for production:
 
-🔐 **JWT Authentication** → Secure user registration & login  
-🗄️ **Database Integration** → SQLAlchemy 2.0 with async support  
-🛡️ **Rate Limiting** → DDoS protection per endpoint  
-⚡ **Caching System** → Performance optimization ready  
-🔄 **WebSocket Support** → Real-time communication  
-📁 **File Upload** → Secure file handling with validation  
+**JWT Authentication** → Secure user registration & login  
+**Database Integration** → SQLAlchemy 2.0 with async support  
+**Rate Limiting** → DDoS protection per endpoint  
+**Caching System** → Performance optimization ready  
+**WebSocket Support** → Real-time communication  
+**File Upload** → Secure file handling with validation  
 
-## ⚡ Quick Start in 30 Seconds
+## Quick Start in 30 Seconds
 
 ```bash
 # You're already here! Just run:
@@ -36,12 +36,12 @@ make start
 uvicorn main:app --reload
 ```
 
-🚀 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
+**Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
 
-## 🌟 Enterprise Features
+## Enterprise Features
 
 <details>
-<summary><strong>🔐 JWT Authentication System</strong></summary>
+<summary><strong>JWT Authentication System</strong></summary>
 
 **Complete authentication workflow:**
 - ✅ **User Registration** - Secure user creation with password hashing
@@ -58,7 +58,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>🗄️ Database Integration</strong></summary>
+<summary><strong>Database Integration</strong></summary>
 
 **Modern async database patterns:**
 - ✅ **SQLAlchemy 2.0** - Latest async ORM patterns
@@ -74,7 +74,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>🛡️ Rate Limiting & Security</strong></summary>
+<summary><strong>Rate Limiting & Security</strong></summary>
 
 **Production-ready security:**
 - ✅ **Per-Endpoint Limits** - Different limits per route
@@ -91,7 +91,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>⚡ Performance & Caching</strong></summary>
+<summary><strong>Performance & Caching</strong></summary>
 
 **Optimized for speed:**
 - ✅ **In-Memory Caching** - Fast development caching
@@ -108,7 +108,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>🔄 Real-Time Features</strong></summary>
+<summary><strong>Real-Time Features</strong></summary>
 
 **WebSocket communication:**
 - ✅ **Connection Management** - Handle multiple clients
@@ -123,7 +123,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>📁 File Upload System</strong></summary>
+<summary><strong>File Upload System</strong></summary>
 
 **Secure file handling:**
 - ✅ **Type Validation** - Images, PDFs, text files
@@ -139,59 +139,59 @@ uvicorn main:app --reload
 
 </details>
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 🔐 Authentication
+### Authentication
 ```http
 POST /auth/register     # User registration
 POST /auth/login        # User login (returns JWT)
 GET  /auth/me           # Get current user (protected)
 ```
 
-### 🗄️ Database Operations
+### Database Operations
 ```http
 POST /products/         # Create product (protected, cached)
 GET  /products/         # List products (cached, rate limited)
 GET  /products/{id}     # Get product (cached)
 ```
 
-### 📁 File Operations
+### File Operations
 ```http
 POST /upload/           # File upload (protected, rate limited)
 ```
 
-### 🔄 Real-Time
+### Real-Time
 ```http
 WebSocket /ws           # WebSocket endpoint
 ```
 
-### 🛠️ Core Features
+### Core Features
 ```http
 GET  /                  # Hello world
 GET  /health            # Enhanced health check
 ```
 
-### 📚 Learning Examples (from Hello World)
+### Learning Examples (from Hello World)
 ```http
 GET  /version-pydantic-settings  # Configuration examples
 GET  /config                     # Dependency injection
 POST /send-notification/         # Background tasks
 ```
 
-## 🛠️ Development Commands
+## Development Commands
 
 <details>
 <summary><strong>Available Make Commands</strong></summary>
 
 | Command | Description |
 |---------|-------------|
-| `make start` | 🚀 Run app in development mode with auto-reload |
-| `make test` | 🧪 Run comprehensive test suite |
-| `make lint` | 🔍 Run code quality checks with Ruff |
+| `make start` | Run app in development mode with auto-reload |
+| `make test` | Run comprehensive test suite |
+| `make lint` | Run code quality checks with Ruff |
 
 </details>
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -212,7 +212,7 @@ DATABASE_URL=postgresql+asyncpg://user:pass@localhost/dbname
 pip install asyncpg
 ```
 
-## 🧪 Testing Strategy
+## Testing Strategy
 
 **Comprehensive test coverage:**
 - ✅ **Authentication Tests** - Registration, login, protected routes
@@ -227,7 +227,7 @@ make test
 # See detailed test results with coverage
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 advanced/
@@ -242,9 +242,9 @@ advanced/
 └── README.md           # This file
 ```
 
-## 🚀 Production Deployment
+## Production Deployment
 
-### 🔒 Security Checklist
+### Security Checklist
 
 - [ ] Change `SECRET_KEY` to cryptographically secure value
 - [ ] Configure CORS for specific domains only
@@ -254,7 +254,7 @@ advanced/
 - [ ] Set up proper rate limiting with Redis backend
 - [ ] Configure file upload limits based on infrastructure
 
-### ⚡ Performance Optimization
+### Performance Optimization
 
 - [ ] Replace in-memory cache with Redis
 - [ ] Add database connection pooling
@@ -263,7 +263,7 @@ advanced/
 - [ ] Use CDN for file uploads
 - [ ] Set up monitoring with APM tools
 
-### 🛠️ Infrastructure
+### Infrastructure
 
 - [ ] Set up Docker containers
 - [ ] Configure load balancing
@@ -272,40 +272,40 @@ advanced/
 - [ ] Configure monitoring and logging
 - [ ] Implement backup strategies
 
-## 🎓 Learning Path
+## Learning Path
 
 ### Mastering Enterprise Features
 
-1. **🔐 Authentication Flow**
+1. **Authentication Flow**
    - Register a new user via API
    - Login and copy the JWT token
    - Use Bearer token to access `/auth/me`
    - Explore the JWT token structure
 
-2. **🗄️ Database Operations**
+2. **Database Operations**
    - Create products via `POST /products/`
    - Notice caching behavior on repeated requests
    - Explore SQLAlchemy models in `main.py`
 
-3. **🛡️ Rate Limiting**
+3. **Rate Limiting**
    - Make rapid requests to test limits
    - See how different endpoints have different limits
    - Check error responses for rate limit violations
 
-4. **🔄 Real-Time Communication**
+4. **Real-Time Communication**
    - Connect to WebSocket endpoint
    - Send messages and see real-time responses
    - Test multiple client connections
 
-5. **📁 File Uploads**
+5. **File Uploads**
    - Upload different file types
    - Test file size limits
    - Explore secure file storage patterns
 
-## 🔄 Extension Points
+## Extension Points
 
 <details>
-<summary><strong>🔐 Enhanced Authentication</strong></summary>
+<summary><strong>Enhanced Authentication</strong></summary>
 
 **Ready for:**
 - Role-based access control (RBAC)
@@ -316,7 +316,7 @@ advanced/
 </details>
 
 <details>
-<summary><strong>🗄️ Database Scaling</strong></summary>
+<summary><strong>Database Scaling</strong></summary>
 
 **Ready for:**
 - PostgreSQL migration
@@ -327,7 +327,7 @@ advanced/
 </details>
 
 <details>
-<summary><strong>⚡ Performance Scaling</strong></summary>
+<summary><strong>Performance Scaling</strong></summary>
 
 **Ready for:**
 - Redis distributed caching
@@ -338,7 +338,7 @@ advanced/
 </details>
 
 <details>
-<summary><strong>🔄 Real-Time Scaling</strong></summary>
+<summary><strong>Real-Time Scaling</strong></summary>
 
 **Ready for:**
 - Multi-room chat systems
@@ -348,25 +348,25 @@ advanced/
 
 </details>
 
-## 🚀 Next Steps
+## Next Steps
 
 ### Ready for AI Integration?
 
-- 🤖 **Add NLP Features** - Try the [NLP template](../nlp/README.md) for text processing
-- 🔗 **LLM Integration** - Explore [LangChain template](../langchain/README.md) for AI workflows  
-- 🦙 **Local LLM** - Check out [Llama template](../llama/README.md) for local inference
+- **Add NLP Features** - Try the [NLP template](../nlp/README.md) for text processing
+- **LLM Integration** - Explore [LangChain template](../langchain/README.md) for AI workflows  
+- **Local LLM** - Check out [Llama template](../llama/README.md) for local inference
 
 ### Learn More Enterprise Patterns
-- 📚 [FastAPI Advanced User Guide](https://fastapi.tiangolo.com/advanced/)
-- 🔐 [JWT Best Practices](https://auth0.com/blog/a-look-at-the-latest-draft-for-jwt-bcp/)
-- 🗄️ [SQLAlchemy 2.0 Tutorial](https://docs.sqlalchemy.org/en/20/tutorial/)
+- [FastAPI Advanced User Guide](https://fastapi.tiangolo.com/advanced/)
+- [JWT Best Practices](https://auth0.com/blog/a-look-at-the-latest-draft-for-jwt-bcp/)
+- [SQLAlchemy 2.0 Tutorial](https://docs.sqlalchemy.org/en/20/tutorial/)
 
 ---
 
 <div align="center">
 
-**Production-ready FastAPI with enterprise features** 🚀
+**Production-ready FastAPI with enterprise features**
 
-*Need simpler setup? Try the [📚 Hello World template](../hello_world/README.md)*
+*Need simpler setup? Try the [Hello World template](../hello_world/README.md)*
 
 </div>

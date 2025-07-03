@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🦙 Llama - Local LLM Powerhouse Template
+# Llama - Local LLM Powerhouse Template
 
 **Production-ready FastAPI with local LLM inference using llama-cpp-python**
 
@@ -14,18 +14,18 @@
 
 ---
 
-## 🎯 What You'll Build
+## What You'll Build
 
 A **powerful local LLM inference service** with enterprise-grade features:
 
-🏠 **Local LLM Focus** → Optimized for Gemma/Llama GGUF models  
-⚡ **GPU Acceleration** → Auto GPU detection, configurable layers  
-🎛️ **Advanced Config** → Context windows, threading, performance tuning  
-🏗️ **Production Ready** → Lifecycle management, health monitoring  
-🧪 **Real Testing** → Actual model inference validation  
-🔧 **Easy Setup** → Auto model download, optimized defaults  
+**Local LLM Focus** → Optimized for Gemma/Llama GGUF models  
+**GPU Acceleration** → Auto GPU detection, configurable layers  
+**Advanced Config** → Context windows, threading, performance tuning  
+**Production Ready** → Lifecycle management, health monitoring  
+**Real Testing** → Actual model inference validation  
+**Easy Setup** → Auto model download, optimized defaults  
 
-## ⚡ Quick Start in 30 Seconds
+## Quick Start in 30 Seconds
 
 ```bash
 # You're already here! First initialize the environment:
@@ -37,14 +37,14 @@ make start
 # Open: http://localhost:8000/docs
 ```
 
-🚀 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
+**Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
 
-> 🔄 **First time setup:** `make init` downloads the model and sets up everything (~2-3 minutes).
+> **First time setup:** `make init` downloads the model and sets up everything (~2-3 minutes).
 
-## 🌟 Local LLM Features
+## Local LLM Features
 
 <details>
-<summary><strong>🏠 Optimized Local LLM Inference</strong></summary>
+<summary><strong>Optimized Local LLM Inference</strong></summary>
 
 **Purpose-built for local models:**
 - ✅ **GGUF Format Support** - Optimized for quantized Gemma/Llama models
@@ -61,7 +61,7 @@ make start
 </details>
 
 <details>
-<summary><strong>⚡ Advanced Configuration</strong></summary>
+<summary><strong>Advanced Configuration</strong></summary>
 
 **Fine-grained performance control:**
 - ✅ **Context Window Control** - Configurable n_ctx for longer conversations
@@ -81,7 +81,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 </details>
 
 <details>
-<summary><strong>🏗️ Production-Ready Architecture</strong></summary>
+<summary><strong>Production-Ready Architecture</strong></summary>
 
 **Enterprise-grade service management:**
 - ✅ **Lifecycle Management** - Proper startup/shutdown with async context managers
@@ -99,7 +99,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 </details>
 
 <details>
-<summary><strong>🎛️ Modern API Design</strong></summary>
+<summary><strong>Modern API Design</strong></summary>
 
 **Flexible endpoint architecture:**
 - ✅ **Dual Endpoints** - Both GET and POST (modern) endpoints
@@ -115,7 +115,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 </details>
 
 <details>
-<summary><strong>🧪 Real Model Testing</strong></summary>
+<summary><strong>Real Model Testing</strong></summary>
 
 **Comprehensive validation approach:**
 - ✅ **Session-scoped Fixtures** - Efficient test execution with shared model loading
@@ -133,7 +133,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 </details>
 
 <details>
-<summary><strong>🔧 Easy Setup & Management</strong></summary>
+<summary><strong>Easy Setup & Management</strong></summary>
 
 **Streamlined development experience:**
 - ✅ **Auto Model Download** - Automatic model fetching with make commands
@@ -149,14 +149,14 @@ LLM_SEED=-1              # Random seed (-1 = random)
 
 </details>
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 🏥 Health & Status
+### Health & Status
 ```http
 GET /health                 # Service status, model info, GPU config, threads
 ```
 
-### 🤖 Question Answering
+### Question Answering
 ```http
 # Modern POST endpoint (recommended)
 POST /question-answering
@@ -172,22 +172,22 @@ Content-Type: application/json
 GET /question-answering?question=What%20is%20AI&max_tokens=100&temperature=0.5
 ```
 
-## 🛠️ Development Commands
+## Development Commands
 
 <details>
 <summary><strong>Available Make Commands</strong></summary>
 
 | Command | Description |
 |---------|-------------|
-| `make init` | 🚀 Download model and set up environment |
-| `make start` | ▶️ Run app in development mode with auto-reload |
-| `make test` | 🧪 Run comprehensive test suite with real AI |
-| `make lint` | 🔍 Run code quality checks with Ruff |
-| `make download` | 📥 Download model file only (auto-detects curl/wget) |
+| `make init` | Download model and set up environment |
+| `make start` | Run app in development mode with auto-reload |
+| `make test` | Run comprehensive test suite with real AI |
+| `make lint` | Run code quality checks with Ruff |
+| `make download` | Download model file only (auto-detects curl/wget) |
 
 </details>
 
-## 🔧 Configuration & Setup
+## Configuration & Setup
 
 ### Environment Configuration
 
@@ -217,7 +217,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 | `LLM_N_GPU_LAYERS` | GPU layers | -1 (auto) | 0 = CPU only, higher = more GPU |
 | `LLM_SEED` | Random seed | -1 (random) | Set for reproducible outputs |
 
-## 🔧 Model Management
+## Model Management
 
 ### Default Model: SmolLM2 135M Instruct
 
@@ -249,7 +249,7 @@ LLM_SEED=-1              # Random seed (-1 = random)
 | Llama-3.2-1B | ~1GB | ~1.5GB | Production quality |
 | Llama-3.2-3B | ~3GB | ~4GB | High quality responses |
 
-## 🎛️ Hardware Acceleration
+## Hardware Acceleration
 
 ### GPU Support
 
@@ -286,7 +286,7 @@ LLM_N_CTX=4096          # Larger context with GPU
 LLM_N_THREADS=4         # Fewer CPU threads when using GPU
 ```
 
-## 🧪 Testing Strategy
+## Testing Strategy
 
 **Real model validation:**
 
@@ -305,7 +305,7 @@ make test
 - ✅ Context window and threading
 - ✅ API contract validation
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 llama/
@@ -321,38 +321,38 @@ llama/
 └── README.md           # This file
 ```
 
-## 🎓 Local LLM Learning Path
+## Local LLM Learning Path
 
 ### Mastering Local LLM Inference
 
-1. **🔧 Setup & Configuration**
+1. **Setup & Configuration**
    - Run `make init` to set up everything
    - Check `/health` endpoint for model and hardware info
    - Experiment with different configuration parameters
 
-2. **🤖 Test Question Answering**
+2. **Test Question Answering**
    - Start with simple questions via GET endpoint
    - Move to POST endpoint with custom parameters
    - Experiment with temperature and token limits
 
-3. **⚡ Performance Tuning**
+3. **Performance Tuning**
    - Monitor memory usage during inference
    - Test CPU vs GPU performance
    - Optimize thread and layer configurations
 
-4. **🔄 Model Experimentation**
+4. **Model Experimentation**
    - Try different GGUF models
    - Compare model sizes vs quality
    - Test context window capabilities
 
-5. **🧪 Run Real Tests**
+5. **Run Real Tests**
    - Execute `make test` to see model validation
    - Study test patterns for your own endpoints
    - Understand model loading and inference strategies
 
-## 🚀 Production Deployment
+## Production Deployment
 
-### 🔒 Security Best Practices
+### Security Best Practices
 
 - [ ] Implement API key authentication
 - [ ] Add rate limiting for inference endpoints
@@ -361,7 +361,7 @@ llama/
 - [ ] Configure CORS for specific domains
 - [ ] Monitor model usage and resource consumption
 
-### ⚡ Performance Optimization
+### Performance Optimization
 
 - [ ] Use appropriate model quantization (Q4_0, Q5_0, Q8_0)
 - [ ] Configure optimal GPU layers for your hardware
@@ -370,7 +370,7 @@ llama/
 - [ ] Implement request batching for efficiency
 - [ ] Add model response caching for common queries
 
-### 🛠️ Scaling Considerations
+### Scaling Considerations
 
 - [ ] Plan for model file distribution and caching
 - [ ] Set up multiple model instances for load balancing
@@ -379,10 +379,10 @@ llama/
 - [ ] Plan for model updates and versioning
 - [ ] Set up backup inference endpoints
 
-## 🔄 Extension Ideas
+## Extension Ideas
 
 <details>
-<summary><strong>🤖 Advanced LLM Features</strong></summary>
+<summary><strong>Advanced LLM Features</strong></summary>
 
 **Ready to implement:**
 - Multi-turn conversation with context memory
@@ -394,7 +394,7 @@ llama/
 </details>
 
 <details>
-<summary><strong>🏗️ Infrastructure Scaling</strong></summary>
+<summary><strong>Infrastructure Scaling</strong></summary>
 
 **Production enhancements:**
 - Multiple model hosting with model switching
@@ -406,7 +406,7 @@ llama/
 </details>
 
 <details>
-<summary><strong>🔧 Model Management</strong></summary>
+<summary><strong>Model Management</strong></summary>
 
 **Advanced model operations:**
 - Automatic model downloading and caching
@@ -417,26 +417,26 @@ llama/
 
 </details>
 
-## 🚀 Next Steps
+## Next Steps
 
 ### Explore Other AI Templates
 
-- 🤖 **Comprehensive NLP** - Try the [NLP template](../nlp/README.md) for 8 NLP capabilities
-- 🔗 **LangChain Integration** - Check out [LangChain template](../langchain/README.md) for workflows
-- 🚀 **Enterprise Features** - Add auth with [Advanced template](../advanced/README.md)
+- **Comprehensive NLP** - Try the [NLP template](../nlp/README.md) for 8 NLP capabilities
+- **LangChain Integration** - Check out [LangChain template](../langchain/README.md) for workflows
+- **Enterprise Features** - Add auth with [Advanced template](../advanced/README.md)
 
 ### Learn More About Local LLMs
-- 📚 [llama-cpp-python Documentation](https://github.com/abetlen/llama-cpp-python)
-- 🦙 [Llama Model Family](https://ai.meta.com/llama/)
-- 🔧 [GGUF Format Guide](https://huggingface.co/docs/hub/gguf)
-- ⚡ [Quantization Explained](https://huggingface.co/blog/4bit-transformers-bitsandbytes)
+- [llama-cpp-python Documentation](https://github.com/abetlen/llama-cpp-python)
+- [Llama Model Family](https://ai.meta.com/llama/)
+- [GGUF Format Guide](https://huggingface.co/docs/hub/gguf)
+- [Quantization Explained](https://huggingface.co/blog/4bit-transformers-bitsandbytes)
 
 ---
 
 <div align="center">
 
-**Local LLM power with production-ready patterns** 🦙
+**Local LLM power with production-ready patterns**
 
-*Want cloud-based LLMs? Try the [🔗 LangChain template](../langchain/README.md)*
+*Want cloud-based LLMs? Try the [LangChain template](../langchain/README.md)*
 
 </div>

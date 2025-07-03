@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📚 Hello World - FastAPI Learning Template
+# Hello World - FastAPI Learning Template
 
 **Perfect for learning FastAPI fundamentals and starting new projects**
 
@@ -14,18 +14,18 @@
 
 ---
 
-## 🎯 What You'll Build
+## What You'll Build
 
 A **complete learning-focused FastAPI application** with all essential patterns:
 
-🌐 **Real REST API** → CRUD operations with proper validation  
-⚙️ **Smart Configuration** → Environment management done right  
-🔄 **Clean Architecture** → Dependency injection patterns  
-📋 **Async Processing** → Background tasks with logging  
-🛡️ **Error Handling** → Professional error responses  
-💊 **Health Monitoring** → Production-ready health checks
+**Real REST API** → CRUD operations with proper validation  
+**Smart Configuration** → Environment management done right  
+**Clean Architecture** → Dependency injection patterns  
+**Async Processing** → Background tasks with logging  
+**Error Handling** → Professional error responses  
+**Health Monitoring** → Production-ready health checks
 
-## ⚡ Quick Start in 30 Seconds
+## Quick Start in 30 Seconds
 
 ```bash
 # You're already here! Just run:
@@ -35,12 +35,12 @@ make start
 uvicorn main:app --reload
 ```
 
-🚀 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
+**Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
 
-## ✨ Features Included
+## Features Included
 
 <details>
-<summary><strong>🌐 REST API Fundamentals</strong></summary>
+<summary><strong>REST API Fundamentals</strong></summary>
 
 **Complete CRUD operations with modern validation:**
 - ✅ **GET** endpoints with path and query parameters
@@ -51,7 +51,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>⚙️ Configuration Management</strong></summary>
+<summary><strong>Configuration Management</strong></summary>
 
 **Two approaches to environment configuration:**
 - ✅ **`dotenv`** - Simple environment variable loading from `.env` files
@@ -61,7 +61,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>🔄 Advanced FastAPI Patterns</strong></summary>
+<summary><strong>Advanced FastAPI Patterns</strong></summary>
 
 **Production-ready patterns and practices:**
 - ✅ **Background tasks** - Asynchronous task processing with logging
@@ -72,7 +72,7 @@ uvicorn main:app --reload
 </details>
 
 <details>
-<summary><strong>🧪 Complete Testing Suite</strong></summary>
+<summary><strong>Complete Testing Suite</strong></summary>
 
 **100% test coverage for all features:**
 - ✅ **Endpoint testing** - All REST operations tested
@@ -82,7 +82,7 @@ uvicorn main:app --reload
 
 </details>
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Core Endpoints
 ```http
@@ -110,53 +110,53 @@ GET  /error-example       # Custom exception handling
 POST /send-notification/  # Background task example
 ```
 
-## 🛠️ Development Commands
+## Development Commands
 
 <details>
 <summary><strong>Available Make Commands</strong></summary>
 
 | Command | Description |
 |---------|-------------|
-| `make start` | 🚀 Run app in development mode with auto-reload |
-| `make test` | 🧪 Run comprehensive test suite |
-| `make lint` | 🔍 Run code quality checks with Ruff |
+| `make start` | Run app in development mode with auto-reload |
+| `make test` | Run comprehensive test suite |
+| `make lint` | Run code quality checks with Ruff |
 
 </details>
 
-## 🎓 Learning Guide
+## Learning Guide
 
-### 1. **Start with Configuration** 📖
+### 1. **Start with Configuration**
 Explore how environment variables work:
 - Check out `/config` endpoint for dependency injection
 - Compare `/version-pydantic-settings` vs `/version-dotenv`
 - Look at `main.py` to see both approaches
 
-### 2. **Master CRUD Operations** 🔧
+### 2. **Master CRUD Operations**
 Practice REST API fundamentals:
 - Create items via `POST /items/`
 - Retrieve with `GET /items/{id}?q=optional`
 - Update with `PUT /items/{id}`
 
-### 3. **Understand Async Patterns** ⚡
+### 3. **Understand Async Patterns**
 Learn background processing:
 - Try `POST /send-notification/` 
 - Watch the logs for async task execution
 - Study the background task implementation
 
-### 4. **Explore Error Handling** 🛡️
+### 4. **Explore Error Handling**
 See professional error responses:
 - Visit `/error-example` endpoint
 - Check how custom exceptions work
 - Review the exception handler implementation
 
-### 5. **Run the Tests** 🧪
+### 5. **Run the Tests**
 See comprehensive testing in action:
 ```bash
 make test
 # Study the test files to learn testing patterns
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 hello_world/
@@ -169,26 +169,26 @@ hello_world/
 └── README.md           # This file
 ```
 
-## 🚀 Next Steps
+## Next Steps
 
 ### Ready to Level Up?
 
-1. **🔨 Customize the API** - Add your own endpoints and models
-2. **📊 Add a Database** - Try the [Advanced template](../advanced/README.md) for SQLAlchemy integration
-3. **🤖 Add AI Features** - Explore [NLP](../nlp/README.md), [LangChain](../langchain/README.md), or [Llama](../llama/README.md) templates
-4. **🚀 Deploy to Production** - Use the patterns learned here in real applications
+1. **Customize the API** - Add your own endpoints and models
+2. **Add a Database** - Try the [Advanced template](../advanced/README.md) for SQLAlchemy integration
+3. **Add AI Features** - Explore [NLP](../nlp/README.md), [LangChain](../langchain/README.md), or [Llama](../llama/README.md) templates
+4. **Deploy to Production** - Use the patterns learned here in real applications
 
 ### Learn More FastAPI
-- 📚 [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- 🎓 [FastAPI Tutorial](https://fastapi.tiangolo.com/tutorial/)
-- 💡 [Pydantic Documentation](https://pydantic.dev/)
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [FastAPI Tutorial](https://fastapi.tiangolo.com/tutorial/)
+- [Pydantic Documentation](https://pydantic.dev/)
 
 ---
 
 <div align="center">
 
-**Perfect for learning FastAPI or starting new projects** 💯
+**Perfect for learning FastAPI or starting new projects**
 
-*Ready for production features? Check out the [🚀 Advanced template](../advanced/README.md)*
+*Ready for production features? Check out the [Advanced template](../advanced/README.md)*
 
 </div>

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 NLP - Comprehensive AI Language Processing Template
+# NLP - Comprehensive AI Language Processing Template
 
 **Production-ready FastAPI with 8 NLP capabilities using modern Transformers**
 
@@ -14,18 +14,18 @@
 
 ---
 
-## 🎯 What You'll Build
+## What You'll Build
 
 A **comprehensive NLP service** with 8 powerful AI capabilities:
 
-🧠 **8 NLP Capabilities** → Complete text processing pipeline  
-🏗️ **Production Architecture** → Startup model loading, device auto-detection  
-🎛️ **Smart Configuration** → Environment-based config, multiple models  
-⚡ **Performance Optimized** → Model caching, concurrent handling, hardware acceleration  
-💊 **Production Monitoring** → Health checks, model status, logging  
-🧪 **Real AI Testing** → Actual model inference validation  
+**8 NLP Capabilities** → Complete text processing pipeline  
+**Production Architecture** → Startup model loading, device auto-detection  
+**Smart Configuration** → Environment-based config, multiple models  
+**Performance Optimized** → Model caching, concurrent handling, hardware acceleration  
+**Production Monitoring** → Health checks, model status, logging  
+**Real AI Testing** → Actual model inference validation  
 
-## ⚡ Quick Start in 30 Seconds
+## Quick Start in 30 Seconds
 
 ```bash
 # You're already here! Initialize the environment:
@@ -38,14 +38,14 @@ make start
 # Open: http://localhost:8000/docs
 ```
 
-🚀 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
+**Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
 
-> ⏱️ **First startup:** Downloads models (~1-2GB total), takes 3-5 minutes depending on internet speed.
+> **First startup:** Downloads models (~1-2GB total), takes 3-5 minutes depending on internet speed.
 
-## 🧠 8 NLP Capabilities
+## 8 NLP Capabilities
 
 <details>
-<summary><strong>📝 Text Summarization</strong></summary>
+<summary><strong>Text Summarization</strong></summary>
 
 **Advanced text summarization using T5-small:**
 - ✅ **Extractive & Abstractive** - Generate concise summaries from long text
@@ -63,7 +63,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>🏷️ Named Entity Recognition (NER)</strong></summary>
+<summary><strong>Named Entity Recognition (NER)</strong></summary>
 
 **Extract entities from text:**
 - ✅ **Entity Types** - Persons, organizations, locations, and more
@@ -80,7 +80,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>✍️ Text Generation</strong></summary>
+<summary><strong>Text Generation</strong></summary>
 
 **Creative text generation with SmolLM:**
 - ✅ **Prompt Completion** - Continue text from given prompts
@@ -96,7 +96,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>❓ Question Answering</strong></summary>
+<summary><strong>Question Answering</strong></summary>
 
 **Context-based question answering:**
 - ✅ **Extractive QA** - Find answers within provided context
@@ -112,7 +112,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>🔢 Sentence Embeddings</strong></summary>
+<summary><strong>Sentence Embeddings</strong></summary>
 
 **Generate dense vector representations:**
 - ✅ **Semantic Vectors** - Convert text to numerical representations
@@ -129,7 +129,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>😊 Sentiment Analysis</strong></summary>
+<summary><strong>Sentiment Analysis</strong></summary>
 
 **Classify text sentiment:**
 - ✅ **Binary Classification** - Positive/Negative sentiment
@@ -146,7 +146,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>🎯 Zero-shot Classification</strong></summary>
+<summary><strong>Zero-shot Classification</strong></summary>
 
 **Classify text without training data:**
 - ✅ **Custom Categories** - Define your own classification labels
@@ -163,7 +163,7 @@ curl -X POST "http://localhost:8000/summarize" \
 </details>
 
 <details>
-<summary><strong>🔍 Text Similarity</strong></summary>
+<summary><strong>Text Similarity</strong></summary>
 
 **Calculate semantic similarity between texts:**
 - ✅ **Similarity Scores** - Numerical similarity from 0 to 1
@@ -179,14 +179,14 @@ curl -X POST "http://localhost:8000/summarize" \
 
 </details>
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 🏥 Health & Status
+### Health & Status
 ```http
 GET /health                 # Service status, device info, model loading status
 ```
 
-### 📝 Text Processing
+### Text Processing
 ```http
 # Text Summarization
 POST /summarize
@@ -217,7 +217,7 @@ POST /question-answering
 }
 ```
 
-### 🔢 Advanced Analysis
+### Advanced Analysis
 ```http
 # Sentence Embeddings
 POST /embeddings
@@ -246,21 +246,21 @@ POST /similarity
 }
 ```
 
-## 🛠️ Development Commands
+## Development Commands
 
 <details>
 <summary><strong>Available Make Commands</strong></summary>
 
 | Command | Description |
 |---------|-------------|
-| `make init` | 🚀 Set up Python environment and install dependencies |
-| `make start` | ▶️ Run app in development mode with auto-reload |
-| `make test` | 🧪 Run comprehensive test suite with real AI |
-| `make lint` | 🔍 Run code quality checks with Ruff |
+| `make init` | Set up Python environment and install dependencies |
+| `make start` | Run app in development mode with auto-reload |
+| `make test` | Run comprehensive test suite with real AI |
+| `make lint` | Run code quality checks with Ruff |
 
 </details>
 
-## 🔧 Configuration & Setup
+## Configuration & Setup
 
 ### Environment Configuration
 
@@ -326,7 +326,7 @@ TOP_P=0.9
   - MPS (Apple Silicon) excellent performance
   - CPU fallback always available
 
-## 🏗️ Production Architecture
+## Production Architecture
 
 ### Smart Model Loading
 
@@ -346,7 +346,7 @@ TOP_P=0.9
 | **GPU Acceleration** | <500ms | 2-6GB VRAM | When available |
 | **Concurrent Requests** | Parallel | Shared | Multiple requests use same models |
 
-## 🧪 Testing Philosophy
+## Testing Philosophy
 
 **Real AI validation approach:**
 
@@ -377,7 +377,7 @@ env:
 
 The service automatically detects CI environments and switches to CPU mode to avoid memory issues.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 nlp/
@@ -392,43 +392,43 @@ nlp/
 └── README.md           # This file
 ```
 
-## 🎓 NLP Learning Path
+## NLP Learning Path
 
 ### Mastering AI Text Processing
 
-1. **🔧 Setup & Configuration**
+1. **Setup & Configuration**
    - Run `make init` to set up environment
    - Check `/health` endpoint for model status
    - Experiment with different models in configuration
 
-2. **📝 Text Processing Basics**
+2. **Text Processing Basics**
    - Try text summarization with different lengths
    - Extract entities from various text types
    - Generate text with different creativity levels
 
-3. **❓ Advanced Analysis**
+3. **Advanced Analysis**
    - Test question answering with different contexts
    - Analyze sentiment of various text samples
    - Create embeddings for semantic search
 
-4. **🎯 Classification & Similarity**
+4. **Classification & Similarity**
    - Use zero-shot classification for custom categories
    - Calculate text similarity for content matching
    - Combine multiple capabilities for complex workflows
 
-5. **⚡ Performance Optimization**
+5. **Performance Optimization**
    - Monitor memory usage across models
    - Test GPU vs CPU performance
    - Optimize batch processing for efficiency
 
-6. **🧪 Real Testing**
+6. **Real Testing**
    - Run `make test` to see AI validation
    - Study test patterns for production usage
    - Understand model loading and inference strategies
 
-## 🚀 Production Deployment
+## Production Deployment
 
-### 🔒 Security Best Practices
+### Security Best Practices
 
 - [ ] Implement API key authentication for all endpoints
 - [ ] Add rate limiting based on model complexity
@@ -437,7 +437,7 @@ nlp/
 - [ ] Configure CORS for specific domains
 - [ ] Monitor model usage and associated costs
 
-### ⚡ Performance Optimization
+### Performance Optimization
 
 - [ ] Choose optimal models for your use case (speed vs quality)
 - [ ] Use GPU acceleration when available
@@ -446,7 +446,7 @@ nlp/
 - [ ] Monitor memory usage and optimize model selection
 - [ ] Consider model quantization for production speed
 
-### 🛠️ Scaling Considerations
+### Scaling Considerations
 
 - [ ] Set up horizontal scaling with multiple instances
 - [ ] Implement load balancing across model servers
@@ -455,10 +455,10 @@ nlp/
 - [ ] Set up backup inference endpoints
 - [ ] Integrate with model monitoring and analytics tools
 
-## 🔄 Extension Ideas
+## Extension Ideas
 
 <details>
-<summary><strong>🧠 Advanced NLP Features</strong></summary>
+<summary><strong>Advanced NLP Features</strong></summary>
 
 **Ready to implement:**
 - Multi-language support with language detection
@@ -470,7 +470,7 @@ nlp/
 </details>
 
 <details>
-<summary><strong>🔍 Search & Retrieval</strong></summary>
+<summary><strong>Search & Retrieval</strong></summary>
 
 **AI-powered search features:**
 - Vector database integration (Pinecone, Weaviate)
@@ -482,7 +482,7 @@ nlp/
 </details>
 
 <details>
-<summary><strong>📊 Analytics & Insights</strong></summary>
+<summary><strong>Analytics & Insights</strong></summary>
 
 **Business intelligence features:**
 - Text analytics dashboards
@@ -493,26 +493,26 @@ nlp/
 
 </details>
 
-## 🚀 Next Steps
+## Next Steps
 
 ### Explore Other AI Templates
 
-- 🔗 **LLM Integration** - Try the [LangChain template](../langchain/README.md) for conversational AI
-- 🦙 **Local LLM** - Check out [Llama template](../llama/README.md) for local inference
-- 🚀 **Enterprise Features** - Add auth with [Advanced template](../advanced/README.md)
+- **LLM Integration** - Try the [LangChain template](../langchain/README.md) for conversational AI
+- **Local LLM** - Check out [Llama template](../llama/README.md) for local inference
+- **Enterprise Features** - Add auth with [Advanced template](../advanced/README.md)
 
 ### Learn More About NLP
-- 📚 [Hugging Face Transformers](https://huggingface.co/docs/transformers)
-- 🎓 [NLP Course](https://huggingface.co/course/chapter1/1)
-- 🔬 [Sentence Transformers](https://www.sbert.net/)
-- ⚡ [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
+- [Hugging Face Transformers](https://huggingface.co/docs/transformers)
+- [NLP Course](https://huggingface.co/course/chapter1/1)
+- [Sentence Transformers](https://www.sbert.net/)
+- [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
 
 ---
 
 <div align="center">
 
-**8 powerful NLP capabilities in one production-ready service** 🤖
+**8 powerful NLP capabilities in one production-ready service**
 
-*Want conversational AI? Try the [🔗 LangChain template](../langchain/README.md)*
+*Want conversational AI? Try the [LangChain template](../langchain/README.md)*
 
 </div>
