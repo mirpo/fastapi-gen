@@ -1,4 +1,4 @@
-fastapi==0.115.14
+fastapi==0.116.1
 transformers[torch]==4.49.0
 sentence-transformers==5.0.0
 datasets==4.0.0
