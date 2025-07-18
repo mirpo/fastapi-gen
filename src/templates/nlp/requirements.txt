@@ -5,7 +5,7 @@ datasets==4.0.0
 pydantic-settings==2.10.1
 torch==2.7.1
 uvicorn==0.35.0
-accelerate==1.8.1
+accelerate==1.9.0
 # dev
 ruff==0.12.3
 pytest==8.4.1
