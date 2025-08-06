@@ -1,7 +1,7 @@
 fastapi==0.116.1
 transformers[torch]==4.46.3
 pydantic-settings==2.10.1
-torch==2.7.1
+torch==2.8.0
 uvicorn==0.35.0
 langchain==0.3.27
 langchain-community==0.3.27
