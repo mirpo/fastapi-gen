@@ -7,7 +7,7 @@ langchain==0.3.27
 langchain-community==0.3.27
 langchain-core==0.3.74
 langchain-huggingface==0.3.1
-accelerate==1.9.0
+accelerate==1.10.0
 # dev
 ruff==0.12.7
 pytest==8.4.1
