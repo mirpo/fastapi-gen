@@ -1,5 +1,5 @@
 fastapi==0.116.1
-transformers[torch]==4.49.0
+transformers[torch]==4.53.0
 sentence-transformers==5.1.0
 datasets==4.0.0
 pydantic-settings==2.10.1
