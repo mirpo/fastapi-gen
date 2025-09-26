@@ -7,7 +7,7 @@
 *This project was bootstrapped with [FastAPI Gen](https://github.com/mirpo/fastapi-gen)*
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
-[![llama-cpp-python](https://img.shields.io/badge/llama--cpp--python-Latest-blue.svg)](https://github.com/abetlen/llama-cpp-python)
+[![](https://img.shields.io/badge/llama--cpp--python-Latest-blue.svg)](https://github.com/abetlen/llama-cpp-python)
 [![GGUF](https://img.shields.io/badge/GGUF-Format-orange.svg)](https://huggingface.co/docs/hub/gguf)
 
 </div>
@@ -177,12 +177,12 @@ GET /question-answering?question=What%20is%20AI&max_tokens=100&temperature=0.5
 <details>
 <summary><strong>Available Make Commands</strong></summary>
 
-| Command | Description |
-|---------|-------------|
-| `make init` | Download model and set up environment |
-| `make start` | Run app in development mode with auto-reload |
-| `make test` | Run comprehensive test suite with real AI |
-| `make lint` | Run code quality checks with Ruff |
+| Command         | Description                                       |
+| --------------- | ------------------------------------------------- |
+| `make init`     | Download model and set up environment             |
+| `make start`    | Run app in development mode with auto-reload      |
+| `make test`     | Run comprehensive test suite with real AI         |
+| `make lint`     | Run code quality checks with Ruff                 |
 | `make download` | Download model file only (auto-detects curl/wget) |
 
 </details>
@@ -210,12 +210,12 @@ LLM_SEED=-1              # Random seed (-1 = random)
 
 ### Performance Configuration Guide
 
-| Parameter | Description | Default | Notes |
-|-----------|-------------|---------|-------|
-| `LLM_N_CTX` | Context window size | 2048 | Larger values use more memory |
-| `LLM_N_THREADS` | CPU threads | -1 (auto) | Set to number of CPU cores |
-| `LLM_N_GPU_LAYERS` | GPU layers | -1 (auto) | 0 = CPU only, higher = more GPU |
-| `LLM_SEED` | Random seed | -1 (random) | Set for reproducible outputs |
+| Parameter          | Description         | Default     | Notes                           |
+| ------------------ | ------------------- | ----------- | ------------------------------- |
+| `LLM_N_CTX`        | Context window size | 2048        | Larger values use more memory   |
+| `LLM_N_THREADS`    | CPU threads         | -1 (auto)   | Set to number of CPU cores      |
+| `LLM_N_GPU_LAYERS` | GPU layers          | -1 (auto)   | 0 = CPU only, higher = more GPU |
+| `LLM_SEED`         | Random seed         | -1 (random) | Set for reproducible outputs    |
 
 ## Model Management
 
@@ -242,12 +242,12 @@ LLM_SEED=-1              # Random seed (-1 = random)
 
 ### Popular Model Options
 
-| Model | Size | Memory | Use Case |
-|-------|------|--------|----------|
+| Model        | Size   | Memory | Use Case                    |
+| ------------ | ------ | ------ | --------------------------- |
 | SmolLM2-135M | ~135MB | ~200MB | Development, fast inference |
-| SmolLM2-360M | ~360MB | ~500MB | Better quality, still fast |
-| Llama-3.2-1B | ~1GB | ~1.5GB | Production quality |
-| Llama-3.2-3B | ~3GB | ~4GB | High quality responses |
+| SmolLM2-360M | ~360MB | ~500MB | Better quality, still fast  |
+| Llama-3.2-1B | ~1GB   | ~1.5GB | Production quality          |
+| Llama-3.2-3B | ~3GB   | ~4GB   | High quality responses      |
 
 ## Hardware Acceleration
 

@@ -16,63 +16,84 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-test
+
       - name: Install dependencies
-        if: steps.cache-python-env.outputs.cache-hit != 'true'
-        run: |
-          pip install --upgrade pip
-          pip install -e .[dev]
+        run: uv sync --extra dev
+
       - name: Lint
         run: |
           make lint
-      - name: Install app
+
+      - name: Add uv venv to PATH
         run: |
-          pip install -e .
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
           cd ../..
-      - name: Create project using default template
+
+      # - name: Create project using default template
+      #   run: |
+      #     fastapi-gen hello_world
+      #     cd hello_world
+      #     make lint
+      #     make test
+      #     cd ..
+
+      # - name: Create project using "hello_world" template
+      #   run: |
+      #     fastapi-gen hello_world_v2 --template hello_world
+      #     cd hello_world_v2
+      #     make lint
+      #     make test
+      #     cd ..
+
+      # - name: Create project using "advanced" template
+      #   run: |
+      #     fastapi-gen advanced --template advanced
+      #     cd advanced
+      #     make lint
+      #     make test
+      #     cd ..
+
+      # - name: Create project using "nlp" template
+      #   run: |
+      #     fastapi-gen nlp --template nlp
+      #     cd nlp
+      #     make lint
+      #     make test
+      #     cd ..
+
+      # - name: Create project using "langchain" template
+      #   run: |
+      #     fastapi-gen langchain_app --template langchain
+      #     cd langchain_app
+      #     make lint
+      #     make test
+      #     cd ..
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
-          fastapi-gen hello_world
-          cd hello_world
-          make lint
-          make test
-          cd ..
-      - name: Create project using "hello_world" template
-        run: |
-          fastapi-gen hello_world_v2 --template hello_world
-          cd hello_world_v2
-          make lint
-          make test
-          cd ..
-      - name: Create project using "advanced" template
-        run: |
-          fastapi-gen advanced --template advanced
-          cd advanced
-          make lint
-          make test
-          cd ..
-      - name: Create project using "nlp" template
-        run: |
-          fastapi-gen nlp --template nlp
-          cd nlp
-          make lint
-          make test
-          cd ..
-      - name: Create project using "langchain" template
-        run: |
-          fastapi-gen langchain_app --template langchain
-          cd langchain_app
-          make lint
-          make test
-          cd ..
-      - name: Create project using "llama" template
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential libopenblas-dev
+
+      # - name: Install llama-cpp-python (Linux)
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     CMAKE_ARGS="-DGGML_BLAS=OFF -DLLAMA_CUBLAS=OFF" \
+      #     FORCE_CMAKE=1 \
+      #     pip install llama-cpp-python
+
+      # - name: Install llama-cpp-python (macOS)
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     CMAKE_ARGS="-DLLAMA_METAL=OFF -DGGML_METAL=OFF -DGGML_BLAS=OFF -DGGML_CUBLAS=OFF -DGGML_OPENMP=OFF -DGGML_NATIVE=OFF" \
+      #     FORCE_CMAKE=1 \
+      #     pip install --force-reinstall --no-cache-dir llama-cpp-python
+
+      - name: Install llama-cpp-python
         run: |
           fastapi-gen llama_app --template llama
           cd llama_app

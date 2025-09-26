@@ -1,18 +1,34 @@
-.PHONY: init lint start test
+.PHONY: install sync lint lint-fix test start build clean update
 
 PORT=8000
 HOST=127.0.0.1
 
-init: requirements.txt
-	test -d venv || python3 -m venv venv
-	. venv/bin/activate && pip install -r requirements.txt
+install:
+	uv sync --group dev
 	test -d .git || git init || true
 
+sync:
+	uv sync --group dev
+
 lint:
-	. venv/bin/activate && ruff check tests main.py
+	uv run ruff check tests main.py
+
+lint-fix:
+	uv run ruff check --fix tests main.py
 
 test:
-	. venv/bin/activate && pytest -vv .
+	uv run pytest -vv .
 
 start:
-	. venv/bin/activate && uvicorn main:app --reload --host $(HOST) --port $(PORT)
+	uv run uvicorn main:app --reload --host $(HOST) --port $(PORT)
+
+build:
+	uv build
+
+clean:
+	rm -rf dist/ build/ *.egg-info/ .pytest_cache/ .ruff_cache/
+
+update:
+	uv sync --upgrade
+
+init: install

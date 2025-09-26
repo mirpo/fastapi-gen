@@ -27,6 +27,7 @@ def replace_string_in_file(file_path, old_string, new_string):
 
 _choices = ["hello_world", "advanced", "nlp", "langchain", "llama"]
 
+
 def _create_dir(path: str):
     try:
         os.makedirs(path)
@@ -34,17 +35,29 @@ def _create_dir(path: str):
     except OSError as e:
         click.echo(f"Error creating folder: {e}")
 
+
 def _walk_resources(package: str, path: str = ""):
     for file in resources.files(package).iterdir():
-        if file.name in ["__pycache__", ".pytest_cache", "venv"]:
+        if (
+            file.name in ["__pycache__", ".pytest_cache", "venv", ".ruff_cache", ".venv", ".git"]
+            or file.name.endswith(".egg-info")
+            or file.name.endswith("__pycache__")
+            or not file.name
+            or file.name.strip() == ""
+            or file.name.isspace()
+        ):
             continue
 
         if file.is_dir():
             _create_dir(os.path.join(path, file.name))
             _walk_resources(f"{package}.{file.name}", os.path.join(path, file.name))
+        elif file.name.startswith("."):
+            with open(os.path.join(path, file.name), "w") as f:
+                f.write(file.read_text())
         else:
             with open(os.path.join(path, file.name), "w") as f:
                 f.write(resources.read_text(package, file.name))
+
 
 @click.command()
 @click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
@@ -82,21 +95,21 @@ def fastapi_create(name: str, template: str):
 Success! Created new-app at {new_project_path}
 Inside that directory, you can run several commands:
 
-    {click.style('make start', bg='blue', fg='white')}
+    {click.style("make start", bg="blue", fg="white")}
     Starts the development server.
 
-    {click.style('make test', bg='blue', fg='white')}
+    {click.style("make test", bg="blue", fg="white")}
     Starts the test runner.
 
-    {click.style('make lint', bg='blue', fg='white')}
+    {click.style("make lint", bg="blue", fg="white")}
     Starts linters.
 
 We suggest that you begin by typing:
 
-    {click.style(f'cd {name}', bg='blue', fg='white')}
-    {click.style('make start', bg='blue', fg='white')}
+    {click.style(f"cd {name}", bg="blue", fg="white")}
+    {click.style("make start", bg="blue", fg="white")}
 
-{click.style('Happy hacking!', blink=True, bold=True)}
+{click.style("Happy hacking!", blink=True, bold=True)}
 """
     click.echo(welcome_message)
 

@@ -1,16 +1,19 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.build]
-include = ["src"]
+[tool.setuptools]
+include-package-data = true
 
-[tool.hatch.build.targets.wheel]
-sources = ["src"]
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
 
 [project]
 name = "fastapi-gen"
-dynamic = ["version"]
+version = "0.9.0"
 description = "Set up a modern REST API by running one command."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -51,7 +54,6 @@ classifiers = [
   "Framework :: Pydantic",
   "Framework :: Pydantic :: 1",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -72,14 +74,11 @@ Source = "https://github.com/mirpo/fastapi-gen"
 [project.scripts]
 fastapi-gen = "cli.__main__:main"
 
-[tool.hatch.version]
-path = "src/cli/__about__.py"
-
-[tool.hatch.envs.default]
-dependencies = ["coverage[toml]==7.10.3", "pytest"]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.12", "3.13"]
+[dependency-groups]
+dev = [
+    "coverage[toml]==7.10.3",
+    "pytest",
+]
 
 [tool.black]
 target-version = ["py312"]

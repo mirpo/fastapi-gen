@@ -1,0 +1,14 @@
+include README.md
+include LICENSE
+recursive-include src/templates *.toml
+recursive-include src/templates *.txt
+recursive-include src/templates *.py
+recursive-include src/templates *.md
+recursive-include src/templates Makefile
+recursive-include src/templates .env*
+recursive-include src/templates .git*
+graft src/templates
+prune src/templates/__pycache__
+prune src/templates/.pytest_cache
+prune src/templates/venv
+prune src/templates/.ruff_cache

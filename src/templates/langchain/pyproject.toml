@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langchain-fastapi-app"
+version = "0.1.0"
+description = "FastAPI Application with LangChain Integration"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dependencies = [
+    "fastapi==0.116.1",
+    "transformers[torch]==4.55.4",
+    "pydantic-settings==2.10.1",
+    "torch==2.8.0",
+    "uvicorn==0.35.0",
+    "langchain==0.3.27",
+    "langchain-community==0.3.27",
+    "langchain-core==0.3.74",
+    "langchain-huggingface==0.3.1",
+    "accelerate==1.10.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff==0.12.10",
+    "pytest==8.4.1",
+    "pytest-asyncio==1.1.0",
+    "httpx==0.28.1",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["main"]

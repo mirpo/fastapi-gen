@@ -51,13 +51,18 @@ cd my_app && make start
 
 > **Platform Support:** Works on macOS and Linux | [Report Issues](https://github.com/mirpo/fastapi-gen/issues/new)
 
+## Requirements
+
+- Python 3.12+
+- `uv`  (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
+
 ## Why FastAPI Gen?
 
 <div align="center">
 
-| **Focus on Code** | **Production Ready** | **Testing Included** | **Zero Config** |
-|:---:|:---:|:---:|:---:|
-| Skip boilerplate setup | Enterprise patterns | Real test coverage | Ready-to-run templates |
+|   **Focus on Code**    | **Production Ready** | **Testing Included** |    **Zero Config**     |
+| :--------------------: | :------------------: | :------------------: | :--------------------: |
+| Skip boilerplate setup | Enterprise patterns  |  Real test coverage  | Ready-to-run templates |
 
 </div>
 
@@ -160,13 +165,13 @@ cd my_app && make start
 
 ## Template Comparison
 
-| Template | Best For | Complexity | AI/ML | Database | Auth |
-|----------|----------|------------|--------|----------|------|
-| **Hello World** | Learning, Simple APIs | ⭐ | ❌ | ❌ | ❌ |
-| **Advanced** | Production Apps | ⭐⭐⭐ | ❌ | ✅ | ✅ |
-| **NLP** | AI Text Processing | ⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
-| **LangChain** | LLM Workflows | ⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
-| **Llama** | Local LLM | ⭐⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
+| Template        | Best For              | Complexity | AI/ML | Database | Auth |
+| --------------- | --------------------- | ---------- | ----- | -------- | ---- |
+| **Hello World** | Learning, Simple APIs | ⭐          | ❌     | ❌        | ❌    |
+| **Advanced**    | Production Apps       | ⭐⭐⭐        | ❌     | ✅        | ✅    |
+| **NLP**         | AI Text Processing    | ⭐⭐⭐⭐       | ✅     | ❌        | ❌    |
+| **LangChain**   | LLM Workflows         | ⭐⭐⭐⭐       | ✅     | ❌        | ❌    |
+| **Llama**       | Local LLM             | ⭐⭐⭐⭐⭐      | ✅     | ❌        | ❌    |
 
 ## What You Get Out of the Box
 
@@ -195,8 +200,6 @@ make start           # Run!
 - **Makefile** with common development commands
 
 ## Creating an App
-
-**You'll need to have Python 3.12+ or later version on your local development machine**. We recommend using the latest LTS version. You can use [pyenv](https://github.com/pyenv/pyenv) (macOS/Linux) to switch Python versions between different projects.
 
 ### Basic template
 

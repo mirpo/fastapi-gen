@@ -56,7 +56,7 @@ def test_question_answering_get_with_params(client):
     question = "What is Python?"
     max_tokens = 50
     temperature = 0.5
-    
+
     response = client.get(
         f"/question-answering?question={urllib.parse.quote(question)}&max_tokens={max_tokens}&temperature={temperature}"
     )
@@ -106,31 +106,19 @@ def test_question_answering_post_validation_errors(client):
     assert response.status_code == 422
 
     # Test invalid max_tokens (too high)
-    response = client.post("/question-answering", json={
-        "question": "test",
-        "max_tokens": 5000
-    })
+    response = client.post("/question-answering", json={"question": "test", "max_tokens": 5000})
     assert response.status_code == 422
 
     # Test invalid max_tokens (negative)
-    response = client.post("/question-answering", json={
-        "question": "test",
-        "max_tokens": -1
-    })
+    response = client.post("/question-answering", json={"question": "test", "max_tokens": -1})
     assert response.status_code == 422
 
     # Test invalid temperature (too high)
-    response = client.post("/question-answering", json={
-        "question": "test",
-        "temperature": 3.0
-    })
+    response = client.post("/question-answering", json={"question": "test", "temperature": 3.0})
     assert response.status_code == 422
 
     # Test invalid temperature (negative)
-    response = client.post("/question-answering", json={
-        "question": "test",
-        "temperature": -0.1
-    })
+    response = client.post("/question-answering", json={"question": "test", "temperature": -0.1})
     assert response.status_code == 422
 
 

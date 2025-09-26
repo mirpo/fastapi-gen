@@ -27,6 +27,7 @@ def test_version_pydantic_setting_200():
     assert response.is_success
     assert response.json() == {"package": "pydantic-settings", "version": "1.0.0"}
 
+
 def test_version_dotenv_200():
     response = client.get("/version-dotenv")
 
@@ -39,6 +40,7 @@ def test_config_200():
 
     assert response.is_success
     assert response.json() == {"api_version": "1.0.0", "source": "dependency_injection"}
+
 
 def test_create_item_200():
     response = client.post(
