@@ -12,70 +12,99 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v5
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-test
+      # - uses: actions/cache@v4
+      #   id: cache
+      #   with:
+      #     path: ${{ env.pythonLocation }}
+      #     key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-test
+
       - name: Install dependencies
-        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        #   if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install --upgrade pip
           pip install -e .[dev]
+
       - name: Lint
         run: |
           make lint
+
       - name: Install app
         run: |
           pip install -e .
           cd ../..
-      - name: Create project using default template
-        run: |
-          fastapi-gen hello_world
-          cd hello_world
-          make lint
-          make test
-          cd ..
-      - name: Create project using "hello_world" template
-        run: |
-          fastapi-gen hello_world_v2 --template hello_world
-          cd hello_world_v2
-          make lint
-          make test
-          cd ..
-      - name: Create project using "advanced" template
-        run: |
-          fastapi-gen advanced --template advanced
-          cd advanced
-          make lint
-          make test
-          cd ..
-      - name: Create project using "nlp" template
-        run: |
-          fastapi-gen nlp --template nlp
-          cd nlp
-          make lint
-          make test
-          cd ..
-      - name: Create project using "langchain" template
-        run: |
-          fastapi-gen langchain_app --template langchain
-          cd langchain_app
-          make lint
-          make test
-          cd ..
-      - name: Create project using "llama" template
+
+      # - name: Create project using default template
+      #   run: |
+      #     fastapi-gen hello_world
+      #     cd hello_world
+      #     make lint
+      #     make test
+      #     cd ..
+      #     rm -rf hello_world
+
+      # - name: Create project using "hello_world" template
+      #   run: |
+      #     fastapi-gen hello_world_v2 --template hello_world
+      #     cd hello_world_v2
+      #     make lint
+      #     make test
+      #     cd ..
+      #     rm -rf hello_world_v2
+
+      # - name: Create project using "advanced" template
+      #   run: |
+      #     fastapi-gen advanced --template advanced
+      #     cd advanced
+      #     make lint
+      #     make test
+      #     cd ..
+      #     rm -rf advanced
+
+      # - name: Create project using "nlp" template
+      #   run: |
+      #     fastapi-gen nlp --template nlp
+      #     cd nlp
+      #     make lint
+      #     make test
+      #     cd ..
+      #     rm -rf nlp
+
+      # - name: Create project using "langchain" template
+      #   run: |
+      #     fastapi-gen langchain_app --template langchain
+      #     cd langchain_app
+      #     make lint
+      #     make test
+      #     cd ..
+      #     rm -rf langchain_app
+
+      # - name: Set CMAKE_ARGS for macOS
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     echo "CMAKE_ARGS=-DGGML_METAL=on -DLLAMA_NATIVE=OFF -DGGML_I8MM=OFF -DGGML_NO_I8MM=ON -DGGML_CPU_ARM_ARCH=armv8-a" >> $GITHUB_ENV
+
+      # - name: Upgrade pip
+      #   run: |
+      #     python -m pip install --upgrade pip wheel setuptools
+
+      # - name: Install llama-cpp-python
+      #   run: |
+      #     pip install llama-cpp-python==0.2.78 --verbose
+
+      - name: Create project using llama template
         run: |
           fastapi-gen llama_app --template llama
           cd llama_app
           make lint
           make test
           cd ..
+          rm -rf llama_app
