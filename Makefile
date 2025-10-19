@@ -1,7 +1,13 @@
-.PHONY: lint lint-fix
+.PHONY: lint lint-fix test install
+
+install:
+	uv sync
 
 lint:
-	ruff check src/cli
+	uv run ruff check src/cli
 
 lint-fix:
-	ruff check --fix src
+	uv run ruff check --fix src
+
+test:
+	@echo "Phase 1: No root tests yet. Template tests will be added in later phases."

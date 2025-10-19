@@ -39,12 +39,21 @@ def _walk_resources(package: str, path: str = ""):
         if file.name in ["__pycache__", ".pytest_cache", "venv"]:
             continue
 
+        if file.is_dir() and file.name.startswith("."):
+            continue
+
         if file.is_dir():
             _create_dir(os.path.join(path, file.name))
             _walk_resources(f"{package}.{file.name}", os.path.join(path, file.name))
         else:
-            with open(os.path.join(path, file.name), "w") as f:
-                f.write(resources.read_text(package, file.name))
+            try:
+                content = resources.read_text(package, file.name)
+                with open(os.path.join(path, file.name), "w") as f:
+                    f.write(content)
+            except UnicodeDecodeError:
+                content_bytes = resources.files(package).joinpath(file.name).read_bytes()
+                with open(os.path.join(path, file.name), "wb") as f:
+                    f.write(content_bytes)
 
 @click.command()
 @click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")

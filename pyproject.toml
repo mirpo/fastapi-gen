@@ -7,6 +7,36 @@ include = ["src"]
 
 [tool.hatch.build.targets.wheel]
 sources = ["src"]
+exclude = [
+  "**/__pycache__",
+  "**/*.pyc",
+  "**/.venv",
+  "**/venv",
+  "**/.pytest_cache",
+  "**/.ruff_cache",
+  "**/*.egg-info",
+  "**/*.log",
+  "**/*.db",
+  "**/models/*.gguf",
+  "**/models/*.bin",
+  "**/.env_dev",
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "**/__pycache__",
+  "**/*.pyc",
+  "**/.venv",
+  "**/venv",
+  "**/.pytest_cache",
+  "**/.ruff_cache",
+  "**/*.egg-info",
+  "**/*.log",
+  "**/*.db",
+  "**/models/*.gguf",
+  "**/models/*.bin",
+  "**/.env_dev",
+]
 
 [project]
 name = "fastapi-gen"
@@ -62,7 +92,7 @@ classifiers = [
 dependencies = ["click==8.2.1", "colorama==0.4.6", "importlib_resources==6.5.2"]
 
 [project.optional-dependencies]
-dev = ["ruff==0.12.10"]
+dev = ["ruff==0.12.10", "pytest==8.4.1", "coverage[toml]==7.10.3"]
 
 [project.urls]
 Documentation = "https://github.com/mirpo/fastapi-gen#readme"
@@ -75,11 +105,11 @@ fastapi-gen = "cli.__main__:main"
 [tool.hatch.version]
 path = "src/cli/__about__.py"
 
-[tool.hatch.envs.default]
-dependencies = ["coverage[toml]==7.10.3", "pytest"]
-
 [[tool.hatch.envs.all.matrix]]
 python = ["3.12", "3.13"]
+
+[tool.uv.workspace]
+members = []
 
 [tool.black]
 target-version = ["py312"]

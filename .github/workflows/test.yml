@@ -20,62 +20,62 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v4
-        id: cache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-test
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
       - name: Install dependencies
-        if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-          pip install --upgrade pip
-          pip install -e .[dev]
+          uv sync --all-extras
       - name: Lint
         run: |
           make lint
-      - name: Install app
-        run: |
-          pip install -e .
-          cd ../..
       - name: Create project using default template
         run: |
-          fastapi-gen hello_world
+          uv run fastapi-gen hello_world
           cd hello_world
           make lint
           make test
           cd ..
+          rm -rf hello_world
       - name: Create project using "hello_world" template
         run: |
-          fastapi-gen hello_world_v2 --template hello_world
+          uv run fastapi-gen hello_world_v2 --template hello_world
           cd hello_world_v2
           make lint
           make test
           cd ..
+          rm -rf hello_world_v2
       - name: Create project using "advanced" template
         run: |
-          fastapi-gen advanced --template advanced
+          uv run fastapi-gen advanced --template advanced
           cd advanced
           make lint
           make test
           cd ..
+          rm -rf advanced
       - name: Create project using "nlp" template
         run: |
-          fastapi-gen nlp --template nlp
+          uv run fastapi-gen nlp --template nlp
           cd nlp
           make lint
           make test
           cd ..
+          rm -rf nlp
       - name: Create project using "langchain" template
         run: |
-          fastapi-gen langchain_app --template langchain
+          uv run fastapi-gen langchain_app --template langchain
           cd langchain_app
           make lint
           make test
           cd ..
+          rm -rf langchain_app
       - name: Create project using "llama" template
         run: |
-          fastapi-gen llama_app --template llama
+          uv run fastapi-gen llama_app --template llama
           cd llama_app
           make lint
           make test
           cd ..
+          rm -rf llama_app
