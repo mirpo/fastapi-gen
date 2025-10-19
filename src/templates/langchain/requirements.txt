@@ -5,7 +5,7 @@ torch==2.9.0
 uvicorn==0.35.0
 langchain==0.3.27
 langchain-community==0.3.27
-langchain-core==0.3.74
+langchain-core==0.3.79
 langchain-huggingface==0.3.1
 accelerate==1.10.0
 # dev
