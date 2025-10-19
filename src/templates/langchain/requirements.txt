@@ -11,5 +11,5 @@ accelerate==1.10.0
 # dev
 ruff==0.12.10
 pytest==8.4.1
-pytest-asyncio==1.1.0
+pytest-asyncio==1.2.0
 httpx==0.28.1
