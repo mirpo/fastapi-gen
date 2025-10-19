@@ -89,7 +89,7 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-dependencies = ["click==8.2.1", "colorama==0.4.6", "importlib_resources==6.5.2"]
+dependencies = ["click==8.3.0", "colorama==0.4.6", "importlib_resources==6.5.2"]
 
 [project.optional-dependencies]
 dev = ["ruff==0.12.10", "pytest==8.4.1", "coverage[toml]==7.10.3"]

@@ -1,8 +1,8 @@
-fastapi==0.116.1
+fastapi==0.119.0
 transformers[torch]==4.55.4
-pydantic-settings==2.10.1
+pydantic-settings==2.11.0
 torch==2.9.0
-uvicorn==0.35.0
+uvicorn==0.38.0
 langchain==0.3.27
 langchain-community==0.3.27
 langchain-core==0.3.79
