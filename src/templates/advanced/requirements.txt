@@ -9,6 +9,7 @@ sqlalchemy==2.0.43
 # Authentication
 python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.3.0
 
 # Rate limiting
 slowapi==0.1.9
