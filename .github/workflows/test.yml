@@ -12,25 +12,31 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install uv
+
+      - name: Set up uv (with Python)
         uses: astral-sh/setup-uv@v7
         with:
+          python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
+
+      - name: Upgrade pip & clear wheel cache
+        run: |
+          pip install --upgrade pip
+          pip cache purge
+
       - name: Install dependencies
         run: |
           uv sync --all-extras
+
       - name: Lint
         run: |
           make lint
+
       - name: Create project using default template
         run: |
           uv run fastapi-gen hello_world
@@ -39,6 +45,7 @@ jobs:
           make test
           cd ..
           rm -rf hello_world
+
       - name: Create project using "hello_world" template
         run: |
           uv run fastapi-gen hello_world_v2 --template hello_world
@@ -47,6 +54,7 @@ jobs:
           make test
           cd ..
           rm -rf hello_world_v2
+
       - name: Create project using "advanced" template
         run: |
           uv run fastapi-gen advanced --template advanced
@@ -55,6 +63,7 @@ jobs:
           make test
           cd ..
           rm -rf advanced
+
       - name: Create project using "nlp" template
         run: |
           uv run fastapi-gen nlp --template nlp
@@ -63,6 +72,7 @@ jobs:
           make test
           cd ..
           rm -rf nlp
+
       - name: Create project using "langchain" template
         run: |
           uv run fastapi-gen langchain_app --template langchain
@@ -71,6 +81,7 @@ jobs:
           make test
           cd ..
           rm -rf langchain_app
+
       - name: Create project using "llama" template
         run: |
           uv run fastapi-gen llama_app --template llama
