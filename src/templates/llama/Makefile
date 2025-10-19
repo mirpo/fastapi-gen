@@ -8,7 +8,18 @@ OUTPUT_FILE=./models/SmolLM2-135M-Instruct-Q4_K_M.gguf
 
 init: requirements.txt download
 	test -d venv || python3 -m venv venv
-	. venv/bin/activate && pip install -r requirements.txt
+	. venv/bin/activate; \
+	pip install --upgrade pip; \
+	if [ "$$(uname)" = "Darwin" ]; then \
+		echo "Building llama-cpp-python with ARM-safe flags (macOS)"; \
+		CFLAGS="-march=armv8.2-a+simd" \
+		CXXFLAGS="-march=armv8.2-a+simd" \
+		pip install --no-cache-dir --force-reinstall llama-cpp-python==0.3.16; \
+		grep -v '^llama-cpp-python' requirements.txt | pip install --no-cache-dir -r /dev/stdin; \
+	else \
+		echo "Installing normally (non-macOS)"; \
+		pip install --no-cache-dir -r requirements.txt; \
+	fi; \
 	test -d .git || git init || true
 
 lint:

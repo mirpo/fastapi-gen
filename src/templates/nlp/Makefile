@@ -5,7 +5,10 @@ HOST=127.0.0.1
 
 init: requirements.txt
 	test -d venv || python3 -m venv venv
-	. venv/bin/activate && pip install -r requirements.txt
+	. venv/bin/activate; \
+	pip install --upgrade pip setuptools wheel; \
+	pip cache purge; \
+	pip install --no-cache-dir -r requirements.txt
 	test -d .git || git init || true
 
 lint:
