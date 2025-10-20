@@ -40,7 +40,9 @@
     {
       "matchPackageNames": [
         "langchain",
-        "langchain-community"
+        "langchain-community",
+        "langchain-core",
+        "langchain-huggingface"
       ],
       "groupName": "langchain deps"
     },
