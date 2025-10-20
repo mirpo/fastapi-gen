@@ -93,14 +93,14 @@ class LlamaService:
 ### Response:
 
 """
-            
+
             result = self.llm(
                 prompt,
                 max_tokens=actual_max_tokens,
                 temperature=actual_temperature,
                 echo=True,
             )
-            
+
             # Extract the response part after "### Response:"
             full_text = result["choices"][0]["text"]
             if "### Response:" in full_text:
@@ -120,7 +120,7 @@ class LlamaService:
         """Get model information for health checks"""
         if not self.llm:
             return {"initialized": False}
-        
+
         return {
             "initialized": True,
             "model_path": self.settings.llm_model,
@@ -161,10 +161,10 @@ def get_llama_service() -> LlamaService:
 async def health_check(service: LlamaService = Depends(get_llama_service)):
     """Health check endpoint with model information"""
     model_info = service.get_model_info()
-    
+
     if not model_info["initialized"]:
         raise HTTPException(status_code=503, detail="Model not initialized")
-    
+
     return HealthResponse(
         status="healthy",
         model=settings.llm_model,
@@ -186,7 +186,7 @@ async def question_answering_post(
             request.max_tokens,
             request.temperature,
         )
-        
+
         return QuestionResponse(
             question=request.question,
             answer=result["answer"],

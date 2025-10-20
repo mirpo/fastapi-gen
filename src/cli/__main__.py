@@ -27,12 +27,14 @@ def replace_string_in_file(file_path, old_string, new_string):
 
 _choices = ["hello_world", "advanced", "nlp", "langchain", "llama"]
 
+
 def _create_dir(path: str):
     try:
         os.makedirs(path)
         click.echo(f"Folder '{path}' created successfully.")
     except OSError as e:
         click.echo(f"Error creating folder: {e}")
+
 
 def _walk_resources(package: str, path: str = ""):
     for file in resources.files(package).iterdir():
@@ -54,6 +56,7 @@ def _walk_resources(package: str, path: str = ""):
                 content_bytes = resources.files(package).joinpath(file.name).read_bytes()
                 with open(os.path.join(path, file.name), "wb") as f:
                     f.write(content_bytes)
+
 
 @click.command()
 @click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
@@ -91,21 +94,21 @@ def fastapi_create(name: str, template: str):
 Success! Created new-app at {new_project_path}
 Inside that directory, you can run several commands:
 
-    {click.style('make start', bg='blue', fg='white')}
+    {click.style("make start", bg="blue", fg="white")}
     Starts the development server.
 
-    {click.style('make test', bg='blue', fg='white')}
+    {click.style("make test", bg="blue", fg="white")}
     Starts the test runner.
 
-    {click.style('make lint', bg='blue', fg='white')}
+    {click.style("make lint", bg="blue", fg="white")}
     Starts linters.
 
 We suggest that you begin by typing:
 
-    {click.style(f'cd {name}', bg='blue', fg='white')}
-    {click.style('make start', bg='blue', fg='white')}
+    {click.style(f"cd {name}", bg="blue", fg="white")}
+    {click.style("make start", bg="blue", fg="white")}
 
-{click.style('Happy hacking!', blink=True, bold=True)}
+{click.style("Happy hacking!", blink=True, bold=True)}
 """
     click.echo(welcome_message)
 

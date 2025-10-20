@@ -74,10 +74,7 @@ def test_summarize_post_validation_errors(client):
     assert response.status_code == 422
 
     # Test invalid max_length
-    response = client.post("/summarize", json={
-        "text": "A" * 300,
-        "max_length": -1
-    })
+    response = client.post("/summarize", json={"text": "A" * 300, "max_length": -1})
     assert response.status_code == 422
 
 
@@ -178,11 +175,7 @@ def test_text_generation_post_success(client):
 
 def test_text_generation_post_with_params(client):
     """Test text generation with custom parameters"""
-    payload = {
-        "text": "Hello world",
-        "max_new_tokens": 20,
-        "temperature": 0.5
-    }
+    payload = {"text": "Hello world", "max_new_tokens": 20, "temperature": 0.5}
     response = client.post("/text-generation", json=payload)
 
     assert response.status_code == 200
@@ -197,17 +190,11 @@ def test_text_generation_post_validation_errors(client):
     assert response.status_code == 422
 
     # Test invalid max_new_tokens
-    response = client.post("/text-generation", json={
-        "text": "test",
-        "max_new_tokens": -1
-    })
+    response = client.post("/text-generation", json={"text": "test", "max_new_tokens": -1})
     assert response.status_code == 422
 
     # Test invalid temperature
-    response = client.post("/text-generation", json={
-        "text": "test",
-        "temperature": 3.0
-    })
+    response = client.post("/text-generation", json={"text": "test", "temperature": 3.0})
     assert response.status_code == 422
 
 
@@ -236,7 +223,7 @@ def test_question_answering_post_success(client):
     """Test question answering with POST method"""
     payload = {
         "context": "John is a software engineer who lives in San Francisco. He enjoys hiking and coding.",
-        "question": "What does John do for work?"
+        "question": "What does John do for work?",
     }
     response = client.post("/question-answering", json=payload)
 
@@ -252,17 +239,11 @@ def test_question_answering_post_success(client):
 def test_question_answering_post_validation_errors(client):
     """Test QA validation"""
     # Test empty context
-    response = client.post("/question-answering", json={
-        "context": "",
-        "question": "What?"
-    })
+    response = client.post("/question-answering", json={"context": "", "question": "What?"})
     assert response.status_code == 422
 
     # Test empty question
-    response = client.post("/question-answering", json={
-        "context": "Some context",
-        "question": ""
-    })
+    response = client.post("/question-answering", json={"context": "Some context", "question": ""})
     assert response.status_code == 422
 
 
@@ -336,7 +317,7 @@ def test_classify_success(client):
     """Test zero-shot classification"""
     payload = {
         "text": "I love programming in Python",
-        "candidate_labels": ["technology", "sports", "cooking", "programming"]
+        "candidate_labels": ["technology", "sports", "cooking", "programming"],
     }
     response = client.post("/classify", json=payload)
 
@@ -353,27 +334,18 @@ def test_classify_success(client):
 def test_classify_validation_errors(client):
     """Test zero-shot classification validation"""
     # Test empty text
-    response = client.post("/classify", json={
-        "text": "",
-        "candidate_labels": ["label1", "label2"]
-    })
+    response = client.post("/classify", json={"text": "", "candidate_labels": ["label1", "label2"]})
     assert response.status_code == 422
 
     # Test empty labels
-    response = client.post("/classify", json={
-        "text": "test text",
-        "candidate_labels": []
-    })
+    response = client.post("/classify", json={"text": "test text", "candidate_labels": []})
     assert response.status_code == 422
 
 
 # Similarity tests
 def test_similarity_success(client):
     """Test text similarity"""
-    payload = {
-        "text1": "The cat is sleeping",
-        "text2": "A cat is taking a nap"
-    }
+    payload = {"text1": "The cat is sleeping", "text2": "A cat is taking a nap"}
     response = client.post("/similarity", json=payload)
 
     assert response.status_code == 200
@@ -388,17 +360,11 @@ def test_similarity_success(client):
 def test_similarity_validation_errors(client):
     """Test similarity validation"""
     # Test empty text1
-    response = client.post("/similarity", json={
-        "text1": "",
-        "text2": "test"
-    })
+    response = client.post("/similarity", json={"text1": "", "text2": "test"})
     assert response.status_code == 422
 
     # Test empty text2
-    response = client.post("/similarity", json={
-        "text1": "test",
-        "text2": ""
-    })
+    response = client.post("/similarity", json={"text1": "test", "text2": ""})
     assert response.status_code == 422
 
 
@@ -407,15 +373,15 @@ def test_endpoint_error_handling(client):
     # All endpoints should return proper error responses
     endpoints_to_test = [
         "/summarize",
-        "/ner", 
+        "/ner",
         "/text-generation",
         "/question-answering",
         "/embeddings",
         "/sentiment",
         "/classify",
-        "/similarity"
+        "/similarity",
     ]
-    
+
     for endpoint in endpoints_to_test:
         response = client.post(endpoint, json={})
         assert response.status_code in [400, 422, 500]  # Should not crash
