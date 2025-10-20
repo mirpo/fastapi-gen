@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 
 import torch
 from fastapi import Depends, FastAPI, HTTPException
-from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFacePipeline
 from pydantic import BaseModel, Field
@@ -99,8 +98,8 @@ class LangChainService:
         try:
             template = "{text}"
             prompt = PromptTemplate(input_variables=["text"], template=template)
-            chain = LLMChain(llm=self.llm, prompt=prompt, verbose=True)
-            result = chain.run(text).strip()
+            chain = prompt | self.llm
+            result = chain.invoke({"text": text}).strip()
             return result
         except Exception as e:
             logger.error(f"Text generation failed: {e}")
@@ -116,8 +115,8 @@ class LangChainService:
         try:
             template = "Context: {context}\nQuestion: {question}\nAnswer:"
             prompt = PromptTemplate(input_variables=["context", "question"], template=template)
-            chain = LLMChain(llm=self.llm, prompt=prompt, verbose=True)
-            result = chain.run({"context": context, "question": question}).strip()
+            chain = prompt | self.llm
+            result = chain.invoke({"context": context, "question": question}).strip()
             return result
         except Exception as e:
             logger.error(f"Question answering failed: {e}")

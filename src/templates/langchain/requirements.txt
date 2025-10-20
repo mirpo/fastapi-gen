@@ -3,10 +3,9 @@ transformers[torch]==4.57.1
 pydantic-settings==2.11.0
 torch==2.9.0
 uvicorn==0.38.0
-langchain==0.3.27
+langchain==1.0.1
 langchain-community==0.4
-langchain-core==0.3.79
-langchain-huggingface==0.3.1
+langchain-huggingface==1.0.0
 accelerate==1.10.1
 # dev
 ruff==0.14.1
