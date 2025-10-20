@@ -13,6 +13,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env_dev", ".env.prod"),
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
         if self.device == "auto":
             return "cuda" if torch.cuda.is_available() else "cpu"
         return self.device
+
 
 class TextGenerationRequest(BaseModel):
     text: str = Field(..., description="Input text for generation")
@@ -105,8 +107,8 @@ class LangChainService:
             raise HTTPException(status_code=500, detail=f"Generation failed: {e!s}")
 
     def answer_question(
-            self, context: str, question: str, max_new_tokens: int | None = None, temperature: float | None = None
-) -> str:
+        self, context: str, question: str, max_new_tokens: int | None = None, temperature: float | None = None
+    ) -> str:
         """Answer question based on context"""
         if not self.llm:
             raise HTTPException(status_code=503, detail="Model not initialized")
@@ -147,6 +149,7 @@ def get_langchain_service() -> LangChainService:
     if langchain_service is None:
         raise HTTPException(status_code=503, detail="Service not initialized")
     return langchain_service
+
 
 @app.get("/health")
 async def health_check():

@@ -169,22 +169,20 @@ class NLPService:
             self.pipelines["summarize"] = pipeline(
                 "summarization", model=self.settings.summarize_model, device=device_arg
             )
-            
+
             logger.info("Loading NER pipeline...")
             self.pipelines["ner"] = pipeline(
                 "ner", model=self.settings.ner_model, aggregation_strategy="simple", device=device_arg
             )
-            
+
             logger.info("Loading QA pipeline...")
-            self.pipelines["qa"] = pipeline(
-                "question-answering", model=self.settings.qa_model, device=device_arg
-            )
-            
+            self.pipelines["qa"] = pipeline("question-answering", model=self.settings.qa_model, device=device_arg)
+
             logger.info("Loading sentiment pipeline...")
             self.pipelines["sentiment"] = pipeline(
                 "sentiment-analysis", model=self.settings.sentiment_model, device=device_arg
             )
-            
+
             logger.info("Loading zero-shot pipeline...")
             self.pipelines["zero_shot"] = pipeline(
                 "zero-shot-classification", model=self.settings.zero_shot_model, device=device_arg
@@ -193,9 +191,9 @@ class NLPService:
             # Initialize text generation separately for more control
             logger.info("Loading text generation model...")
             self.tokenizers["generation"] = AutoTokenizer.from_pretrained(self.settings.text_generation_model)
-            self.models["generation"] = AutoModelForCausalLM.from_pretrained(
-                self.settings.text_generation_model
-            ).to(self.device)
+            self.models["generation"] = AutoModelForCausalLM.from_pretrained(self.settings.text_generation_model).to(
+                self.device
+            )
 
             # Initialize sentence transformer with explicit device
             logger.info("Loading sentence transformer...")
@@ -275,7 +273,7 @@ class NLPService:
         try:
             if not self.sentence_transformer:
                 raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
-            
+
             embeddings = self.sentence_transformer.encode(texts)
             return {
                 "embeddings": embeddings.tolist(),
@@ -314,7 +312,7 @@ class NLPService:
         try:
             if not self.sentence_transformer:
                 raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
-            
+
             embeddings = self.sentence_transformer.encode([text1, text2])
             similarity = self.sentence_transformer.similarity(embeddings[0], embeddings[1]).item()
             return {"similarity": round(similarity, 5)}
@@ -397,7 +395,7 @@ async def summarize_get(
     """Summarize text"""
     if not text or not text.strip():
         raise HTTPException(status_code=400, detail="Text must be specified.")
-    
+
     text = text.strip()
     if len(text) < 200:
         raise HTTPException(status_code=400, detail="Text to summarize is too short. Min length is 200.")

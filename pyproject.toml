@@ -140,6 +140,7 @@ ignore = [
   "S607",
   "S101",
   "PLR2004",
+  "COM812",  # Conflicts with ruff formatter
 ]
 unfixable = [
   # Don't touch unused imports
