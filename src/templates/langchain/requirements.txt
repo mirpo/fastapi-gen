@@ -6,7 +6,7 @@ uvicorn==0.38.0
 langchain==0.3.27
 langchain-community==0.3.27
 langchain-core==0.3.79
-langchain-huggingface==0.3.1
+langchain-huggingface==1.0.0
 accelerate==1.10.0
 # dev
 ruff==0.12.10
