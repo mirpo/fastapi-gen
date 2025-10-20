@@ -69,6 +69,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 class User(Base):
     """
     User model for authentication
@@ -77,6 +78,7 @@ class User(Base):
     - roles table relationship for RBAC
     - email verification status
     """
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -85,6 +87,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 
 class Product(Base):
     """
@@ -95,6 +98,7 @@ class Product(Base):
     - Image URLs
     - User ownership (foreign key to User)
     """
+
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -103,10 +107,12 @@ class Product(Base):
     price = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
     password: str = Field(..., min_length=6)
+
 
 class UserResponse(BaseModel):
     id: int
@@ -118,10 +124,12 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class ProductCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     description: str | None = Field(None, max_length=500)
     price: float = Field(..., gt=0)
+
 
 class ProductResponse(BaseModel):
     id: int
@@ -133,9 +141,11 @@ class ProductResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 
 # Authentication setup
 # TODO: Move SECRET_KEY to environment variables in production
@@ -152,19 +162,23 @@ security = HTTPBearer()
 # redis_client = redis.Redis(host='localhost', port=6379, db=0)
 cache: dict[str, Any] = {}
 
+
 def get_cache_key(prefix: str, *args) -> str:
     """Generate cache key from prefix and arguments"""
     return f"{prefix}:{':'.join(str(arg) for arg in args)}"
 
+
 def cache_get(key: str) -> Any | None:
     """Get item from cache - Replace with Redis GET in production"""
     return cache.get(key)
+
 
 def cache_set(key: str, value: Any, expire: int = 300) -> None:
     """Set item in cache - Replace with Redis SETEX in production"""
     # Simple in-memory cache without expiration for demo
     # TODO: Implement TTL with background cleanup or use Redis
     cache[key] = value
+
 
 class ConnectionManager:
     """
@@ -175,6 +189,7 @@ class ConnectionManager:
     - Connection authentication
     - Scaling across multiple servers with Redis pub/sub
     """
+
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 
@@ -192,10 +207,12 @@ class ConnectionManager:
         for connection in self.active_connections:
             try:
                 await connection.send_text(message)
-            except: # noqa: E722
+            except:  # noqa: E722
                 self.active_connections.remove(connection)
 
+
 manager = ConnectionManager()
+
 
 def get_db():
     """Database session dependency"""
@@ -205,11 +222,14 @@ def get_db():
     finally:
         db.close()
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def create_access_token(data: dict, expires_delta: datetime.timedelta | None = None):
     """
@@ -226,6 +246,7 @@ def create_access_token(data: dict, expires_delta: datetime.timedelta | None = N
         expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=15)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -256,10 +277,12 @@ async def get_current_user(
         raise credentials_exception
     return user
 
+
 @app.get("/")
 async def root():
     """Example how use GET and return JSON"""
     return {"message": "Hello World - Advanced Template"}
+
 
 @app.get("/health")
 @limiter.limit("10/minute")  # Rate limiting example
@@ -284,6 +307,7 @@ async def health_check(request: Request, db: Annotated[Session, Depends(get_db)]
         "cache": "healthy" if cache is not None else "unhealthy",
     }
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env_dev", ".env.prod"),
@@ -291,23 +315,29 @@ class Settings(BaseSettings):
     api_version: str = "1.0.0"
     secret_key: str = SECRET_KEY
 
+
 settings = Settings()
 load_dotenv(".env_dev")
 
+
 def get_settings():
     return settings
+
 
 @app.get("/version-pydantic-settings")
 async def version_pydantic_settings():
     return {"package": "pydantic-settings", "version": settings.api_version}
 
+
 @app.get("/version-dotenv")
 async def version_dotenv():
     return {"package": "dotenv", "version": os.getenv("API_VERSION", "1.0.0")}
 
+
 @app.get("/config")
 async def get_config(settings: Annotated[Settings, Depends(get_settings)]):
     return {"api_version": settings.api_version, "source": "dependency_injection"}
+
 
 class Item(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Item name")
@@ -315,19 +345,23 @@ class Item(BaseModel):
     price: float = Field(..., gt=0, description="Item price must be greater than 0")
     tax: float | None = Field(None, ge=0, le=100, description="Tax percentage (0-100)")
 
+
 @app.post("/items/")
 async def create_item(item: Item) -> Item:
     return item
 
+
 @app.put("/items/{item_id}")
 async def update_item(item_id: int, item: Item):
     return {"item_id": item_id, **item.model_dump()}
+
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: int, q: str | None = None):
     if q:
         return {"item_id": item_id, "q": q}
     return {"item_id": item_id}
+
 
 @app.post("/auth/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
@@ -339,11 +373,15 @@ async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     - Rate limiting for registration attempts
     - CAPTCHA integration
     """
-    existing_user = db.execute(
-        select(User).where(
-            (User.username == user.username) | (User.email == user.email),
-        ),
-    ).scalars().first()
+    existing_user = (
+        db.execute(
+            select(User).where(
+                (User.username == user.username) | (User.email == user.email),
+            ),
+        )
+        .scalars()
+        .first()
+    )
     if existing_user:
         raise HTTPException(
             status_code=400,
@@ -361,6 +399,7 @@ async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     db.refresh(db_user)
 
     return db_user
+
 
 @app.post("/auth/login", response_model=Token)
 @limiter.limit("5/minute")  # Prevent brute force attacks
@@ -389,14 +428,17 @@ async def login(
 
     access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires,
+        data={"sub": user.username},
+        expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @app.get("/auth/me", response_model=UserResponse)
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
     """Get current user profile"""
     return current_user
+
 
 @app.post("/products/", response_model=ProductResponse)
 async def create_product(
@@ -434,6 +476,7 @@ async def create_product(
 
     return response_product
 
+
 @app.get("/products/", response_model=list[ProductResponse])
 @limiter.limit("30/minute")
 async def list_products(
@@ -456,9 +499,13 @@ async def list_products(
     if cached_products:
         return cached_products
 
-    products = db.execute(
-        select(Product).offset(skip).limit(limit),
-    ).scalars().all()
+    products = (
+        db.execute(
+            select(Product).offset(skip).limit(limit),
+        )
+        .scalars()
+        .all()
+    )
 
     response_products = [
         ProductResponse(
@@ -473,6 +520,7 @@ async def list_products(
 
     cache_set(cache_key, [p.model_dump() for p in response_products])
     return response_products
+
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: Annotated[Session, Depends(get_db)]):
@@ -498,6 +546,7 @@ async def get_product(product_id: int, db: Annotated[Session, Depends(get_db)]):
 
     cache_set(cache_key, response_product.model_dump())
     return response_product
+
 
 @app.post("/upload/")
 @limiter.limit("10/minute")
@@ -538,6 +587,7 @@ async def upload_file(
         "path": str(file_path),
     }
 
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """
@@ -559,18 +609,22 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
         await manager.broadcast("Someone disconnected")
 
+
 def write_log(message: str):
     with open("app.log", "a") as log_file:
         log_file.write(f"{datetime.datetime.now(datetime.UTC)}: {message}\n")
+
 
 @app.post("/send-notification/")
 async def send_notification(background_tasks: BackgroundTasks):
     background_tasks.add_task(write_log, "notification sent")
     return {"message": "Notification sent in background"}
 
+
 class CustomError(Exception):
     def __init__(self, name: str):
         self.name = name
+
 
 @app.exception_handler(CustomError)
 async def custom_exception_handler(_request: Request, exc: CustomError):
@@ -579,6 +633,7 @@ async def custom_exception_handler(_request: Request, exc: CustomError):
         content={"message": f"Custom error occurred: {exc.name}"},
     )
 
+
 @app.get("/error-example")
 async def error_example(*, trigger_error: bool = False):
     if trigger_error:
@@ -586,9 +641,11 @@ async def error_example(*, trigger_error: bool = False):
         raise CustomError(msg)
     return {"message": "No error occurred"}
 
+
 def create_tables():
     """Create database tables on startup"""
     Base.metadata.create_all(bind=engine)
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -601,6 +658,7 @@ async def startup_event():
     - Background job initialization
     """
     create_tables()
+
 
 @app.on_event("shutdown")
 async def shutdown_event():

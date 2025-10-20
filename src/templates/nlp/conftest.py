@@ -1,4 +1,5 @@
 """Test configuration for pytest."""
+
 import os
 
 # Set environment variables before any imports to ensure CPU usage

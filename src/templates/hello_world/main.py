@@ -26,12 +26,14 @@ async def custom_exception_handler(_request: Request, exc: CustomError):
         content={"message": f"Custom error occurred: {exc.name}"},
     )
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # `.env.prod` takes priority over `.env_dev`
         env_file=(".env_dev", ".env.prod"),
     )
     api_version: str
+
 
 settings = Settings()
 load_dotenv(".env_dev")
@@ -50,6 +52,7 @@ def write_log(message: str):
     """
     with open("app.log", "a") as log_file:
         log_file.write(f"{datetime.datetime.now(datetime.UTC)}: {message}\n")
+
 
 class Item(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Item name")
@@ -73,12 +76,14 @@ async def health_check():
     """
     return {"status": "healthy", "timestamp": datetime.datetime.now(datetime.UTC)}
 
+
 @app.get("/version-pydantic-settings")
 async def version_pydantic_settings():
     """
     Example how use GET env variables using pydantic-settings package
     """
     return {"package": "pydantic-settings", "version": settings.api_version}
+
 
 @app.get("/version-dotenv")
 async def version_dotenv():
@@ -94,6 +99,7 @@ async def get_config(settings: Annotated[Settings, Depends(get_settings)]):
     Example how to use dependency injection with settings
     """
     return {"api_version": settings.api_version, "source": "dependency_injection"}
+
 
 @app.post("/items/")
 async def create_item(item: Item) -> Item:
