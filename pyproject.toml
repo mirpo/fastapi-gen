@@ -104,7 +104,6 @@ fastapi-gen = "cli.__main__:main"
 
 [tool.hatch.version]
 source = "vcs"
-raw-options = { tag_regex = "^v(?P<version>[^\\+]+)(?:\\+.*)?$" }
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.12", "3.13"]
