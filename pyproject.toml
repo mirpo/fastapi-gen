@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
@@ -103,7 +103,7 @@ Source = "https://github.com/mirpo/fastapi-gen"
 fastapi-gen = "cli.__main__:main"
 
 [tool.hatch.version]
-path = "src/cli/__about__.py"
+source = "vcs"
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.12", "3.13"]
