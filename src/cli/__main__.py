@@ -3,10 +3,14 @@ import re
 import subprocess
 import sys
 from importlib import resources
+from importlib.metadata import PackageNotFoundError, version
 
 import click
 
-from cli.__about__ import __version__
+try:
+    __version__ = version("fastapi-gen")
+except PackageNotFoundError:
+    __version__ = "0.0.0+dev"
 
 _pattern = r"^[a-zA-Z0-9_]+$"
 
