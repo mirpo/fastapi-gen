@@ -22,12 +22,6 @@ dev = [
   "httpx==0.28.1",
 ]
 
-[project.scripts]
-start = "uvicorn hello_world.main:app --reload --host 127.0.0.1 --port 8000"
-lint = "ruff check src tests"
-lint-fix = "ruff check --fix src tests && ruff format src tests"
-test = "pytest -vv"
-
 [tool.ruff]
 target-version = "py311"
 line-length = 120

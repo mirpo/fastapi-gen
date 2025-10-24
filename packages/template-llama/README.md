@@ -28,10 +28,13 @@ A **powerful local LLM inference service** with enterprise-grade features:
 ## Quick Start in 30 Seconds
 
 ```bash
-# You're already here! First initialize the environment:
-make init  # Downloads model (~135MB), sets up environment
+# You're already here! First install dependencies:
+make install
 
-# Then start the app:
+# Download the model (~135MB):
+make download
+
+# Start the app:
 make start
 
 # Open: http://localhost:8000/docs
@@ -39,7 +42,13 @@ make start
 
 **Open:** [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
 
-> **First time setup:** `make init` downloads the model and sets up everything (~2-3 minutes).
+> **macOS ARM64 Note:** If `make install` fails to compile llama-cpp-python, set these flags first:
+> ```bash
+> export CFLAGS="-march=armv8.2-a+simd"
+> export CXXFLAGS="-march=armv8.2-a+simd"
+> export CMAKE_ARGS="-DGGML_METAL=OFF"
+> make install
+> ```
 
 ## Local LLM Features
 
@@ -136,14 +145,14 @@ LLM_SEED=-1              # Random seed (-1 = random)
 <summary><strong>Easy Setup & Management</strong></summary>
 
 **Streamlined development experience:**
-- ✅ **Auto Model Download** - Automatic model fetching with make commands
+- ✅ **Auto Model Download** - Simple model fetching with curl/wget
 - ✅ **Optimized Defaults** - Sensible default configurations
 - ✅ **Environment Detection** - Auto GPU/CPU detection and configuration
 - ✅ **Error Recovery** - Robust handling of model loading failures
-- ✅ **Development Tools** - Makefile with common development commands
+- ✅ **Development Tools** - Make commands for common development tasks
 
 **Setup Features:**
-- One-command environment initialization
+- One-command environment initialization with `make install`
 - Automatic dependency management
 - Smart hardware detection and optimization
 
@@ -175,15 +184,22 @@ GET /question-answering?question=What%20is%20AI&max_tokens=100&temperature=0.5
 ## Development Commands
 
 <details>
-<summary><strong>Available Make Commands</strong></summary>
+<summary><strong>Available Commands</strong></summary>
 
 | Command | Description |
 |---------|-------------|
-| `make init` | Download model and set up environment |
+| `make install` | Install dependencies and set up environment |
 | `make start` | Run app in development mode with auto-reload |
 | `make test` | Run comprehensive test suite with real AI |
 | `make lint` | Run code quality checks with Ruff |
-| `make download` | Download model file only (auto-detects curl/wget) |
+| `make lint-fix` | Auto-fix linting issues and format code |
+| `make download` | Download model (~135MB) |
+
+**Manual model download (alternative to `make download`):**
+```bash
+mkdir -p models
+curl -L https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q4_K_M.gguf -o models/SmolLM2-135M-Instruct-Q4_K_M.gguf
+```
 
 </details>
 
@@ -309,15 +325,16 @@ make test
 
 ```
 llama/
-├── main.py              # FastAPI app with llama-cpp-python
+├── src/
+│   └── llama_app/
+│       └── main.py      # FastAPI app with llama-cpp-python
 ├── models/
 │   └── SmolLM2-135M-Instruct-Q4_K_M.gguf  # Downloaded model
 ├── tests/
 │   ├── test_main.py     # Real AI integration tests
 │   └── __init__.py
-├── requirements.txt     # Dependencies (llama-cpp-python, etc.)
+├── pyproject.toml      # UV project configuration & dependencies
 ├── .env_dev            # Environment configuration
-├── Makefile            # Development commands
 └── README.md           # This file
 ```
 
@@ -326,7 +343,8 @@ llama/
 ### Mastering Local LLM Inference
 
 1. **Setup & Configuration**
-   - Run `make init` to set up everything
+   - Run `make install` to install dependencies
+   - Download the model with `make download` (see Quick Start)
    - Check `/health` endpoint for model and hardware info
    - Experiment with different configuration parameters
 

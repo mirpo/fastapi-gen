@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from typing import Annotated, Any
 
+import bcrypt
 from dotenv import load_dotenv
 from fastapi import (
     BackgroundTasks,
@@ -21,9 +22,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-
-# Authentication
-import bcrypt
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
