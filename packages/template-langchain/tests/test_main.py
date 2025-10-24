@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
-from src.templates.langchain.main import app
+from langchain_app.main import app
 
 
 @pytest.fixture(scope="session")
