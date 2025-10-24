@@ -3,40 +3,40 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-include = ["src"]
+include = [
+  "src/cli/**/*.py",
+  "packages/template-hello-world/**/*",
+  "packages/template-advanced/**/*",
+  "packages/template-nlp/**/*",
+  "packages/template-langchain/**/*",
+  "packages/template-llama/**/*",
+]
+exclude = [
+  "**/__pycache__",
+  "**/*.pyc",
+  "**/.venv",
+  "**/venv",
+  "**/.pytest_cache",
+  "**/.ruff_cache",
+  "**/*.egg-info",
+  "**/uv.lock",
+  "**/.git",
+  "**/*.log",
+  "**/*.db",
+  "**/models/*.gguf",
+  "**/models/*.bin",
+]
 
 [tool.hatch.build.targets.wheel]
 sources = ["src"]
-exclude = [
-  "**/__pycache__",
-  "**/*.pyc",
-  "**/.venv",
-  "**/venv",
-  "**/.pytest_cache",
-  "**/.ruff_cache",
-  "**/*.egg-info",
-  "**/*.log",
-  "**/*.db",
-  "**/models/*.gguf",
-  "**/models/*.bin",
-  "**/.env_dev",
-]
+packages = ["src/cli"]
 
-[tool.hatch.build.targets.sdist]
-exclude = [
-  "**/__pycache__",
-  "**/*.pyc",
-  "**/.venv",
-  "**/venv",
-  "**/.pytest_cache",
-  "**/.ruff_cache",
-  "**/*.egg-info",
-  "**/*.log",
-  "**/*.db",
-  "**/models/*.gguf",
-  "**/models/*.bin",
-  "**/.env_dev",
-]
+[tool.hatch.build.targets.wheel.force-include]
+"packages/template-hello-world" = "cli/templates/template-hello-world"
+"packages/template-advanced" = "cli/templates/template-advanced"
+"packages/template-nlp" = "cli/templates/template-nlp"
+"packages/template-langchain" = "cli/templates/template-langchain"
+"packages/template-llama" = "cli/templates/template-llama"
 
 [project]
 name = "fastapi-gen"
@@ -91,7 +91,7 @@ classifiers = [
 ]
 dependencies = ["click==8.3.0", "colorama==0.4.6", "importlib_resources==6.5.2"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["ruff==0.14.1", "pytest==8.4.2", "coverage[toml]==7.11.0"]
 
 [project.urls]
@@ -109,7 +109,13 @@ source = "vcs"
 python = ["3.12", "3.13"]
 
 [tool.uv.workspace]
-members = []
+members = [
+  "packages/template-hello-world",
+  "packages/template-advanced",
+  "packages/template-nlp",
+  "packages/template-langchain",
+  "packages/template-llama",
+]
 
 [tool.black]
 target-version = ["py312"]

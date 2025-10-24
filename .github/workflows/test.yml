@@ -7,7 +7,40 @@ on:
     branches: ["main"]
 
 jobs:
-  lint-n-test:
+  lint-and-build:
+    name: Lint and Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.11"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Lint CLI
+        run: make lint
+
+      - name: Build CLI package
+        run: uv build
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: dist/*.whl
+
+  test-generated-projects:
+    name: Test (${{ matrix.os }}, py${{ matrix.python-version }})
+    needs: lint-and-build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,77 +49,66 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-      - name: Set up uv (with Python)
+      - name: Set up uv
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-
-      - name: Upgrade pip & clear wheel cache
-        run: |
-          pip install --upgrade pip
-          pip cache purge
 
       - name: Install dependencies
-        run: |
-          uv sync --all-extras
+        run: make install
 
-      - name: Lint
+      - name: Test hello_world template
         run: |
-          make lint
-
-      - name: Create project using default template
-        run: |
-          uv run fastapi-gen hello_world
-          cd hello_world
+          uv run fastapi-gen test_hello_world --template hello_world
+          cd test_hello_world
+          make install
           make lint
           make test
           cd ..
-          rm -rf hello_world
+          rm -rf test_hello_world
 
-      - name: Create project using "hello_world" template
+      - name: Test advanced template
         run: |
-          uv run fastapi-gen hello_world_v2 --template hello_world
-          cd hello_world_v2
+          uv run fastapi-gen test_advanced --template advanced
+          cd test_advanced
+          make install
           make lint
           make test
           cd ..
-          rm -rf hello_world_v2
+          rm -rf test_advanced
 
-      - name: Create project using "advanced" template
+      - name: Test nlp template
         run: |
-          uv run fastapi-gen advanced --template advanced
-          cd advanced
+          uv run fastapi-gen test_nlp --template nlp
+          cd test_nlp
+          make install
           make lint
           make test
           cd ..
-          rm -rf advanced
+          rm -rf test_nlp
 
-      - name: Create project using "nlp" template
+      - name: Test langchain template
         run: |
-          uv run fastapi-gen nlp --template nlp
-          cd nlp
+          uv run fastapi-gen test_langchain --template langchain
+          cd test_langchain
+          make install
           make lint
           make test
           cd ..
-          rm -rf nlp
+          rm -rf test_langchain
 
-      - name: Create project using "langchain" template
+      - name: Test llama template
         run: |
-          uv run fastapi-gen langchain_app --template langchain
-          cd langchain_app
+          uv run fastapi-gen test_llama --template llama
+          cd test_llama
+          make install
           make lint
           make test
-          cd ..
-          rm -rf langchain_app
-
-      - name: Create project using "llama" template
-        run: |
-          uv run fastapi-gen llama_app --template llama
-          cd llama_app
-          make lint
-          make test
-          cd ..
-          rm -rf llama_app
+          rm -rf test_llama
+        env:
+          CFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
+          CXXFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
+          CMAKE_ARGS: ${{ matrix.os == 'macos-latest' && '-DGGML_METAL=OFF' || '' }}

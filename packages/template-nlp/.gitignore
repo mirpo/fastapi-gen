@@ -161,8 +161,3 @@ cython_debug/
 .vscode
 .ruff_cache
 .DS_Store
-
-# packages/template*/.pytest_cache
-# packages/template*/__pycache__
-# packages/template*/venv
-# packages/template-advanced/app.db

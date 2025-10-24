@@ -80,7 +80,7 @@ cd my_app && make start
 - **Health Monitoring** - Built-in health endpoints
 - **Complete Tests** - 100% test coverage
 
-[📖 View Details →](src/templates/hello_world/README.md)
+[📖 View Details →](packages/template-hello-world/README.md)
 
 </details>
 
@@ -99,7 +99,7 @@ cd my_app && make start
 - **Enhanced Security** - CORS, validation, production patterns
 - **Full Test Suite** - Auth, CRUD, WebSocket, integration
 
-[📖 View Details →](src/templates/advanced/README.md)
+[📖 View Details →](packages/template-advanced/README.md)
 
 </details>
 
@@ -116,7 +116,7 @@ cd my_app && make start
 - **Production Monitoring** - Health checks, model status, logging
 - **Real AI Testing** - Actual model inference validation
 
-[📖 View Details →](src/templates/nlp/README.md)
+[📖 View Details →](packages/template-nlp/README.md)
 
 </details>
 
@@ -133,7 +133,7 @@ cd my_app && make start
 - **Real Testing** - Actual model inference tests
 - **Dual Endpoints** - Text generation & question answering
 
-[📖 View Details →](src/templates/langchain/README.md)
+[📖 View Details →](packages/template-langchain/README.md)
 
 </details>
 
@@ -152,7 +152,7 @@ cd my_app && make start
 
 > **Requirements:** ~4GB model download + 4GB+ RAM
 
-[📖 View Details →](src/templates/llama/README.md)
+[📖 View Details →](packages/template-llama/README.md)
 
 </details>
 
