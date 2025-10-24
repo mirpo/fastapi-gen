@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nlp-fastapi-app"
+version = "0.1.0"
+description = "FastAPI application with NLP capabilities"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.119.1",
+  "uvicorn==0.38.0",
+  "transformers[torch]==4.57.1",
+  "sentence-transformers==5.1.1",
+  "pydantic-settings==2.11.0",
+  "torch==2.9.0",
+  "accelerate==1.11.0",
+]
+
+[dependency-groups]
+dev = [
+  "ruff==0.14.1",
+  "pytest==8.4.2",
+  "httpx==0.28.1",
+]
+
+[project.scripts]
+start = "uvicorn nlp.main:app --reload --host 127.0.0.1 --port 8000"
+lint = "ruff check src tests"
+lint-fix = "ruff check --fix src tests && ruff format src tests"
+test = "pytest -vv"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

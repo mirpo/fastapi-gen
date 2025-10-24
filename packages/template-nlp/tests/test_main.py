@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
-from src.templates.nlp.main import app
+from nlp.main import app
 
 
 @pytest.fixture(scope="session")

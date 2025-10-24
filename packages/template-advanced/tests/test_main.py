@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.templates.advanced.main import Base, app, engine
+from advanced.main import Base, app, engine
 
 client = TestClient(app)
 

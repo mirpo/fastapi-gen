@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from src.templates.hello_world.main import app
+from hello_world.main import app
 
 client = TestClient(app)
 

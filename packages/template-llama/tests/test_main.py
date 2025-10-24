@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
-from src.templates.llama.main import app
+from llama_app.main import app
 
 
 @pytest.fixture(scope="session")
