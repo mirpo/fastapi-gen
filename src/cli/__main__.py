@@ -102,6 +102,27 @@ def update_imports_in_tests(tests_dir: Path, old_module: str, new_module: str):
         test_file.write_text(content)
 
 
+def update_makefile(makefile_path: Path, old_module: str, new_module: str):
+    """Update module name in Makefile uvicorn command."""
+    if not makefile_path.exists():
+        return
+
+    content = makefile_path.read_text()
+    content = content.replace(f"uvicorn {old_module}.", f"uvicorn {new_module}.")
+    makefile_path.write_text(content)
+
+
+def update_readme(readme_path: Path, old_module: str, new_module: str):
+    """Update module name references in README."""
+    if not readme_path.exists():
+        return
+
+    content = readme_path.read_text()
+    content = content.replace(f"uvicorn {old_module}.", f"uvicorn {new_module}.")
+    content = content.replace(f"{old_module}/", f"{new_module}/")
+    readme_path.write_text(content)
+
+
 @click.command()
 @click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
 @click.argument("name")
@@ -163,6 +184,16 @@ def main(name: str, template: str):
     tests_dir = dest_path / "tests"
     if tests_dir.exists():
         update_imports_in_tests(tests_dir, template_module_name, name)
+
+    # Update Makefile
+    makefile_path = dest_path / "Makefile"
+    if makefile_path.exists():
+        update_makefile(makefile_path, template_module_name, name)
+
+    # Update README
+    readme_path = dest_path / "README.md"
+    if readme_path.exists():
+        update_readme(readme_path, template_module_name, name)
 
     # Initialize git repository
     os.chdir(dest_path)

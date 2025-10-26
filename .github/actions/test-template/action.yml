@@ -1,0 +1,45 @@
+name: "Test FastAPI Template"
+description: "Generate, install, lint, test, and start a FastAPI template project"
+
+inputs:
+  template:
+    description: "Template name to test"
+    required: true
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Test ${{ inputs.template }} template
+      shell: bash
+      run: |
+        PROJECT="test_${{ inputs.template }}"
+        uv run fastapi-gen "$PROJECT" --template "${{ inputs.template }}"
+        cd "$PROJECT"
+
+        make install
+        make lint
+        make test
+
+        make start &
+        SERVER_PID=$!
+
+        for i in {1..10}; do
+          if curl -f http://localhost:8000/health 2>/dev/null; then
+            break
+          fi
+          sleep 1
+        done
+
+        curl -f http://localhost:8000/health
+
+        # Kill all uvicorn and related processes
+        pkill -9 -f "uvicorn" || true
+        pkill -9 -f "StatReload" || true
+        kill -9 $SERVER_PID 2>/dev/null || true
+
+        cd ..
+        rm -rf "$PROJECT"

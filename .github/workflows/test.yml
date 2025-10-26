@@ -61,53 +61,34 @@ jobs:
         run: make install
 
       - name: Test hello_world template
-        run: |
-          uv run fastapi-gen test_hello_world --template hello_world
-          cd test_hello_world
-          make install
-          make lint
-          make test
-          cd ..
-          rm -rf test_hello_world
+        uses: ./.github/actions/test-template
+        with:
+          template: hello_world
+          python-version: ${{ matrix.python-version }}
 
       - name: Test advanced template
-        run: |
-          uv run fastapi-gen test_advanced --template advanced
-          cd test_advanced
-          make install
-          make lint
-          make test
-          cd ..
-          rm -rf test_advanced
+        uses: ./.github/actions/test-template
+        with:
+          template: advanced
+          python-version: ${{ matrix.python-version }}
 
       - name: Test nlp template
-        run: |
-          uv run fastapi-gen test_nlp --template nlp
-          cd test_nlp
-          make install
-          make lint
-          make test
-          cd ..
-          rm -rf test_nlp
+        uses: ./.github/actions/test-template
+        with:
+          template: nlp
+          python-version: ${{ matrix.python-version }}
 
       - name: Test langchain template
-        run: |
-          uv run fastapi-gen test_langchain --template langchain
-          cd test_langchain
-          make install
-          make lint
-          make test
-          cd ..
-          rm -rf test_langchain
+        uses: ./.github/actions/test-template
+        with:
+          template: langchain
+          python-version: ${{ matrix.python-version }}
 
       - name: Test llama template
-        run: |
-          uv run fastapi-gen test_llama --template llama
-          cd test_llama
-          make install
-          make lint
-          make test
-          rm -rf test_llama
+        uses: ./.github/actions/test-template
+        with:
+          template: llama
+          python-version: ${{ matrix.python-version }}
         env:
           CFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
           CXXFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
