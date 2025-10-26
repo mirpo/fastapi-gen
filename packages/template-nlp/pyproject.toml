@@ -12,7 +12,7 @@ dependencies = [
   "fastapi==0.120.0",
   "uvicorn==0.38.0",
   "transformers[torch]==4.57.1",
-  "sentence-transformers==5.1.1",
+  "sentence-transformers==5.1.2",
   "pydantic-settings==2.11.0",
   "torch==2.9.0",
   "accelerate==1.11.0",
