@@ -31,19 +31,22 @@
 Get a fully functional FastAPI app running in **30 seconds**:
 
 ```bash
-# Install
-pip install fastapi-gen
-
-# Create your app
-fastapi-gen my_app
-
-# Run it
+# Recommended: using uvx (no installation needed)
+uvx fastapi-gen my_app
 cd my_app && make start
 ```
 
-**Or use pipx for one-time execution:**
+**Or install with uv:**
 ```bash
-pipx run fastapi-gen my_app
+uv tool install fastapi-gen
+fastapi-gen my_app
+cd my_app && make start
+```
+
+**Or use pip:**
+```bash
+pip install fastapi-gen
+fastapi-gen my_app
 cd my_app && make start
 ```
 
@@ -53,13 +56,10 @@ cd my_app && make start
 
 ## Why FastAPI Gen?
 
-<div align="center">
-
-| **Focus on Code** | **Production Ready** | **Testing Included** | **Zero Config** |
-|:---:|:---:|:---:|:---:|
-| Skip boilerplate setup | Enterprise patterns | Real test coverage | Ready-to-run templates |
-
-</div>
+**Focus on Code** - Skip boilerplate setup and start building
+**Production Ready** - Enterprise patterns and best practices built-in
+**Testing Included** - Real test coverage from day one
+**Zero Config** - Ready-to-run templates that just work
 
 ---
 
@@ -71,16 +71,14 @@ cd my_app && make start
 **Best for:** Learning FastAPI fundamentals and starting new projects
 
 **Key Features:**
-- **REST API Fundamentals** - Complete CRUD with validation
-- **Configuration Management** - Both pydantic-settings & dotenv
-- **Dependency Injection** - Clean architecture with `Depends()`
-- **Background Tasks** - Async processing with logging
-- **Exception Handling** - Professional error responses
-- **Input Validation** - Advanced Pydantic constraints
-- **Health Monitoring** - Built-in health endpoints
-- **Complete Tests** - 100% test coverage
+- REST API fundamentals with complete CRUD
+- Configuration management (pydantic-settings & dotenv)
+- Dependency injection and clean architecture
+- Background tasks and exception handling
+- Input validation and health monitoring
+- Complete test coverage
 
-[📖 View Details →](packages/template-hello-world/README.md)
+[View Details →](packages/template-hello-world/README.md)
 
 </details>
 
@@ -90,16 +88,14 @@ cd my_app && make start
 **Best for:** Production applications with enterprise features
 
 **Key Features:**
-- **JWT Authentication** - Registration, login, protected routes
-- **Database Integration** - SQLAlchemy 2.0 async (SQLite/PostgreSQL)
-- **Rate Limiting** - DDoS protection per endpoint
-- **Caching System** - In-memory + Redis integration ready
-- **WebSocket Support** - Real-time communication
-- **File Upload** - Secure handling + cloud storage ready
-- **Enhanced Security** - CORS, validation, production patterns
-- **Full Test Suite** - Auth, CRUD, WebSocket, integration
+- JWT authentication with registration and login
+- Database integration with SQLAlchemy 2.0 async
+- Rate limiting and caching system
+- WebSocket support and file upload
+- Enhanced security and CORS configuration
+- Full test suite
 
-[📖 View Details →](packages/template-advanced/README.md)
+[View Details →](packages/template-advanced/README.md)
 
 </details>
 
@@ -109,14 +105,13 @@ cd my_app && make start
 **Best for:** AI applications with natural language processing
 
 **Key Features:**
-- **8 NLP Capabilities** - Summarization, NER, generation, QA, embeddings, sentiment, classification, similarity
-- **Production Architecture** - Startup model loading, device auto-detection
-- **Smart Configuration** - Environment-based config, multiple models
-- **Performance Optimized** - Model caching, concurrent handling, hardware acceleration
-- **Production Monitoring** - Health checks, model status, logging
-- **Real AI Testing** - Actual model inference validation
+- 8 NLP capabilities: summarization, NER, generation, QA, embeddings, sentiment, classification, similarity
+- Production architecture with startup model loading
+- Smart configuration and device auto-detection
+- Performance optimized with model caching
+- Real AI testing with actual inference
 
-[📖 View Details →](packages/template-nlp/README.md)
+[View Details →](packages/template-nlp/README.md)
 
 </details>
 
@@ -126,14 +121,13 @@ cd my_app && make start
 **Best for:** Applications using LangChain for LLM workflows
 
 **Key Features:**
-- **Optimized Loading** - Startup caching, memory management
-- **Modern Patterns** - Latest LangChain best practices
-- **Smart Config** - Auto device detection (CPU/GPU)
-- **Production Ready** - Health checks, monitoring, error handling
-- **Real Testing** - Actual model inference tests
-- **Dual Endpoints** - Text generation & question answering
+- Optimized loading with startup caching
+- Modern LangChain patterns and best practices
+- Smart config with auto device detection
+- Production ready with health checks
+- Dual endpoints: text generation and question answering
 
-[📖 View Details →](packages/template-langchain/README.md)
+[View Details →](packages/template-langchain/README.md)
 
 </details>
 
@@ -143,16 +137,15 @@ cd my_app && make start
 **Best for:** Local LLM inference with llama-cpp-python
 
 **Key Features:**
-- **Local LLM Focus** - Optimized for Gemma/Llama GGUF models
-- **GPU Acceleration** - Auto GPU detection, configurable layers
-- **Advanced Config** - Context windows, threading, performance tuning
-- **Production Ready** - Lifecycle management, health monitoring
-- **Real Testing** - Actual model inference validation
-- **Easy Setup** - Auto model download, optimized defaults
+- Local LLM focus optimized for Gemma/Llama GGUF models
+- GPU acceleration with auto detection
+- Advanced config for context windows and threading
+- Production ready with lifecycle management
+- Easy setup with auto model download
 
 > **Requirements:** ~4GB model download + 4GB+ RAM
 
-[📖 View Details →](packages/template-llama/README.md)
+[View Details →](packages/template-llama/README.md)
 
 </details>
 
@@ -160,13 +153,13 @@ cd my_app && make start
 
 ## Template Comparison
 
-| Template | Best For | Complexity | AI/ML | Database | Auth |
-|----------|----------|------------|--------|----------|------|
-| **Hello World** | Learning, Simple APIs | ⭐ | ❌ | ❌ | ❌ |
-| **Advanced** | Production Apps | ⭐⭐⭐ | ❌ | ✅ | ✅ |
-| **NLP** | AI Text Processing | ⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
-| **LangChain** | LLM Workflows | ⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
-| **Llama** | Local LLM | ⭐⭐⭐⭐⭐ | ✅ | ❌ | ❌ |
+| Template        | Best For              | Complexity | AI/ML | Database | Auth |
+| --------------- | --------------------- | ---------- | ----- | -------- | ---- |
+| **Hello World** | Learning, Simple APIs | Basic      | No    | No       | No   |
+| **Advanced**    | Production Apps       | Medium     | No    | Yes      | Yes  |
+| **NLP**         | AI Text Processing    | Advanced   | Yes   | No       | No   |
+| **LangChain**   | LLM Workflows         | Advanced   | Yes   | No       | No   |
+| **Llama**       | Local LLM             | Advanced   | Yes   | No       | No   |
 
 ## What You Get Out of the Box
 
@@ -181,66 +174,38 @@ cd my_app && make start
 All dependencies (FastAPI, Pydantic, Pytest, etc.) are preconfigured. Just create and run:
 
 ```bash
-fastapi-gen my_app    # Create
+fastapi-gen my_app   # Create
 cd my_app            # Enter  
 make start           # Run!
 ```
 
 **Every Template Includes:**
-- **Ready-to-run** development environment
-- **Industry-standard** project structure
-- **Comprehensive** test suites with examples
-- **Ruff** linting and formatting
-- **Auto-generated** OpenAPI documentation
-- **Makefile** with common development commands
+- Ready-to-run development environment
+- Industry-standard project structure
+- Comprehensive test suites with examples
+- Ruff linting and formatting
+- Auto-generated OpenAPI documentation
+- Makefile with common development commands
 
-## Creating an App
+## Installation & Usage
 
-**You'll need to have Python 3.12+ or later version on your local development machine**. We recommend using the latest LTS version. You can use [pyenv](https://github.com/pyenv/pyenv) (macOS/Linux) to switch Python versions between different projects.
+**You'll need to have Python 3.11+ or later version on your local development machine**. We recommend using the latest version. You can use [uv](https://docs.astral.sh/uv/) for Python version management and project workflows.
 
-### Basic template
+### Choose Your Template
 
-```console
-pip3 install fastapi-gen
-fastapi-gen my_app
+```bash
+# Default (hello_world)
+uvx fastapi-gen my_app
+
+# Or specify a template
+uvx fastapi-gen my_app --template <template-name>
 ```
 
-or
+Available templates: `hello_world`, `advanced`, `nlp`, `langchain`, `llama`
 
-```console
-pip3 install fastapi-gen
-fastapi-gen my_app --template hello_world
-```
+### Built-in Commands
 
-### Advanced template
-
-```console
-pip3 install fastapi-gen
-fastapi-gen my_app --template advanced
-```
-
-### NLP template
-
-```console
-pip install fastapi-gen
-fastapi-gen my_app --template nlp
-```
-
-### Langchain template
-
-```console
-pip install fastapi-gen
-fastapi-gen my_app --template Langchain
-```
-
-### Llama template
-
-```console
-pip install fastapi-gen
-fastapi-gen my_app --template llama
-```
-
-Inside the newly created project, you can run some built-in commands:
+Inside the newly created project, you can run:
 
 ### `make start`
 
