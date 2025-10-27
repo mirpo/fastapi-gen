@@ -1,0 +1,56 @@
+name: Homebrew Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  homebrew-releaser:
+    runs-on: ubuntu-latest
+    name: Release to Homebrew tap
+
+    steps:
+      - name: Release to Homebrew tap
+        uses: Justintime50/homebrew-releaser@v1
+        with:
+          # The name of the homebrew tap to publish your formula to
+          # This should be a repository under your GitHub account
+          # Example: if this is "homebrew-fastapi-gen", it will publish to mirpo/homebrew-fastapi-gen
+          homebrew_owner: mirpo
+          homebrew_tap: homebrew-fastapi-gen
+
+          # The name of the folder in your homebrew tap where formula will be created
+          formula_folder: Formula
+
+          # The GitHub Token with permissions to push to your homebrew tap
+          github_token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+
+          # Commit message
+          commit_owner: homebrew-releaser
+          commit_email: homebrew-releaser@example.com
+
+          # Python-specific configuration
+          depends_on: |
+            "python@3.12"
+
+          install: |
+            virtualenv_install_with_resources
+
+          test: |
+            system "#{bin}/fastapi-gen", "--version"
+
+          # Enable Python virtualenv support in the formula
+          formula_includes: |
+            include Language::Python::Virtualenv
+
+          # Automatically update Python resources (dependencies)
+          update_python_resources: true
+
+          # The target commitish for the release
+          target_commitish: main
+
+          # Extra fields for the formula
+          homepage: https://github.com/mirpo/fastapi-gen
+          description: Create production-ready FastAPI applications in seconds
+          license: MIT

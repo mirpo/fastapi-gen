@@ -50,6 +50,14 @@ fastapi-gen my_app
 cd my_app && make start
 ```
 
+**Or use Homebrew (macOS/Linux):**
+```bash
+brew tap mirpo/fastapi-gen
+brew install fastapi-gen
+fastapi-gen my_app
+cd my_app && make start
+```
+
 **That's it!** Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your OpenAPI documentation.
 
 > **Platform Support:** Works on macOS and Linux | [Report Issues](https://github.com/mirpo/fastapi-gen/issues/new)
