@@ -1092,16 +1092,16 @@ wheels = [
 
 [[package]]
 name = "langchain"
-version = "1.0.3"
+version = "1.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "langgraph" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/37/08/1708495e03eadbeef5d51e6b7cdcae4752a113a9b6313f46c70e165149c4/langchain-1.0.3.tar.gz", hash = "sha256:f96d8d185cb8cbba9793f5c648e7d5eeec688f8e3778f700d75d89d6570ae11e", size = 444810, upload-time = "2025-10-29T23:15:10.74Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/27/bcd45b71849b81933e006b9f1e805467d34676ded4c5bc064bde7aa34fb7/langchain-1.0.4.tar.gz", hash = "sha256:70f09e5ada227c9422d0e581709471f7e113bb61c6bd48a226a9c61ffc60c340", size = 461816, upload-time = "2025-11-06T21:53:18.187Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/68/c8/b5dcfdde8b96369e5445f0fbac52fe8495bbd11b23ca83691d90d464eb15/langchain-1.0.3-py3-none-any.whl", hash = "sha256:a7d57964ed16278c991de4ab15516a81937a58c5ac7d7aadccb18431ad8179b2", size = 91970, upload-time = "2025-10-29T23:15:09.198Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/9f/5d8f19329cbd3f1d2395be263a1283476ee3b5bb1c3a0840a3e435bb247d/langchain-1.0.4-py3-none-any.whl", hash = "sha256:1df5caf3fcf2ffd59d078329d77c8d56608cc3b24035a08274375c2bf94c91d0", size = 93745, upload-time = "2025-11-06T21:53:14.538Z" },
 ]
 
 [[package]]
@@ -1147,7 +1147,7 @@ wheels = [
 
 [[package]]
 name = "langchain-core"
-version = "1.0.1"
+version = "1.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsonpatch" },
@@ -1158,9 +1158,9 @@ dependencies = [
     { name = "tenacity" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e7/37/1bc4badb93eaa32406a7afdef011336b21719d21ce5ecebf35409a524f8c/langchain_core-1.0.1.tar.gz", hash = "sha256:d769e8d25854466abb672a721143a01bea11cc6ee2d7dae776aa092556db0a26", size = 764566, upload-time = "2025-10-24T16:39:35.495Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/41/15/dfe0c2af463d63296fe18608a06570ce3a4b245253d4f26c301481380f7d/langchain_core-1.0.3.tar.gz", hash = "sha256:10744945d21168fb40d1162a5f1cf69bf0137ff6ad2b12c87c199a5297410887", size = 770278, upload-time = "2025-11-03T14:32:09.712Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/54/3cdbe9d151d06cd689b5aa937ac11403b64bbfe76486fda6431a24061721/langchain_core-1.0.1-py3-none-any.whl", hash = "sha256:c7ce58fc487359c44166e255cc0009ef30290da0b6307b75091152847919661e", size = 467122, upload-time = "2025-10-24T16:39:33.788Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/1b/b0a37674bdcbd2931944e12ea742fd167098de5212ee2391e91dce631162/langchain_core-1.0.3-py3-none-any.whl", hash = "sha256:64f1bd45f04b174bbfd54c135a8adc52f4902b347c15a117d6383b412bf558a5", size = 469927, upload-time = "2025-11-03T14:32:08.322Z" },
 ]
 
 [[package]]
@@ -1191,9 +1191,9 @@ dev = [
 requires-dist = [
     { name = "accelerate", specifier = "==1.11.0" },
     { name = "fastapi", specifier = "==0.120.4" },
-    { name = "langchain", specifier = "==1.0.3" },
+    { name = "langchain", specifier = "==1.0.4" },
     { name = "langchain-community", specifier = "==0.4.1" },
-    { name = "langchain-huggingface", specifier = "==1.0.0" },
+    { name = "langchain-huggingface", specifier = "==1.0.1" },
     { name = "pydantic-settings", specifier = "==2.11.0" },
     { name = "torch", specifier = "==2.9.0" },
     { name = "transformers", extras = ["torch"], specifier = "==4.57.1" },
@@ -1210,16 +1210,16 @@ dev = [
 
 [[package]]
 name = "langchain-huggingface"
-version = "1.0.0"
+version = "1.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
     { name = "langchain-core" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/0d/2a22659534cc70410573a53d32756cf7971de7923ba2ccf940c03ecbe12a/langchain_huggingface-1.0.0.tar.gz", hash = "sha256:0d2eb924ff77dc08bb7dd340ab10d47c1b71372e4297bc12e84c4a66df9a4414", size = 247750, upload-time = "2025-10-17T15:30:35.179Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ae/85/8ae6fa9e70a4d2647151df59abf8bc658c159936fcb1e508b86c4f6f23b6/langchain_huggingface-1.0.1.tar.gz", hash = "sha256:9e54b81303b60656f88f45e9a876fb4e3ea0bfb5d40715f802c26811fd8cd72b", size = 248461, upload-time = "2025-11-03T19:53:43.072Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/30/7476a926e31498ebc4be3131e06650c5136ffb8ba12067f56212e187dd7c/langchain_huggingface-1.0.0-py3-none-any.whl", hash = "sha256:06d6ac57951c6a1c47d329c38f2b32472a839eab2fa14883be784916ea075da0", size = 27493, upload-time = "2025-10-17T15:30:34.023Z" },
+    { url = "https://files.pythonhosted.org/packages/bd/9d/90dc488e426e4dfef63a77b04a06ef816297a1b036075e5fd34a98436875/langchain_huggingface-1.0.1-py3-none-any.whl", hash = "sha256:032325539dd6b2970910356ecfc363283e8b4e51fb1890de40666a52e95e7d53", size = 27920, upload-time = "2025-11-03T19:53:42.173Z" },
 ]
 
 [[package]]
