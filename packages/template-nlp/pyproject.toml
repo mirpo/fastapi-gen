@@ -9,12 +9,12 @@ description = "FastAPI application with NLP capabilities"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi==0.121.1",
+  "fastapi==0.121.2",
   "uvicorn==0.38.0",
   "transformers[torch]==4.57.1",
   "sentence-transformers==5.1.2",
-  "pydantic-settings==2.11.0",
-  "torch==2.9.0",
+  "pydantic-settings==2.12.0",
+  "torch==2.9.1",
   "accelerate==1.11.0",
 ]
 
