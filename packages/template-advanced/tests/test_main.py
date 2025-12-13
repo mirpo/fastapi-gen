@@ -198,7 +198,7 @@ def test_login_invalid_user():
 
 def test_protected_endpoint_no_token():
     response = client.get("/auth/me")
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_protected_endpoint_invalid_token():
@@ -214,7 +214,7 @@ def test_create_product_unauthorized():
         "price": 29.99,
     }
     response = client.post("/products/", json=product_data)
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_create_product_invalid_data():
@@ -265,7 +265,7 @@ def test_get_nonexistent_product():
 
 def test_upload_file_unauthorized():
     response = client.post("/upload/", files={"file": ("test.txt", b"test content", "text/plain")})
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_upload_file_invalid_type():
