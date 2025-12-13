@@ -925,7 +925,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
-    { name = "uvicorn" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -940,7 +940,7 @@ requires-dist = [
     { name = "fastapi", specifier = "==0.121.2" },
     { name = "pydantic-settings", specifier = "==2.12.0" },
     { name = "python-dotenv", specifier = "==1.2.1" },
-    { name = "uvicorn", specifier = "==0.38.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = "==0.38.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1378,7 +1378,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "llama-cpp-python" },
     { name = "pydantic-settings" },
-    { name = "uvicorn" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -1393,7 +1393,7 @@ requires-dist = [
     { name = "fastapi", specifier = "==0.121.2" },
     { name = "llama-cpp-python", specifier = "==0.3.16" },
     { name = "pydantic-settings", specifier = "==2.12.0" },
-    { name = "uvicorn", specifier = "==0.38.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = "==0.38.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1644,7 +1644,7 @@ dependencies = [
     { name = "sentence-transformers" },
     { name = "torch" },
     { name = "transformers", extra = ["torch"] },
-    { name = "uvicorn" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -1662,7 +1662,7 @@ requires-dist = [
     { name = "sentence-transformers", specifier = "==5.1.2" },
     { name = "torch", specifier = "==2.9.1" },
     { name = "transformers", extras = ["torch"], specifier = "==4.57.3" },
-    { name = "uvicorn", specifier = "==0.38.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = "==0.38.0" },
 ]
 
 [package.metadata.requires-dev]
