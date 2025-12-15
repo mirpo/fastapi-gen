@@ -85,7 +85,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Test llama template
-        if: matrix.os == 'macos-latest'
         uses: ./.github/actions/test-template
         with:
           template: llama
