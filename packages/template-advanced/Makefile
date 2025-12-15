@@ -1,10 +1,13 @@
-.PHONY: install start test lint lint-fix
+.PHONY: install start start-ci test lint lint-fix
 
 install:
 	uv sync
 
 start:
 	uv run uvicorn advanced.main:app --reload
+
+start-ci:
+	uv run uvicorn advanced.main:app --workers 1
 
 test:
 	uv run pytest

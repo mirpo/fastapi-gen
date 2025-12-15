@@ -1,4 +1,4 @@
-.PHONY: install start test lint lint-fix download
+.PHONY: install start start-ci test lint lint-fix download
 
 MODEL_URL=https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q4_K_M.gguf
 OUTPUT_FILE=./models/SmolLM2-135M-Instruct-Q4_K_M.gguf
@@ -8,6 +8,9 @@ install: download
 
 start:
 	uv run uvicorn llama_app.main:app --reload
+
+start-ci:
+	uv run uvicorn llama_app.main:app --workers 1
 
 test:
 	uv run pytest
