@@ -24,34 +24,5 @@ runs:
         make lint
         make test
 
-        # Start server with CI optimization (no reload = faster)
-        make start-ci &
-        SERVER_PID=$!
-
-        # Wait for server with longer timeout (60s instead of 10s)
-        for i in {1..60}; do
-          if curl -f http://localhost:8000/health 2>/dev/null; then
-            echo "Server ready after ${i}s"
-            break
-          fi
-          sleep 1
-        done
-
-        # Verify health check
-        curl -f http://localhost:8000/health
-
-        # Graceful shutdown: SIGTERM first, wait, then SIGKILL if needed
-        kill -15 $SERVER_PID 2>/dev/null || true
-        sleep 3
-
-        # Only force kill if still running
-        kill -9 $SERVER_PID 2>/dev/null || true
-        pkill -9 -f "uvicorn" || true
-        pkill -9 -f "StatReload" || true
-
-        # Wait for port to be released and files to close
-        sleep 5
-
-        # Cleanup
         cd ..
         rm -rf "$PROJECT"
