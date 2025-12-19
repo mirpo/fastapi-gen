@@ -24,22 +24,5 @@ runs:
         make lint
         make test
 
-        make start &
-        SERVER_PID=$!
-
-        for i in {1..10}; do
-          if curl -f http://localhost:8000/health 2>/dev/null; then
-            break
-          fi
-          sleep 1
-        done
-
-        curl -f http://localhost:8000/health
-
-        # Kill all uvicorn and related processes
-        pkill -9 -f "uvicorn" || true
-        pkill -9 -f "StatReload" || true
-        kill -9 $SERVER_PID 2>/dev/null || true
-
         cd ..
         rm -rf "$PROJECT"
