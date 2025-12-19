@@ -17,7 +17,7 @@ dependencies = [
   "python-jose[cryptography]==3.5.0",
   "bcrypt==5.0.0",
   "slowapi==0.1.9",
-  "python-multipart==0.0.20",
+  "python-multipart==0.0.21",
   "websockets==15.0.1",
 ]
 
