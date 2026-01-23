@@ -17,7 +17,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "ruff==0.14.13",
+  "ruff==0.14.14",
   "pytest==9.0.2",
   "httpx==0.28.1",
 ]
