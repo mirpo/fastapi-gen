@@ -16,7 +16,7 @@ dependencies = [
   "torch==2.11.0",
   "langchain==1.2.15",
   "langchain-community==0.4.1",
-  "langchain-huggingface==1.2.1",
+  "langchain-huggingface==1.2.2",
   "accelerate==1.13.0",
 ]
 
