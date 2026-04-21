@@ -9,10 +9,10 @@ description = "FastAPI application with LangChain integration"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi==0.135.2",
-  "uvicorn[standard]==0.42.0",
+  "fastapi==0.136.0",
+  "uvicorn[standard]==0.45.0",
   "transformers[torch]==4.57.6",
-  "pydantic-settings==2.13.1",
+  "pydantic-settings==2.14.0",
   "torch==2.11.0",
   "langchain==1.2.15",
   "langchain-community==0.4.1",
