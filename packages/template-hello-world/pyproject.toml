@@ -12,7 +12,7 @@ dependencies = [
   "fastapi==0.136.1",
   "uvicorn[standard]==0.46.0",
   "python-dotenv==1.2.2",
-  "pydantic-settings==2.14.0",
+  "pydantic-settings==2.14.1",
 ]
 
 [dependency-groups]
