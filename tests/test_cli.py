@@ -5,9 +5,10 @@ import pytest
 
 from cli.__main__ import (
     copy_template,
+    discover_templates,
     is_valid_name,
     rename_package_in_pyproject,
-    update_imports_in_tests,
+    replace_module_references,
 )
 
 
@@ -131,47 +132,121 @@ class TestRenamePackageInPyproject:
         assert 'description = "My app"' in content
 
 
-class TestUpdateImportsInTests:
-    def test_replaces_from_imports(self, tmp_path):
-        tests_dir = tmp_path / "tests"
-        tests_dir.mkdir()
-        test_file = tests_dir / "test_main.py"
-        test_file.write_text("from nlp.main import app\nfrom nlp.config import settings\n")
+class TestDiscoverTemplates:
+    def _make_templates_dir(self, tmp_path: Path) -> Path:
+        tpl_root = tmp_path / "packages"
 
-        update_imports_in_tests(tests_dir, "nlp", "my_app")
+        for name, module in [
+            ("template-hello-world", "hello_world"),
+            ("template-nlp", "nlp"),
+            ("template-llama", "llama_app"),
+        ]:
+            (tpl_root / name / "src" / module).mkdir(parents=True)
+            (tpl_root / name / "src" / module / "__init__.py").write_text("")
 
-        content = test_file.read_text()
+        return tpl_root
+
+    def test_discovers_all_templates(self, tmp_path):
+        tpl_root = self._make_templates_dir(tmp_path)
+
+        templates = discover_templates(tpl_root)
+
+        assert "hello_world" in templates
+        assert "nlp" in templates
+        assert "llama" in templates
+
+    def test_returns_correct_directory(self, tmp_path):
+        tpl_root = self._make_templates_dir(tmp_path)
+
+        templates = discover_templates(tpl_root)
+
+        assert templates["hello_world"][0] == tpl_root / "template-hello-world"
+
+    def test_discovers_module_name_from_src(self, tmp_path):
+        tpl_root = self._make_templates_dir(tmp_path)
+
+        templates = discover_templates(tpl_root)
+
+        assert templates["hello_world"][1] == "hello_world"
+        assert templates["llama"][1] == "llama_app"
+
+    def test_ignores_non_template_dirs(self, tmp_path):
+        tpl_root = self._make_templates_dir(tmp_path)
+        (tpl_root / "some-other-package" / "src" / "foo").mkdir(parents=True)
+
+        templates = discover_templates(tpl_root)
+
+        assert "some_other_package" not in templates
+        assert len(templates) == 3
+
+    def test_empty_dir(self, tmp_path):
+        tpl_root = tmp_path / "packages"
+        tpl_root.mkdir()
+
+        templates = discover_templates(tpl_root)
+
+        assert templates == {}
+
+
+class TestReplaceModuleReferences:
+    def _make_project(self, tmp_path: Path, module_name: str = "nlp") -> Path:
+        dest = tmp_path / "project"
+        dest.mkdir()
+        (dest / "src" / module_name).mkdir(parents=True)
+        (dest / "src" / module_name / "main.py").write_text("app = 1")
+        (dest / "tests").mkdir()
+        (dest / "tests" / "test_main.py").write_text(f"from {module_name}.main import app\n")
+        (dest / "Makefile").write_text(f"start:\n\tuvicorn {module_name}.main:app\n")
+        (dest / "README.md").write_text(f"Run uvicorn {module_name}.main:app\nSee {module_name}/ dir\n")
+        (dest / "pyproject.toml").write_text(
+            f'[project]\nname = "old-name"\n\n[project.scripts]\nstart = "{module_name}.main:app"\n'
+        )
+        return dest
+
+    def test_renames_src_directory(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        assert (dest / "src" / "my_app" / "main.py").exists()
+        assert not (dest / "src" / "nlp").exists()
+
+    def test_updates_makefile(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        assert "uvicorn my_app.main:app" in (dest / "Makefile").read_text()
+
+    def test_updates_readme(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        content = (dest / "README.md").read_text()
+        assert "uvicorn my_app.main:app" in content
+        assert "my_app/" in content
+
+    def test_updates_test_imports(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        assert "from my_app.main import app" in (dest / "tests" / "test_main.py").read_text()
+
+    def test_updates_pyproject_scripts(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        assert '"my_app.main:app"' in (dest / "pyproject.toml").read_text()
+
+    def test_updates_bare_imports(self, tmp_path):
+        dest = self._make_project(tmp_path)
+        (dest / "tests" / "test_main.py").write_text("import nlp\nfrom nlp.main import app\n")
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        content = (dest / "tests" / "test_main.py").read_text()
+        assert "import my_app" in content
         assert "from my_app.main import app" in content
-        assert "from my_app.config import settings" in content
-
-    def test_replaces_bare_imports(self, tmp_path):
-        tests_dir = tmp_path / "tests"
-        tests_dir.mkdir()
-        test_file = tests_dir / "test_main.py"
-        test_file.write_text("import nlp\n")
-
-        update_imports_in_tests(tests_dir, "nlp", "my_app")
-
-        assert "import my_app" in test_file.read_text()
-
-    def test_skips_init_files(self, tmp_path):
-        tests_dir = tmp_path / "tests"
-        tests_dir.mkdir()
-        init = tests_dir / "__init__.py"
-        init.write_text("from nlp.main import app")
-
-        update_imports_in_tests(tests_dir, "nlp", "my_app")
-
-        assert "from nlp.main" in init.read_text()
-
-    def test_does_not_overmatch_prefix(self, tmp_path):
-        tests_dir = tmp_path / "tests"
-        tests_dir.mkdir()
-        test_file = tests_dir / "test_main.py"
-        test_file.write_text("from nlp.main import app\nfrom nlp_utils import helper\n")
-
-        update_imports_in_tests(tests_dir, "nlp", "my_app")
-
-        content = test_file.read_text()
-        assert "from my_app.main import app" in content
-        assert "from nlp_utils import helper" in content

@@ -15,42 +15,47 @@ except PackageNotFoundError:
     __version__ = "0.0.0+dev"
 
 _pattern = r"^[a-zA-Z0-9_]+$"
-_choices = ["hello_world", "advanced", "nlp", "langchain", "llama"]
 
-# Template name mapping
-_template_map = {
-    "hello_world": ("template-hello-world", "hello_world"),
-    "advanced": ("template-advanced", "advanced"),
-    "nlp": ("template-nlp", "nlp"),
-    "langchain": ("template-langchain", "langchain_app"),
-    "llama": ("template-llama", "llama_app"),
+_EXCLUDE_PATTERNS = {
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    ".git",
+    "uv.lock",
 }
+
+_REPLACEABLE_SUFFIXES = {".py", ".toml", ".md", ""}
 
 
 def is_valid_name(name) -> bool:
     return re.match(_pattern, name) is not None
 
 
-def copy_template(template_dir: Path, dest_path: Path):
-    """Recursively copy template directory, excluding dev artifacts."""
-    exclude_patterns = {
-        "__pycache__",
-        ".pytest_cache",
-        ".ruff_cache",
-        ".venv",
-        "venv",
-        ".git",
-        "uv.lock",
-    }
+def discover_templates(templates_root: Path) -> dict[str, tuple[Path, str]]:
+    templates = {}
+    for d in sorted(templates_root.iterdir()):
+        if not d.is_dir() or not d.name.startswith("template-"):
+            continue
+        src_dir = d / "src"
+        if not src_dir.exists():
+            continue
+        modules = [p for p in src_dir.iterdir() if p.is_dir() and not p.name.startswith(".")]
+        if len(modules) != 1:
+            continue
+        cli_name = d.name.removeprefix("template-").replace("-", "_")
+        templates[cli_name] = (d, modules[0].name)
+    return templates
 
+
+def copy_template(template_dir: Path, dest_path: Path):
     def ignore_function(_directory, contents):
-        """Custom ignore function that excludes dev artifacts but keeps other dotfiles."""
-        return [name for name in contents if name in exclude_patterns]
+        return [name for name in contents if name in _EXCLUDE_PATTERNS]
 
     for item in template_dir.iterdir():
-        if item.name in exclude_patterns:
+        if item.name in _EXCLUDE_PATTERNS:
             continue
-
         dest_item = dest_path / item.name
         if item.is_dir():
             shutil.copytree(item, dest_item, ignore=ignore_function, dirs_exist_ok=True)
@@ -59,148 +64,81 @@ def copy_template(template_dir: Path, dest_path: Path):
 
 
 def rename_package_in_pyproject(pyproject_path: Path, new_name: str):
-    """Rename the package in pyproject.toml."""
     content = pyproject_path.read_text()
-
-    # Replace name field
     content = re.sub(r'name\s*=\s*"[^"]+', f'name = "{new_name}', content, count=1)
-
     pyproject_path.write_text(content)
 
 
-def update_scripts_in_pyproject(pyproject_path: Path, old_module: str, new_module: str):
-    """Update script module names in pyproject.toml."""
-    content = pyproject_path.read_text()
-
-    # Replace module names in scripts
-    content = content.replace(f"{old_module}.", f"{new_module}.")
-
-    pyproject_path.write_text(content)
-
-
-def rename_src_directory(dest_path: Path, old_name: str, new_name: str):
-    """Rename the src/{old_name} directory to src/{new_name}."""
-    old_src = dest_path / "src" / old_name
-    new_src = dest_path / "src" / new_name
-
+def replace_module_references(dest_path: Path, old_module: str, new_module: str):
+    old_src = dest_path / "src" / old_module
     if old_src.exists():
-        old_src.rename(new_src)
+        old_src.rename(dest_path / "src" / new_module)
 
-
-def update_imports_in_tests(tests_dir: Path, old_module: str, new_module: str):
-    """Update import statements in test files."""
-    if not tests_dir.exists():
-        return
-
-    for test_file in tests_dir.glob("*.py"):
-        if test_file.name == "__init__.py":
+    for path in dest_path.rglob("*"):
+        if not path.is_file() or path.suffix not in _REPLACEABLE_SUFFIXES:
             continue
-
-        content = test_file.read_text()
-        content = content.replace(f"from {old_module}.", f"from {new_module}.")
-        content = content.replace(f"import {old_module}", f"import {new_module}")
-        test_file.write_text(content)
-
-
-def update_makefile(makefile_path: Path, old_module: str, new_module: str):
-    """Update module name in Makefile uvicorn command."""
-    if not makefile_path.exists():
-        return
-
-    content = makefile_path.read_text()
-    content = content.replace(f"uvicorn {old_module}.", f"uvicorn {new_module}.")
-    makefile_path.write_text(content)
+        content = path.read_text()
+        updated = content.replace(f"{old_module}.", f"{new_module}.")
+        updated = updated.replace(f"{old_module}/", f"{new_module}/")
+        updated = updated.replace(f"import {old_module}", f"import {new_module}")
+        if updated != content:
+            path.write_text(updated)
 
 
-def update_readme(readme_path: Path, old_module: str, new_module: str):
-    """Update module name references in README."""
-    if not readme_path.exists():
-        return
-
-    content = readme_path.read_text()
-    content = content.replace(f"uvicorn {old_module}.", f"uvicorn {new_module}.")
-    content = content.replace(f"{old_module}/", f"{new_module}/")
-    readme_path.write_text(content)
-
-
-@click.command()
-@click.option("-t", "--template", default="hello_world", type=click.Choice(_choices), help="template")
-@click.argument("name")
-@click.version_option(version=__version__, prog_name="fastapi-gen")
-def main(name: str, template: str):
-    """This script creates new FastAPI project with NAME using TEMPLATE."""
-    if not is_valid_name(name):
-        click.echo(f"Error. Invalid name {name}. Name must match: {_pattern}")
-        sys.exit(1)
-
-    click.echo(f"Creating new project: '{name}' using template '{template}'...")
-
-    dest_path = Path.cwd() / name
-    if dest_path.exists():
-        click.echo(f"Error. Folder {dest_path} already exists.")
-        sys.exit(1)
-
-    # Get template info
-    template_package_name, template_module_name = _template_map[template]
-
-    # Get template directory - try installed package first, then development mode
-    template_files = None
+def _get_templates_root() -> Path | None:
     try:
-        # Try installed package location (cli/templates/)
-        template_files = resources.files("cli").joinpath("templates").joinpath(template_package_name)
-        if not Path(template_files).exists():
-            template_files = None
+        installed = resources.files("cli").joinpath("templates")
+        if Path(installed).exists():
+            return Path(installed)
     except (FileNotFoundError, AttributeError, TypeError):
         pass
+    dev_path = Path(__file__).parent.parent.parent / "packages"
+    if dev_path.exists():
+        return dev_path
+    return None
 
-    if template_files is None:
-        # Try development mode location (packages/)
-        dev_template_path = Path(__file__).parent.parent.parent / "packages" / template_package_name
-        if dev_template_path.exists():
-            template_files = dev_template_path
-        else:
-            click.echo(f"Error. Template {template} not found in installation or development mode.")
+
+def _build_cli():
+    templates_root = _get_templates_root()
+    available = discover_templates(templates_root) if templates_root else {}
+    choices = sorted(available.keys())
+    default = "hello_world" if "hello_world" in choices else (choices[0] if choices else None)
+
+    @click.command()
+    @click.option("-t", "--template", default=default, type=click.Choice(choices), help="template")
+    @click.argument("name")
+    @click.version_option(version=__version__, prog_name="fastapi-gen")
+    def cli(name: str, template: str):
+        """This script creates new FastAPI project with NAME using TEMPLATE."""
+        if not is_valid_name(name):
+            click.echo(f"Error. Invalid name {name}. Name must match: {_pattern}")
             sys.exit(1)
 
-    # Create destination directory
-    dest_path.mkdir(parents=True)
+        click.echo(f"Creating new project: '{name}' using template '{template}'...")
 
-    # Copy template
-    click.echo("Copying template files...")
-    copy_template(Path(template_files), dest_path)
+        dest_path = Path.cwd() / name
+        if dest_path.exists():
+            click.echo(f"Error. Folder {dest_path} already exists.")
+            sys.exit(1)
 
-    # Rename package in pyproject.toml
-    pyproject_path = dest_path / "pyproject.toml"
-    if pyproject_path.exists():
+        template_dir, template_module = available[template]
+
+        dest_path.mkdir(parents=True)
+
+        click.echo("Copying template files...")
+        copy_template(template_dir, dest_path)
+
         click.echo(f"Renaming package to '{name}'...")
-        rename_package_in_pyproject(pyproject_path, name)
-        update_scripts_in_pyproject(pyproject_path, template_module_name, name)
+        pyproject_path = dest_path / "pyproject.toml"
+        if pyproject_path.exists():
+            rename_package_in_pyproject(pyproject_path, name)
 
-    # Rename src directory
-    click.echo(f"Renaming module to '{name}'...")
-    rename_src_directory(dest_path, template_module_name, name)
+        replace_module_references(dest_path, template_module, name)
 
-    # Update imports in tests
-    tests_dir = dest_path / "tests"
-    if tests_dir.exists():
-        update_imports_in_tests(tests_dir, template_module_name, name)
+        os.chdir(dest_path)
+        subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
 
-    # Update Makefile
-    makefile_path = dest_path / "Makefile"
-    if makefile_path.exists():
-        update_makefile(makefile_path, template_module_name, name)
-
-    # Update README
-    readme_path = dest_path / "README.md"
-    if readme_path.exists():
-        update_readme(readme_path, template_module_name, name)
-
-    # Initialize git repository
-    os.chdir(dest_path)
-    subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
-
-    # Success message
-    welcome_message = f"""
+        welcome_message = f"""
 {click.style("Success!", fg="green", bold=True)} Created {name} at {dest_path}
 
 Inside that directory, you can run several commands:
@@ -227,9 +165,13 @@ Then open {click.style("http://localhost:8000/docs", fg="cyan")} to see your API
 
 {click.style("Happy hacking!", fg="yellow", blink=True, bold=True)}
 """
-    click.echo(welcome_message)
-    return 0
+        click.echo(welcome_message)
+        return 0
 
+    return cli
+
+
+main = _build_cli()
 
 if __name__ == "__main__":
     sys.exit(main())
