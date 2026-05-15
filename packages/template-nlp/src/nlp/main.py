@@ -167,7 +167,7 @@ class NLPService:
 
             logger.info("Loading summarization pipeline...")
             self.pipelines["summarize"] = pipeline(
-                "summarization", model=self.settings.summarize_model, device=device_arg
+                "text-generation", model=self.settings.summarize_model, device=device_arg
             )
 
             logger.info("Loading NER pipeline...")
@@ -208,9 +208,11 @@ class NLPService:
         """Summarize text using the loaded pipeline"""
         try:
             actual_max_length = max_length or 150
-            result = self.pipelines["summarize"](text, max_length=actual_max_length, min_length=30, do_sample=False)
+            result = self.pipelines["summarize"](
+                "summarize: " + text, max_new_tokens=actual_max_length, do_sample=False
+            )
             return {
-                "summary_text": result[0]["summary_text"],
+                "summary_text": result[0]["generated_text"],
             }
         except Exception as e:
             logger.error(f"Summarization failed: {e}")
