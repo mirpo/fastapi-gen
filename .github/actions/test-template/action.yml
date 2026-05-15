@@ -9,8 +9,8 @@ inputs:
     description: "Python version to use"
     required: false
     default: "3.11"
-  uv-install-args:
-    description: "Extra args passed to uv sync"
+  post-install:
+    description: "Extra command to run after make install (e.g. rebuild a package from source)"
     required: false
     default: ""
 
@@ -24,7 +24,8 @@ runs:
         uv run fastapi-gen "$PROJECT" --template "${{ inputs.template }}"
         cd "$PROJECT"
 
-        uv sync ${{ inputs.uv-install-args }}
+        make install
+        ${{ inputs.post-install }}
         make lint
         make test
 
