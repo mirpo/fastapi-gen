@@ -9,6 +9,10 @@ inputs:
     description: "Python version to use"
     required: false
     default: "3.11"
+  uv-install-args:
+    description: "Extra args passed to uv sync"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -20,7 +24,7 @@ runs:
         uv run fastapi-gen "$PROJECT" --template "${{ inputs.template }}"
         cd "$PROJECT"
 
-        make install
+        uv sync ${{ inputs.uv-install-args }}
         make lint
         make test
 
