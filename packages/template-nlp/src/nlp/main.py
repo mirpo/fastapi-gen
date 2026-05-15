@@ -8,7 +8,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sentence_transformers import SentenceTransformer
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, set_seed
+from transformers import AutoModelForCausalLM, AutoModelForQuestionAnswering, AutoTokenizer, pipeline, set_seed
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -175,8 +175,9 @@ class NLPService:
                 "ner", model=self.settings.ner_model, aggregation_strategy="simple", device=device_arg
             )
 
-            logger.info("Loading QA pipeline...")
-            self.pipelines["qa"] = pipeline("question-answering", model=self.settings.qa_model, device=device_arg)
+            logger.info("Loading QA model...")
+            self.tokenizers["qa"] = AutoTokenizer.from_pretrained(self.settings.qa_model)
+            self.models["qa"] = AutoModelForQuestionAnswering.from_pretrained(self.settings.qa_model).to(self.device)
 
             logger.info("Loading sentiment pipeline...")
             self.pipelines["sentiment"] = pipeline(
@@ -259,12 +260,28 @@ class NLPService:
             raise HTTPException(status_code=500, detail=f"Text generation failed: {e!s}")
 
     def answer_question(self, context: str, question: str) -> dict[str, Any]:
-        """Answer question based on context"""
+        """Answer question based on context using extractive QA"""
         try:
-            result = self.pipelines["qa"](question=question, context=context)
+            tokenizer = self.tokenizers["qa"]
+            model = self.models["qa"]
+
+            inputs = tokenizer(question, context, return_tensors="pt", truncation=True).to(self.device)
+            with torch.no_grad():
+                outputs = model(**inputs)
+
+            start_idx = torch.argmax(outputs.start_logits, dim=-1).item()
+            end_idx = torch.argmax(outputs.end_logits, dim=-1).item()
+
+            answer_tokens = inputs["input_ids"][0][start_idx : end_idx + 1]
+            answer = tokenizer.decode(answer_tokens, skip_special_tokens=True)
+
+            start_prob = torch.softmax(outputs.start_logits, dim=-1).max().item()
+            end_prob = torch.softmax(outputs.end_logits, dim=-1).max().item()
+            confidence = round((start_prob + end_prob) / 2, 5)
+
             return {
-                "answer": result["answer"],
-                "confidence": round(result["score"], 5),
+                "answer": answer,
+                "confidence": confidence,
             }
         except Exception as e:
             logger.error(f"Question answering failed: {e}")
@@ -328,7 +345,7 @@ class NLPService:
             "summarization": "summarize" in self.pipelines,
             "ner": "ner" in self.pipelines,
             "text_generation": "generation" in self.models,
-            "question_answering": "qa" in self.pipelines,
+            "question_answering": "qa" in self.models,
             "embeddings": self.sentence_transformer is not None,
             "sentiment": "sentiment" in self.pipelines,
             "zero_shot": "zero_shot" in self.pipelines,
