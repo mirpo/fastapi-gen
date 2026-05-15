@@ -2,11 +2,13 @@ import textwrap
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
 from cli.__main__ import (
     copy_template,
     discover_templates,
     is_valid_name,
+    main,
     rename_package_in_pyproject,
     replace_module_references,
 )
@@ -250,3 +252,29 @@ class TestReplaceModuleReferences:
         content = (dest / "tests" / "test_main.py").read_text()
         assert "import my_app" in content
         assert "from my_app.main import app" in content
+
+
+class TestCliFlags:
+    def test_no_git_skips_git_init(self, tmp_path):
+        runner = CliRunner()
+        result = runner.invoke(main, ["test_app", "--no-git", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert not (tmp_path / "test_app" / ".git").exists()
+
+    def test_output_dir(self, tmp_path):
+        runner = CliRunner()
+        result = runner.invoke(main, ["test_app", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert (tmp_path / "test_app").exists()
+        assert (tmp_path / "test_app" / "pyproject.toml").exists()
+
+    def test_output_dir_with_no_git(self, tmp_path):
+        runner = CliRunner()
+        result = runner.invoke(main, ["test_app", "-o", str(tmp_path), "--no-git"], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        dest = tmp_path / "test_app"
+        assert dest.exists()
+        assert not (dest / ".git").exists()
