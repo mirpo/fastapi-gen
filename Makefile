@@ -1,4 +1,4 @@
-.PHONY: lint lint-fix format test install
+.PHONY: lint lint-fix format test install check-deps
 
 install:
 	uv sync
@@ -12,4 +12,7 @@ lint-fix:
 	uv run ruff format src/cli packages/*/src packages/*/tests
 
 test:
-	@echo "Phase 1: No root tests yet. Template tests will be added in later phases."
+	uv run pytest tests/
+
+check-deps:
+	uv run python scripts/check_dep_sync.py
