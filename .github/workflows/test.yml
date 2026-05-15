@@ -95,8 +95,8 @@ jobs:
         with:
           template: llama
           python-version: ${{ matrix.python-version }}
+          uv-install-args: ${{ matrix.os == 'ubuntu-latest' && '--no-binary-package llama-cpp-python --reinstall-package llama-cpp-python' || '' }}
         env:
           CFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
           CXXFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
           CMAKE_ARGS: ${{ matrix.os == 'macos-latest' && '-DGGML_METAL=OFF' || '-DGGML_AVX2=OFF -DGGML_AVX=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF' }}
-          UV_NO_BINARY_PACKAGE: ${{ matrix.os == 'ubuntu-latest' && 'llama-cpp-python' || '' }}
