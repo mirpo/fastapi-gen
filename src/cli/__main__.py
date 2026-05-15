@@ -106,9 +106,13 @@ def _build_cli():
 
     @click.command()
     @click.option("-t", "--template", default=default, type=click.Choice(choices), help="template")
+    @click.option(
+        "-o", "--output-dir", default=None, type=click.Path(exists=True, file_okay=False), help="output directory"
+    )
+    @click.option("--no-git", is_flag=True, default=False, help="skip git init")
     @click.argument("name")
     @click.version_option(version=__version__, prog_name="fastapi-gen")
-    def cli(name: str, template: str):
+    def cli(name: str, template: str, output_dir: str | None, *, no_git: bool):
         """This script creates new FastAPI project with NAME using TEMPLATE."""
         if not is_valid_name(name):
             click.echo(f"Error. Invalid name {name}. Name must match: {_pattern}")
@@ -116,7 +120,8 @@ def _build_cli():
 
         click.echo(f"Creating new project: '{name}' using template '{template}'...")
 
-        dest_path = Path.cwd() / name
+        base = Path(output_dir) if output_dir else Path.cwd()
+        dest_path = base / name
         if dest_path.exists():
             click.echo(f"Error. Folder {dest_path} already exists.")
             sys.exit(1)
@@ -135,8 +140,9 @@ def _build_cli():
 
         replace_module_references(dest_path, template_module, name)
 
-        os.chdir(dest_path)
-        subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
+        if not no_git:
+            os.chdir(dest_path)
+            subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
 
         welcome_message = f"""
 {click.style("Success!", fg="green", bold=True)} Created {name} at {dest_path}
