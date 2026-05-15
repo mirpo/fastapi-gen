@@ -335,8 +335,9 @@ Extend the script to also verify:
 
 | # | Idea | Impact | Effort | Status |
 |---|---|---|---|---|
-| 8 | Dependency version sync check | Medium | Low | **→ DO NOW** |
-| 6 | Python version alignment + CI 3.13 | Medium | Low | **→ DO NOW** (alongside #8) |
+| 8 | Dependency version sync check | Medium | Low | **Done** |
+| 6 | Python version alignment (classifiers, ruff, hatch) | Medium | Low | **Done** |
+| 9 | Add Python 3.13 to CI matrix | Medium | Low | **TODO** — test each template separately, heavy deps (torch, llama-cpp-python) may lack 3.13 wheels |
 | 3 | CLI unit tests | High | Medium | Next |
 | 2 | Auto-discovery (simplify adding templates) | Medium | Medium | Next |
 | 5B | Generic replacement function | Medium | Low | Next |

@@ -83,6 +83,7 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
@@ -106,7 +107,7 @@ fastapi-gen = "cli.__main__:main"
 source = "vcs"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.12", "3.13"]
+python = ["3.11", "3.12", "3.13"]
 
 [tool.uv.workspace]
 members = [
@@ -118,12 +119,12 @@ members = [
 ]
 
 [tool.black]
-target-version = ["py312"]
+target-version = ["py311"]
 line-length = 120
 skip-string-normalization = true
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py311"
 line-length = 120
 
 [tool.ruff.lint]
