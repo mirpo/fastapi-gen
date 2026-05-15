@@ -29,6 +29,12 @@ jobs:
       - name: Lint CLI
         run: make lint
 
+      - name: Check dependency version sync
+        run: make check-deps
+
+      - name: Run tests
+        run: make test
+
       - name: Build CLI package
         run: uv build
 
