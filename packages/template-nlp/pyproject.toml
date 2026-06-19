@@ -14,7 +14,7 @@ dependencies = [
   "transformers[torch]==5.12.0",
   "sentence-transformers==5.5.1",
   "pydantic-settings==2.14.1",
-  "torch==2.12.0",
+  "torch==2.12.1",
   "accelerate==1.14.0",
 ]
 
