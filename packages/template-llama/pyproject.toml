@@ -11,7 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.136.3",
   "uvicorn[standard]==0.49.0",
-  "llama-cpp-python==0.3.28",
+  "llama-cpp-python==0.3.30",
   "pydantic-settings==2.14.1",
 ]
 

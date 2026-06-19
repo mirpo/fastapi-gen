@@ -1462,7 +1462,7 @@ wheels = [
 
 [[package]]
 name = "llama-cpp-python"
-version = "0.3.28"
+version = "0.3.30"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "diskcache" },
@@ -1470,7 +1470,7 @@ dependencies = [
     { name = "numpy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/c1/ac90e90d28f405009a89f08a5727d3f0dac49309575fb2d1a5ff1d265826/llama_cpp_python-0.3.28.tar.gz", hash = "sha256:958227b394f413425d6039952096daa0b8b98328c6b99d652862aec775f1672d", size = 68296944, upload-time = "2026-06-07T23:54:28.292Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/45/2bca210df9ab2403efbd20316b6f53a2c322fd71a313d8bf090e2ee148e4/llama_cpp_python-0.3.30.tar.gz", hash = "sha256:798c9b42652d2e0bff5fe81e7e762089f425a99e67f66ffe5ae156957876e0d1", size = 70191382, upload-time = "2026-06-16T07:51:16.654Z" }
 
 [[package]]
 name = "llama-fastapi-app"
@@ -1493,7 +1493,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = "==0.136.3" },
-    { name = "llama-cpp-python", specifier = "==0.3.28" },
+    { name = "llama-cpp-python", specifier = "==0.3.30" },
     { name = "pydantic-settings", specifier = "==2.14.1" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.49.0" },
 ]
