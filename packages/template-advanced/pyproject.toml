@@ -16,7 +16,7 @@ dependencies = [
   "sqlalchemy==2.0.50",
   "python-jose[cryptography]==3.5.0",
   "bcrypt==5.0.0",
-  "slowapi==0.1.9",
+  "slowapi==0.1.10",
   "python-multipart==0.0.32",
   "websockets==16.0",
 ]
