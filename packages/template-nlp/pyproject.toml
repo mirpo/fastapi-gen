@@ -9,7 +9,7 @@ description = "FastAPI application with NLP capabilities"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi==0.136.3",
+  "fastapi==0.138.0",
   "uvicorn[standard]==0.49.0",
   "transformers[torch]==5.12.1",
   "sentence-transformers==5.6.0",
