@@ -16,7 +16,7 @@
 
 ## What You'll Build
 
-A complete enterprise-grade FastAPI application with JWT authentication, database integration, rate limiting, caching, WebSocket support, and secure file upload handling.
+A complete enterprise-grade FastAPI application with JWT authentication, database integration, rate limiting, WebSocket support, and secure file upload handling.
 
 ## Quick Start
 
@@ -39,7 +39,7 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 - Token management with expiration
 
 **Database Integration**
-- SQLAlchemy 2.0 with async support
+- SQLAlchemy 2.0 ORM
 - Auto migrations (tables created on startup)
 - User and Product models ready to extend
 - Proper connection and session management
@@ -49,12 +49,6 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 - DDoS protection
 - CORS configuration
 - Input validation and secure error responses
-
-**Performance & Caching**
-- In-memory caching for development
-- Redis-ready integration
-- Strategic cache keys for products and users
-- TTL management and cache invalidation
 
 **Real-Time Features**
 - WebSocket connection management
@@ -79,9 +73,9 @@ GET  /auth/me           # Get current user (protected)
 
 ### Database Operations
 ```http
-POST /products/         # Create product (protected, cached)
-GET  /products/         # List products (cached, rate limited)
-GET  /products/{id}     # Get product (cached)
+POST /products/         # Create product (protected)
+GET  /products/         # List products (rate limited)
+GET  /products/{id}     # Get product
 ```
 
 ### File Operations
@@ -110,22 +104,21 @@ GET  /health            # Enhanced health check
 
 ## Configuration
 
-Create `.env_dev` file:
+The app reads its configuration from `.env_dev` (development) and `.env.prod` (production overrides):
+
 ```bash
-API_VERSION=1.0.0
 SECRET_KEY=your-secret-key-for-jwt-tokens
-DATABASE_URL=sqlite+aiosqlite:///./app.db
+
+# Optional, defaults to local SQLite
+DATABASE_URL=sqlite:///./app.db
 ```
 
-For production with PostgreSQL:
-```bash
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost/dbname
-uv pip install asyncpg
-```
+`SECRET_KEY` signs the JWT tokens — always set a strong unique value in production.
+Point `DATABASE_URL` at PostgreSQL for production (e.g. `postgresql://user:pass@localhost/dbname`).
 
 ## Testing
 
-Run comprehensive test suite covering authentication, CRUD, rate limiting, WebSocket, and file upload:
+Run comprehensive test suite covering authentication, CRUD, WebSocket, and file upload:
 
 ```bash
 make test

@@ -1,12 +1,10 @@
 import datetime
-import os
+from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
 import bcrypt
-from dotenv import load_dotenv
 from fastapi import (
-    BackgroundTasks,
     Depends,
     FastAPI,
     File,
@@ -19,10 +17,9 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Rate limiting
@@ -35,35 +32,29 @@ from sqlalchemy import Boolean, Column, DateTime, Integer, String, create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from sqlalchemy.sql import func
 
-app = FastAPI(
-    title="Advanced FastAPI Template",
-    description="Demonstrates advanced FastAPI features with extensible patterns",
-    version="1.0.0",
-)
 
-# CORS middleware - Configure for production
-# TODO: In production, replace "*" with specific origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Configure specific domains in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        # `.env.prod` takes priority over `.env_dev`
+        env_file=(".env_dev", ".env.prod"),
+    )
+    secret_key: str
+    # TODO: Point at PostgreSQL for production, e.g.
+    # DATABASE_URL="postgresql://user:password@localhost/dbname"
+    database_url: str = "sqlite:///./app.db"
 
-# Rate limiting setup
-# TODO: Replace with Redis for distributed rate limiting in production
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Database setup - SQLite for simplicity
-# TODO: Replace with PostgreSQL for production:
-# DATABASE_URL = "postgresql://user:password@localhost/dbname"
-# For async with PostgreSQL: "postgresql+asyncpg://user:password@localhost/dbname"
-DATABASE_URL = "sqlite:///./app.db"
+settings = Settings()
 
-engine = create_engine(DATABASE_URL, echo=True)
+# Authentication setup
+# The JWT signing key comes from the environment via Settings (see .env_dev)
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+security = HTTPBearer()
+
+# Database setup - SQLite for simplicity, see Settings.database_url
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -106,6 +97,40 @@ class Product(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """
+    Create database tables on startup
+    TODO: Replace with Alembic migrations for production
+    """
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(
+    title="Advanced FastAPI Template",
+    description="Demonstrates advanced FastAPI features with extensible patterns",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+
+# CORS middleware - Configure for production
+# TODO: In production, replace "*" with specific origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure specific domains in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Rate limiting setup
+# TODO: Replace with Redis for distributed rate limiting in production
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
@@ -113,14 +138,13 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: str
     is_active: bool
     created_at: datetime.datetime
-
-    class Config:
-        from_attributes = True
 
 
 class ProductCreate(BaseModel):
@@ -130,51 +154,24 @@ class ProductCreate(BaseModel):
 
 
 class ProductResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     description: str | None
     price: float
     created_at: datetime.datetime
 
-    class Config:
-        from_attributes = True
+    @field_validator("price", mode="before")
+    @classmethod
+    def cents_to_dollars(cls, value: float) -> float:
+        # Product.price is stored as integer cents
+        return value / 100
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-# Authentication setup
-# TODO: Move SECRET_KEY to environment variables in production
-SECRET_KEY = "your-secret-key-change-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-security = HTTPBearer()
-
-# In-memory cache - Simple dict for development
-# TODO: Replace with Redis for production distributed caching:
-# import redis
-# redis_client = redis.Redis(host='localhost', port=6379, db=0)
-cache: dict[str, Any] = {}
-
-
-def get_cache_key(prefix: str, *args) -> str:
-    """Generate cache key from prefix and arguments"""
-    return f"{prefix}:{':'.join(str(arg) for arg in args)}"
-
-
-def cache_get(key: str) -> Any | None:
-    """Get item from cache - Replace with Redis GET in production"""
-    return cache.get(key)
-
-
-def cache_set(key: str, value: Any, expire: int = 300) -> None:
-    """Set item in cache - Replace with Redis SETEX in production"""
-    # Simple in-memory cache without expiration for demo
-    # TODO: Implement TTL with background cleanup or use Redis
-    cache[key] = value
 
 
 class ConnectionManager:
@@ -232,7 +229,7 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
-def create_access_token(data: dict, expires_delta: datetime.timedelta | None = None):
+def create_access_token(data: dict, expires_delta: datetime.timedelta):
     """
     Create JWT access token
     TODO: Add refresh token support:
@@ -241,17 +238,13 @@ def create_access_token(data: dict, expires_delta: datetime.timedelta | None = N
     - Different permissions in token payload
     """
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.datetime.now(datetime.UTC) + expires_delta
-    else:
-        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    to_encode.update({"exp": datetime.datetime.now(datetime.UTC) + expires_delta})
+    return jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db),
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    db: Annotated[Session, Depends(get_db)],
 ) -> User:
     """
     Get current authenticated user
@@ -266,7 +259,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(credentials.credentials, settings.secret_key, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
@@ -292,7 +285,6 @@ async def health_check(request: Request, db: Annotated[Session, Depends(get_db)]
     Health check endpoint with timestamp and database connectivity
     TODO: Add checks for:
     - External service dependencies
-    - Cache connectivity (Redis)
     - Queue health (Celery/RQ)
     """
     try:
@@ -305,63 +297,7 @@ async def health_check(request: Request, db: Annotated[Session, Depends(get_db)]
         "status": "healthy",
         "timestamp": datetime.datetime.now(datetime.UTC),
         "database": db_status,
-        "cache": "healthy" if cache is not None else "unhealthy",
     }
-
-
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=(".env_dev", ".env.prod"),
-    )
-    api_version: str = "1.0.0"
-    secret_key: str = SECRET_KEY
-
-
-settings = Settings()
-load_dotenv(".env_dev")
-
-
-def get_settings():
-    return settings
-
-
-@app.get("/version-pydantic-settings")
-async def version_pydantic_settings():
-    return {"package": "pydantic-settings", "version": settings.api_version}
-
-
-@app.get("/version-dotenv")
-async def version_dotenv():
-    return {"package": "dotenv", "version": os.getenv("API_VERSION", "1.0.0")}
-
-
-@app.get("/config")
-async def get_config(settings: Annotated[Settings, Depends(get_settings)]):
-    return {"api_version": settings.api_version, "source": "dependency_injection"}
-
-
-class Item(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100, description="Item name")
-    description: str | None = Field(None, max_length=500, description="Item description")
-    price: float = Field(..., gt=0, description="Item price must be greater than 0")
-    tax: float | None = Field(None, ge=0, le=100, description="Tax percentage (0-100)")
-
-
-@app.post("/items/")
-async def create_item(item: Item) -> Item:
-    return item
-
-
-@app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item):
-    return {"item_id": item_id, **item.model_dump()}
-
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str | None = None):
-    if q:
-        return {"item_id": item_id, "q": q}
-    return {"item_id": item_id}
 
 
 @app.post("/auth/register", response_model=UserResponse)
@@ -406,9 +342,9 @@ async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
 @limiter.limit("5/minute")  # Prevent brute force attacks
 async def login(
     request: Request,
-    username: Annotated[str, Form()] = ...,
-    password: Annotated[str, Form()] = ...,
-    db: Session = Depends(get_db),
+    username: Annotated[str, Form()],
+    password: Annotated[str, Form()],
+    db: Annotated[Session, Depends(get_db)],
 ):
     """
     User login endpoint
@@ -458,49 +394,32 @@ async def create_product(
     db_product = Product(
         name=product.name,
         description=product.description,
-        price=int(product.price * 100),
+        price=round(product.price * 100),
     )
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
 
-    response_product = ProductResponse(
-        id=db_product.id,
-        name=db_product.name,
-        description=db_product.description,
-        price=db_product.price / 100,
-        created_at=db_product.created_at,
-    )
-
-    cache_key = get_cache_key("product", db_product.id)
-    cache_set(cache_key, response_product.model_dump())
-
-    return response_product
+    return db_product
 
 
 @app.get("/products/", response_model=list[ProductResponse])
 @limiter.limit("30/minute")
 async def list_products(
     request: Request,
+    db: Annotated[Session, Depends(get_db)],
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
 ):
     """
-    List products with pagination and caching
+    List products with pagination
     TODO: Add:
     - Filtering by category, price range
     - Sorting options
     - Search functionality
-    - Response compression
+    - Response caching (Redis)
     """
-    cache_key = get_cache_key("products", skip, limit)
-    cached_products = cache_get(cache_key)
-
-    if cached_products:
-        return cached_products
-
-    products = (
+    return (
         db.execute(
             select(Product).offset(skip).limit(limit),
         )
@@ -508,53 +427,24 @@ async def list_products(
         .all()
     )
 
-    response_products = [
-        ProductResponse(
-            id=product.id,
-            name=product.name,
-            description=product.description,
-            price=product.price / 100,
-            created_at=product.created_at,
-        )
-        for product in products
-    ]
-
-    cache_set(cache_key, [p.model_dump() for p in response_products])
-    return response_products
-
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: Annotated[Session, Depends(get_db)]):
-    """Get product by ID with caching"""
-    cache_key = get_cache_key("product", product_id)
-    cached_product = cache_get(cache_key)
-
-    if cached_product:
-        return ProductResponse(**cached_product)
-
+    """Get product by ID"""
     product = db.execute(select(Product).where(Product.id == product_id)).scalars().first()
 
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    response_product = ProductResponse(
-        id=product.id,
-        name=product.name,
-        description=product.description,
-        price=product.price / 100,
-        created_at=product.created_at,
-    )
-
-    cache_set(cache_key, response_product.model_dump())
-    return response_product
+    return product
 
 
 @app.post("/upload/")
 @limiter.limit("10/minute")
 async def upload_file(
     request: Request,
-    file: Annotated[UploadFile, File()] = ...,
-    current_user: User = Depends(get_current_user),
+    file: Annotated[UploadFile, File()],
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     """
     File upload with validation
@@ -609,65 +499,3 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast("Someone disconnected")
-
-
-def write_log(message: str):
-    with open("app.log", "a") as log_file:
-        log_file.write(f"{datetime.datetime.now(datetime.UTC)}: {message}\n")
-
-
-@app.post("/send-notification/")
-async def send_notification(background_tasks: BackgroundTasks):
-    background_tasks.add_task(write_log, "notification sent")
-    return {"message": "Notification sent in background"}
-
-
-class CustomError(Exception):
-    def __init__(self, name: str):
-        self.name = name
-
-
-@app.exception_handler(CustomError)
-async def custom_exception_handler(_request: Request, exc: CustomError):
-    return JSONResponse(
-        status_code=418,
-        content={"message": f"Custom error occurred: {exc.name}"},
-    )
-
-
-@app.get("/error-example")
-async def error_example(*, trigger_error: bool = False):
-    if trigger_error:
-        msg = "example error"
-        raise CustomError(msg)
-    return {"message": "No error occurred"}
-
-
-def create_tables():
-    """Create database tables on startup"""
-    Base.metadata.create_all(bind=engine)
-
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    Application startup event
-    TODO: Add:
-    - Database migration checks
-    - Cache warming
-    - Health check registration
-    - Background job initialization
-    """
-    create_tables()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Application shutdown event
-    TODO: Add:
-    - Graceful connection cleanup
-    - Background job termination
-    - Cache flush
-    - Metrics export
-    """

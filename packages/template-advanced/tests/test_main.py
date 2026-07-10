@@ -1,7 +1,10 @@
+import datetime
+
 import pytest
 from fastapi.testclient import TestClient
+from jose import jwt
 
-from advanced.main import Base, app, engine
+from advanced.main import Base, Settings, app, create_access_token, engine, limiter, settings
 
 client = TestClient(app)
 
@@ -12,6 +15,26 @@ def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(scope="module")
+def auth_headers():
+    """Register and log in a dedicated user, return Authorization headers"""
+    user_data = {
+        "username": "fixtureuser",
+        "email": "fixtureuser@example.com",
+        "password": "password123",
+    }
+    register_response = client.post("/auth/register", json=user_data)
+    assert register_response.status_code == 200
+
+    login_response = client.post(
+        "/auth/login",
+        data={"username": "fixtureuser", "password": "password123"},
+    )
+    assert login_response.status_code == 200
+
+    return {"Authorization": f"Bearer {login_response.json()['access_token']}"}
 
 
 def test_root():
@@ -26,89 +49,7 @@ def test_health_check():
     json_response = response.json()
     assert json_response["status"] == "healthy"
     assert "timestamp" in json_response
-    assert "database" in json_response
-    assert "cache" in json_response
-
-
-def test_version_pydantic_settings():
-    response = client.get("/version-pydantic-settings")
-    assert response.status_code == 200
-    assert response.json()["package"] == "pydantic-settings"
-
-
-def test_version_dotenv():
-    response = client.get("/version-dotenv")
-    assert response.status_code == 200
-    assert response.json()["package"] == "dotenv"
-
-
-def test_config():
-    response = client.get("/config")
-    assert response.status_code == 200
-    json_response = response.json()
-    assert "api_version" in json_response
-    assert json_response["source"] == "dependency_injection"
-
-
-def test_create_item():
-    response = client.post(
-        "/items/",
-        json={"name": "foobar", "description": "the foo bar", "price": 1.23},
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "name": "foobar",
-        "description": "the foo bar",
-        "price": 1.23,
-        "tax": None,
-    }
-
-
-def test_create_item_validation_error():
-    response = client.post(
-        "/items/",
-        json={"name": "", "price": -5.0},
-    )
-    assert response.status_code == 422
-
-
-def test_update_item():
-    response = client.put(
-        "/items/1",
-        json={"name": "foobar", "description": "the foo bar", "price": 1.23},
-    )
-    assert response.status_code == 200
-    assert response.json()["item_id"] == 1
-
-
-def test_read_item():
-    response = client.get("/items/1")
-    assert response.status_code == 200
-    assert response.json() == {"item_id": 1}
-
-
-def test_read_item_with_query():
-    response = client.get("/items/1?q=super-query")
-    assert response.status_code == 200
-    assert response.json() == {"item_id": 1, "q": "super-query"}
-
-
-def test_send_notification():
-    response = client.post("/send-notification/")
-    assert response.status_code == 200
-    assert response.json() == {"message": "Notification sent in background"}
-
-
-def test_error_example_no_error():
-    response = client.get("/error-example")
-    assert response.status_code == 200
-    assert response.json() == {"message": "No error occurred"}
-
-
-def test_error_example_custom_error():
-    response = client.get("/error-example?trigger_error=true")
-    assert response.status_code == 418
-    assert "Custom error occurred" in response.json()["message"]
+    assert json_response["database"] == "healthy"
 
 
 def test_register_user():
@@ -135,7 +76,9 @@ def test_register_duplicate_user():
     response1 = client.post("/auth/register", json=user_data)
     response2 = client.post("/auth/register", json=user_data)
 
-    assert response1.status_code == 200 or response2.status_code == 400
+    assert response1.status_code == 200
+    assert response2.status_code == 400
+    assert "already registered" in response2.json()["detail"]
 
 
 def test_register_invalid_email():
@@ -159,31 +102,28 @@ def test_register_short_password():
 
 
 def test_login_flow():
-    """Test complete registration -> login flow"""
+    """Test complete registration -> login -> protected route flow"""
     user_data = {
         "username": "loginuser",
         "email": "loginuser@example.com",
         "password": "loginpassword123",
     }
     register_response = client.post("/auth/register", json=user_data)
+    assert register_response.status_code == 200
 
-    login_data = {
-        "username": "loginuser",
-        "password": "loginpassword123",
-    }
-    login_response = client.post("/auth/login", data=login_data)
+    login_response = client.post(
+        "/auth/login",
+        data={"username": "loginuser", "password": "loginpassword123"},
+    )
+    assert login_response.status_code == 200
+    data = login_response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
 
-    if register_response.status_code == 200:
-        assert login_response.status_code == 200
-        data = login_response.json()
-        assert "access_token" in data
-        assert data["token_type"] == "bearer"
-
-        headers = {"Authorization": f"Bearer {data['access_token']}"}
-        me_response = client.get("/auth/me", headers=headers)
-        assert me_response.status_code == 200
-        user_data = me_response.json()
-        assert user_data["username"] == "loginuser"
+    headers = {"Authorization": f"Bearer {data['access_token']}"}
+    me_response = client.get("/auth/me", headers=headers)
+    assert me_response.status_code == 200
+    assert me_response.json()["username"] == "loginuser"
 
 
 def test_login_invalid_user():
@@ -194,6 +134,18 @@ def test_login_invalid_user():
     response = client.post("/auth/login", data=login_data)
     assert response.status_code == 401
     assert "Incorrect username or password" in response.json()["detail"]
+
+
+def test_login_rate_limited():
+    """Login allows 5 attempts per minute; the 6th is rejected with 429"""
+    limiter.reset()
+    login_data = {"username": "nonexistentuser12345", "password": "wrongpassword"}
+    for _ in range(5):
+        response = client.post("/auth/login", data=login_data)
+        assert response.status_code == 401
+    response = client.post("/auth/login", data=login_data)
+    assert response.status_code == 429
+    limiter.reset()
 
 
 def test_protected_endpoint_no_token():
@@ -217,29 +169,32 @@ def test_create_product_unauthorized():
     assert response.status_code == 401
 
 
-def test_create_product_invalid_data():
-    user_data = {
-        "username": "productuser",
-        "email": "productuser@example.com",
-        "password": "password123",
+def test_create_product_invalid_data(auth_headers):
+    product_data = {
+        "name": "",
+        "price": -10.0,
     }
-    client.post("/auth/register", json=user_data)
+    response = client.post("/products/", json=product_data, headers=auth_headers)
+    assert response.status_code == 422
 
-    login_data = {
-        "username": "productuser",
-        "password": "password123",
+
+def test_create_and_get_product(auth_headers):
+    """Create a product and fetch it back by id"""
+    product_data = {
+        "name": "Workflow Product",
+        "description": "Created in workflow test",
+        "price": 25.99,
     }
-    login_response = client.post("/auth/login", data=login_data)
+    create_response = client.post("/products/", json=product_data, headers=auth_headers)
+    assert create_response.status_code == 200
+    created = create_response.json()
+    assert created["price"] == 25.99
 
-    if login_response.status_code == 200:
-        headers = {"Authorization": f"Bearer {login_response.json()['access_token']}"}
-
-        product_data = {
-            "name": "",
-            "price": -10.0,
-        }
-        response = client.post("/products/", json=product_data, headers=headers)
-        assert response.status_code == 422
+    get_response = client.get(f"/products/{created['id']}")
+    assert get_response.status_code == 200
+    fetched = get_response.json()
+    assert fetched["name"] == "Workflow Product"
+    assert fetched["price"] == 25.99
 
 
 def test_list_products():
@@ -268,103 +223,22 @@ def test_upload_file_unauthorized():
     assert response.status_code == 401
 
 
-def test_upload_file_invalid_type():
-    user_data = {
-        "username": "fileuser",
-        "email": "fileuser@example.com",
-        "password": "password123",
-    }
-    client.post("/auth/register", json=user_data)
-
-    login_data = {
-        "username": "fileuser",
-        "password": "password123",
-    }
-    login_response = client.post("/auth/login", data=login_data)
-
-    if login_response.status_code == 200:
-        headers = {"Authorization": f"Bearer {login_response.json()['access_token']}"}
-
-        response = client.post(
-            "/upload/",
-            files={"file": ("test.exe", b"test content", "application/x-executable")},
-            headers=headers,
-        )
-        assert response.status_code == 400
-        assert "not allowed" in response.json()["detail"]
+def test_upload_file_invalid_type(auth_headers):
+    response = client.post(
+        "/upload/",
+        files={"file": ("test.exe", b"test content", "application/x-executable")},
+        headers=auth_headers,
+    )
+    assert response.status_code == 400
+    assert "not allowed" in response.json()["detail"]
 
 
 def test_websocket():
     """Basic WebSocket connection test"""
-    try:
-        with client.websocket_connect("/ws") as websocket:
-            websocket.send_text("Hello WebSocket")
-            data = websocket.receive_text()
-            assert "You wrote: Hello WebSocket" in data
-    except Exception:  # noqa: BLE001
-        pytest.skip("WebSocket test skipped - environment may not support it")
-
-
-def test_rate_limiting_basic():
-    """Basic rate limiting test - should not fail under normal load"""
-    responses = []
-    for _i in range(3):
-        response = client.get("/health")
-        responses.append(response)
-
-    success_count = sum(1 for r in responses if r.status_code == 200)
-    assert success_count >= 2
-
-
-def test_full_user_workflow():
-    """Test complete user registration -> login -> create product workflow"""
-    import time
-
-    timestamp = int(time.time())
-    username = f"workflow{timestamp}"
-
-    user_data = {
-        "username": username,
-        "email": f"{username}@example.com",
-        "password": "workflow123",
-    }
-    register_response = client.post("/auth/register", json=user_data)
-
-    if register_response.status_code == 200:
-        login_data = {
-            "username": username,
-            "password": "workflow123",
-        }
-        login_response = client.post("/auth/login", data=login_data)
-        assert login_response.status_code == 200
-        token = login_response.json()["access_token"]
-
-        headers = {"Authorization": f"Bearer {token}"}
-        product_data = {
-            "name": "Workflow Product",
-            "description": "Created in workflow test",
-            "price": 25.99,
-        }
-        product_response = client.post("/products/", json=product_data, headers=headers)
-        assert product_response.status_code == 200
-
-        product_id = product_response.json()["id"]
-        get_response = client.get(f"/products/{product_id}")
-        assert get_response.status_code == 200
-        assert get_response.json()["name"] == "Workflow Product"
-
-
-def test_database_connectivity():
-    """Test that database connections work"""
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert "database" in response.json()
-
-
-def test_cors_headers():
-    """Test CORS headers are present"""
-    response = client.get("/")
-    assert response.status_code == 200
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_text("Hello WebSocket")
+        data = websocket.receive_text()
+        assert "You wrote: Hello WebSocket" in data
 
 
 def test_api_documentation():
@@ -377,9 +251,42 @@ def test_api_documentation():
     assert "openapi" in response.json()
 
 
-def test_product_listing_performance():
-    """Test that product listing works consistently"""
-    for _ in range(3):
-        response = client.get("/products/")
-        assert response.status_code == 200
-        assert isinstance(response.json(), list)
+def test_secret_key_env_var_overrides_env_file(monkeypatch):
+    """SECRET_KEY from the real environment wins over the .env_dev value"""
+    monkeypatch.setenv("SECRET_KEY", "env-secret")
+    assert Settings().secret_key == "env-secret"
+
+
+def test_access_token_signed_with_configured_secret(monkeypatch):
+    """Tokens must be signed with settings.secret_key so the SECRET_KEY env var takes effect"""
+    monkeypatch.setattr(settings, "secret_key", "runtime-configured-secret")
+    token = create_access_token(
+        data={"sub": "alice"},
+        expires_delta=datetime.timedelta(minutes=5),
+    )
+
+    payload = jwt.decode(token, "runtime-configured-secret", algorithms=["HS256"])
+    assert payload["sub"] == "alice"
+
+
+def test_auth_me_accepts_token_signed_with_configured_secret(monkeypatch):
+    """Token verification must use settings.secret_key, not a hard-coded constant"""
+    user_data = {
+        "username": "secretuser",
+        "email": "secretuser@example.com",
+        "password": "password123",
+    }
+    client.post("/auth/register", json=user_data)
+
+    monkeypatch.setattr(settings, "secret_key", "runtime-configured-secret")
+    token = jwt.encode(
+        {
+            "sub": "secretuser",
+            "exp": datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=5),
+        },
+        "runtime-configured-secret",
+        algorithm="HS256",
+    )
+
+    response = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
