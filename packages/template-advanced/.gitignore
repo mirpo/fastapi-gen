@@ -122,6 +122,9 @@ celerybeat.pid
 # Local SQLite databases
 *.db
 
+# Runtime upload directory
+uploads/
+
 # Environments
 .env
 .env.prod

@@ -59,7 +59,7 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 **File Upload System**
 - Type validation (images, PDFs, text)
 - 5MB size limit
-- Secure storage with timestamped filenames
+- Sanitized, collision-free stored filenames
 - Cloud storage ready (S3/GCS comments included)
 
 ## API Endpoints

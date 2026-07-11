@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 import jwt
 import pytest
@@ -15,6 +16,12 @@ def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_upload_dir():
+    """Create the upload directory (done by lifespan in production)"""
+    Path(settings.upload_dir).mkdir(exist_ok=True)
 
 
 @pytest.fixture(autouse=True)
@@ -239,6 +246,37 @@ def test_upload_file_invalid_type(auth_headers):
     )
     assert response.status_code == 400
     assert "not allowed" in response.json()["detail"]
+
+
+def test_upload_stores_file_inside_upload_dir(auth_headers):
+    """A normal upload lands inside the upload directory with its content intact"""
+    response = client.post(
+        "/upload/",
+        files={"file": ("report.txt", b"hello upload", "text/plain")},
+        headers=auth_headers,
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["filename"] == "report.txt"
+    assert data["size"] == 12
+
+    stored = Path(data["path"])
+    assert stored.read_bytes() == b"hello upload"
+    assert stored.resolve().is_relative_to(Path(settings.upload_dir).resolve())
+
+
+def test_upload_sanitizes_path_traversal_filename(auth_headers):
+    """Client filenames with directory components must not escape the upload dir"""
+    response = client.post(
+        "/upload/",
+        files={"file": ("../../evil.txt", b"malicious", "text/plain")},
+        headers=auth_headers,
+    )
+    assert response.status_code == 200
+
+    stored = Path(response.json()["path"])
+    assert stored.exists()
+    assert stored.resolve().is_relative_to(Path(settings.upload_dir).resolve())
 
 
 def test_websocket():

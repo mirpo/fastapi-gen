@@ -2,6 +2,7 @@ import datetime
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
+from uuid import uuid4
 
 import bcrypt
 import jwt
@@ -470,7 +471,9 @@ async def upload_file(
     if file.content_type not in ALLOWED_UPLOAD_TYPES:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File type not allowed")
 
-    file_path = Path(settings.upload_dir) / f"{datetime.datetime.now().isoformat()}_{file.filename}"
+    # Never trust the client-supplied filename: strip any directory components
+    safe_name = Path(file.filename or "upload").name
+    file_path = Path(settings.upload_dir) / f"{uuid4().hex}_{safe_name}"
     content = await file.read()
 
     with open(file_path, "wb") as f:
