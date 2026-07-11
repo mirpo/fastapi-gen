@@ -203,7 +203,8 @@ class TestReplaceModuleReferences:
         (dest / "Makefile").write_text(f"start:\n\tuvicorn {module_name}.main:app\n")
         (dest / "README.md").write_text(f"Run uvicorn {module_name}.main:app\nSee {module_name}/ dir\n")
         (dest / "pyproject.toml").write_text(
-            f'[project]\nname = "old-name"\n\n[project.scripts]\nstart = "{module_name}.main:app"\n'
+            f'[project]\nname = "old-name"\n\n[project.scripts]\nstart = "{module_name}.main:app"\n\n'
+            f'[tool.hatch.build.targets.wheel]\npackages = ["src/{module_name}"]\n'
         )
         return dest
 
@@ -244,6 +245,15 @@ class TestReplaceModuleReferences:
         replace_module_references(dest, "nlp", "my_app")
 
         assert '"my_app.main:app"' in (dest / "pyproject.toml").read_text()
+
+    def test_updates_hatch_wheel_packages_path(self, tmp_path):
+        dest = self._make_project(tmp_path)
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        content = (dest / "pyproject.toml").read_text()
+        assert 'packages = ["src/my_app"]' in content
+        assert "src/nlp" not in content
 
     def test_updates_bare_imports(self, tmp_path):
         dest = self._make_project(tmp_path)

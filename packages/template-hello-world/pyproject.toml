@@ -15,6 +15,9 @@ dependencies = [
   "pydantic-settings==2.14.2",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/hello_world"]
+
 [dependency-groups]
 dev = [
   "ruff==0.15.21",

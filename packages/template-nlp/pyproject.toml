@@ -18,6 +18,9 @@ dependencies = [
   "accelerate==1.14.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/nlp"]
+
 [dependency-groups]
 dev = [
   "ruff==0.15.21",

@@ -19,6 +19,9 @@ dependencies = [
   "python-multipart==0.0.32",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/advanced"]
+
 [dependency-groups]
 dev = [
   "ruff==0.15.21",

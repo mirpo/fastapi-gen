@@ -80,6 +80,7 @@ def replace_module_references(dest_path: Path, old_module: str, new_module: str)
         updated = content.replace(f"{old_module}.", f"{new_module}.")
         updated = updated.replace(f"{old_module}/", f"{new_module}/")
         updated = updated.replace(f"import {old_module}", f"import {new_module}")
+        updated = updated.replace(f"src/{old_module}", f"src/{new_module}")
         if updated != content:
             path.write_text(updated)
 
