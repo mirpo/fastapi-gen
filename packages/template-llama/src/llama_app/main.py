@@ -84,8 +84,8 @@ class LlamaService:
 
         try:
             # Use provided parameters or fall back to settings
-            actual_max_tokens = max_tokens or self.settings.llm_max_tokens
-            actual_temperature = temperature or self.settings.llm_temperature
+            actual_max_tokens = max_tokens if max_tokens is not None else self.settings.llm_max_tokens
+            actual_temperature = temperature if temperature is not None else self.settings.llm_temperature
 
             prompt = f"""### Instruction:
 {question}
@@ -175,11 +175,16 @@ async def health_check(service: LlamaService = Depends(get_llama_service)):
 
 
 @app.post("/question-answering", response_model=QuestionResponse)
-async def question_answering_post(
+def question_answering_post(
     request: QuestionRequest,
     service: LlamaService = Depends(get_llama_service),
 ) -> QuestionResponse:
-    """Answer questions using the Llama model (modern POST endpoint)"""
+    """
+    Answer questions using the Llama model (modern POST endpoint)
+
+    Declared as `def` (not `async def`): FastAPI runs it in a worker thread,
+    so slow synchronous inference does not block the event loop.
+    """
     try:
         result = service.generate_answer(
             request.question,
@@ -201,7 +206,7 @@ async def question_answering_post(
 
 
 @app.get("/question-answering", response_model=QuestionResponse)
-async def question_answering_get(
+def question_answering_get(
     question: str,
     max_tokens: int | None = None,
     temperature: float | None = None,
@@ -216,4 +221,4 @@ async def question_answering_get(
         max_tokens=max_tokens,
         temperature=temperature,
     )
-    return await question_answering_post(request, service)
+    return question_answering_post(request, service)

@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
-from llama_app.main import app
+from llama_app.main import LlamaService, app, settings
 
 
 @pytest.fixture(scope="session")
@@ -132,6 +132,23 @@ def test_question_answering_post_missing_field(client):
     field_errors = [error for error in errors if error["loc"] == ["body", "question"]]
     assert len(field_errors) > 0
     assert field_errors[0]["type"] == "missing"
+
+
+def test_generate_answer_honors_zero_temperature():
+    """An explicit temperature of 0.0 must not fall back to the configured default"""
+    service = LlamaService(settings)
+    captured = {}
+
+    def fake_llm(prompt, max_tokens, temperature, echo):
+        captured["max_tokens"] = max_tokens
+        captured["temperature"] = temperature
+        return {"choices": [{"text": "answer"}], "usage": {"completion_tokens": 1}}
+
+    service.llm = fake_llm
+    service.generate_answer("test question", max_tokens=None, temperature=0.0)
+
+    assert captured["temperature"] == 0.0
+    assert captured["max_tokens"] == settings.llm_max_tokens
 
 
 def test_question_answering_different_questions(client):
