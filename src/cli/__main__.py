@@ -134,15 +134,20 @@ def _build_cli():
 
         dest_path.mkdir(parents=True)
 
-        click.echo("Copying template files...")
-        copy_template(template_dir, dest_path)
+        try:
+            click.echo("Copying template files...")
+            copy_template(template_dir, dest_path)
 
-        click.echo(f"Renaming package to '{name}'...")
-        pyproject_path = dest_path / "pyproject.toml"
-        if pyproject_path.exists():
-            rename_package_in_pyproject(pyproject_path, name)
+            click.echo(f"Renaming package to '{name}'...")
+            pyproject_path = dest_path / "pyproject.toml"
+            if pyproject_path.exists():
+                rename_package_in_pyproject(pyproject_path, name)
 
-        replace_module_references(dest_path, template_module, name)
+            replace_module_references(dest_path, template_module, name)
+        except Exception as exc:  # noqa: BLE001 - clean up whatever failed, then report it
+            shutil.rmtree(dest_path, ignore_errors=True)
+            click.echo(f"Error. Project generation failed: {exc}. Removed incomplete {dest_path}.")
+            sys.exit(1)
 
         if not no_git:
             git_result = subprocess.run(["git", "init"], cwd=dest_path, capture_output=True)  # noqa: PLW1510

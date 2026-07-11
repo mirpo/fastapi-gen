@@ -290,6 +290,21 @@ class TestGitInit:
         assert "git init failed" in result.output
 
 
+class TestPartialFailureCleanup:
+    def test_failed_generation_removes_partial_project(self, tmp_path, monkeypatch):
+        def boom(*_args, **_kwargs):
+            raise OSError("disk full")
+
+        monkeypatch.setattr("cli.__main__.copy_template", boom)
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["doomed_app", "-o", str(tmp_path)])
+
+        assert result.exit_code == 1
+        assert not (tmp_path / "doomed_app").exists()
+        assert "generation failed" in result.output.lower()
+
+
 class TestCliFlags:
     def test_no_git_skips_git_init(self, tmp_path):
         runner = CliRunner()
