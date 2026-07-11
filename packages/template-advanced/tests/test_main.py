@@ -17,16 +17,24 @@ def setup_database():
     Base.metadata.drop_all(bind=engine)
 
 
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Give every test a fresh rate-limit budget"""
+    limiter.reset()
+
+
+def register(username: str, password: str = "password123"):
+    """Register a user with a derived email, return the response"""
+    return client.post(
+        "/auth/register",
+        json={"username": username, "email": f"{username}@example.com", "password": password},
+    )
+
+
 @pytest.fixture(scope="module")
 def auth_headers():
     """Register and log in a dedicated user, return Authorization headers"""
-    user_data = {
-        "username": "fixtureuser",
-        "email": "fixtureuser@example.com",
-        "password": "password123",
-    }
-    register_response = client.post("/auth/register", json=user_data)
-    assert register_response.status_code == 200
+    assert register("fixtureuser").status_code == 200
 
     login_response = client.post(
         "/auth/login",
@@ -53,12 +61,7 @@ def test_health_check():
 
 
 def test_register_user():
-    user_data = {
-        "username": "testuser123",
-        "email": "testuser123@example.com",
-        "password": "password123",
-    }
-    response = client.post("/auth/register", json=user_data)
+    response = register("testuser123")
     assert response.status_code == 200
     data = response.json()
     assert data["username"] == "testuser123"
@@ -68,34 +71,28 @@ def test_register_user():
 
 
 def test_register_duplicate_user():
-    user_data = {
-        "username": "duplicateuser",
-        "email": "duplicate@example.com",
-        "password": "password123",
-    }
-    response1 = client.post("/auth/register", json=user_data)
-    response2 = client.post("/auth/register", json=user_data)
+    response1 = register("duplicateuser")
+    response2 = register("duplicateuser")
 
     assert response1.status_code == 200
     assert response2.status_code == 400
     assert "already registered" in response2.json()["detail"]
 
 
-def test_register_invalid_email():
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"email": "invalid-email"},
+        {"password": "123"},
+        {"username": "ab"},
+    ],
+)
+def test_register_invalid_data(override):
     user_data = {
-        "username": "invaliduser",
-        "email": "invalid-email",
+        "username": "validuser",
+        "email": "validuser@example.com",
         "password": "password123",
-    }
-    response = client.post("/auth/register", json=user_data)
-    assert response.status_code == 422
-
-
-def test_register_short_password():
-    user_data = {
-        "username": "shortpassuser",
-        "email": "short@example.com",
-        "password": "123",
+        **override,
     }
     response = client.post("/auth/register", json=user_data)
     assert response.status_code == 422
@@ -103,12 +100,7 @@ def test_register_short_password():
 
 def test_login_flow():
     """Test complete registration -> login -> protected route flow"""
-    user_data = {
-        "username": "loginuser",
-        "email": "loginuser@example.com",
-        "password": "loginpassword123",
-    }
-    register_response = client.post("/auth/register", json=user_data)
+    register_response = register("loginuser", password="loginpassword123")
     assert register_response.status_code == 200
 
     login_response = client.post(
@@ -136,16 +128,28 @@ def test_login_invalid_user():
     assert "Incorrect username or password" in response.json()["detail"]
 
 
+def test_cors_rejects_unknown_origin():
+    """Origins outside the configured allowlist get no CORS headers"""
+    response = client.get("/", headers={"Origin": "https://evil.example"})
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_cors_allows_configured_origin():
+    """The configured origin is allowed via CORS"""
+    response = client.get("/", headers={"Origin": "http://localhost:3000"})
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+
+
 def test_login_rate_limited():
     """Login allows 5 attempts per minute; the 6th is rejected with 429"""
-    limiter.reset()
     login_data = {"username": "nonexistentuser12345", "password": "wrongpassword"}
     for _ in range(5):
         response = client.post("/auth/login", data=login_data)
         assert response.status_code == 401
     response = client.post("/auth/login", data=login_data)
     assert response.status_code == 429
-    limiter.reset()
 
 
 def test_protected_endpoint_no_token():
@@ -195,13 +199,6 @@ def test_create_and_get_product(auth_headers):
     fetched = get_response.json()
     assert fetched["name"] == "Workflow Product"
     assert fetched["price"] == 25.99
-
-
-def test_list_products():
-    response = client.get("/products/")
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
 
 
 def test_list_products_with_pagination():
@@ -271,12 +268,7 @@ def test_access_token_signed_with_configured_secret(monkeypatch):
 
 def test_auth_me_accepts_token_signed_with_configured_secret(monkeypatch):
     """Token verification must use settings.secret_key, not a hard-coded constant"""
-    user_data = {
-        "username": "secretuser",
-        "email": "secretuser@example.com",
-        "password": "password123",
-    }
-    client.post("/auth/register", json=user_data)
+    register("secretuser")
 
     monkeypatch.setattr(settings, "secret_key", "runtime-configured-secret")
     token = jwt.encode(

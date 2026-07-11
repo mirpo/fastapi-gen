@@ -6,7 +6,7 @@
 
 *This project was bootstrapped with [FastAPI Gen](https://github.com/mirpo/fastapi-gen)*
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-green.svg)](https://fastapi.tiangolo.com)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red.svg)](https://sqlalchemy.org)
 [![JWT](https://img.shields.io/badge/JWT-Authentication-orange.svg)](https://jwt.io)
 
@@ -25,7 +25,7 @@ A complete enterprise-grade FastAPI application with JWT authentication, databas
 make start
 
 # Or manually:
-uvicorn main:app --reload
+uv run uvicorn advanced.main:app --reload
 ```
 
 Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
@@ -46,7 +46,7 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 
 **Rate Limiting & Security**
 - Per-endpoint rate limits with slowapi
-- DDoS protection
+- Brute-force protection on login
 - CORS configuration
 - Input validation and secure error responses
 
@@ -96,11 +96,13 @@ GET  /health            # Enhanced health check
 
 ## Development Commands
 
-| Command      | Description                                  |
-| ------------ | -------------------------------------------- |
-| `make start` | Run app in development mode with auto-reload |
-| `make test`  | Run comprehensive test suite                 |
-| `make lint`  | Run code quality checks with Ruff            |
+| Command         | Description                                  |
+| --------------- | -------------------------------------------- |
+| `make install`  | Install dependencies                         |
+| `make start`    | Run app in development mode with auto-reload |
+| `make test`     | Run comprehensive test suite                 |
+| `make lint`     | Run code quality checks with Ruff            |
+| `make lint-fix` | Auto-fix lint and formatting issues          |
 
 ## Configuration
 
@@ -111,6 +113,9 @@ SECRET_KEY=your-secret-key-for-jwt-tokens
 
 # Optional, defaults to local SQLite
 DATABASE_URL=sqlite:///./app.db
+
+# Optional, browser origins allowed via CORS (JSON list, defaults to http://localhost:3000)
+CORS_ORIGINS=["https://app.example.com"]
 ```
 
 `SECRET_KEY` signs the JWT tokens — always set a strong unique value in production.
@@ -133,14 +138,14 @@ advanced/
 │       ├── __init__.py
 │       └── main.py      # Main FastAPI app with all features
 ├── tests/
-│   ├── test_main.py     # Comprehensive test suite
-│   └── __init__.py
+│   ├── __init__.py
+│   ├── conftest.py      # Test configuration (throwaway database)
+│   └── test_main.py     # Comprehensive test suite
+├── .env_dev             # Development configuration (SECRET_KEY etc.)
 ├── pyproject.toml       # Project configuration (uv)
-├── Makefile            # Development commands
+├── Makefile             # Development commands
 ├── .gitignore
-└── README.md           # This file
-
-# Auto-generated at runtime:
-├── uploads/             # File upload directory
-└── app.db              # SQLite database
+├── README.md            # This file
+├── uploads/             # File upload directory (created at runtime)
+└── app.db               # SQLite database (created at runtime)
 ```

@@ -8,8 +8,8 @@ from fastapi import (
     Depends,
     FastAPI,
     File,
-    Form,
     HTTPException,
+    Query,
     Request,
     UploadFile,
     WebSocket,
@@ -17,7 +17,7 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     # TODO: Point at PostgreSQL for production, e.g.
     # DATABASE_URL="postgresql://user:password@localhost/dbname"
     database_url: str = "sqlite:///./app.db"
+    # Origins allowed to call this API from a browser.
+    # Set as a JSON list, e.g. CORS_ORIGINS='["https://app.example.com"]'
+    cors_origins: list[str] = ["http://localhost:3000"]
+    # Where uploaded files are stored; TODO: replace with cloud storage (S3, GCS)
+    upload_dir: str = "uploads"
 
 
 settings = Settings()
@@ -51,7 +56,11 @@ settings = Settings()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-security = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+# Upload policy
+MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024
+ALLOWED_UPLOAD_TYPES = {"image/jpeg", "image/png", "image/gif", "text/plain", "application/pdf"}
 
 # Database setup - SQLite for simplicity, see Settings.database_url
 engine = create_engine(settings.database_url)
@@ -63,7 +72,7 @@ class User(Base):
     """
     User model for authentication
     TODO: Extend with additional fields as needed:
-    - profile_picture, bio, created_at, last_login
+    - profile_picture, bio, last_login
     - roles table relationship for RBAC
     - email verification status
     """
@@ -93,17 +102,18 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
     description = Column(String)
-    price = Column(Integer)
+    price = Column(Integer)  # stored as integer cents; see ProductResponse.cents_to_dollars
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """
-    Create database tables on startup
-    TODO: Replace with Alembic migrations for production
+    Create database tables and the upload directory on startup
+    TODO: Replace create_all with Alembic migrations for production
     """
     Base.metadata.create_all(bind=engine)
+    Path(settings.upload_dir).mkdir(exist_ok=True)
     yield
 
 
@@ -114,12 +124,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware - Configure for production
-# TODO: In production, replace "*" with specific origins
+# CORS middleware - only the configured origins may call this API from a browser.
+# Credentials stay disabled: this API uses Bearer tokens, not cookies.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure specific domains in production
-    allow_credentials=True,
+    allow_origins=settings.cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -194,9 +203,6 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
     async def broadcast(self, message: str):
         for connection in self.active_connections:
             try:
@@ -242,8 +248,12 @@ def create_access_token(data: dict, expires_delta: datetime.timedelta):
     return jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
 
 
+def get_user_by_username(db: Session, username: str) -> User | None:
+    return db.execute(select(User).where(User.username == username)).scalars().first()
+
+
 async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    token: Annotated[str, Depends(oauth2_scheme)],
     db: Annotated[Session, Depends(get_db)],
 ) -> User:
     """
@@ -259,14 +269,14 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(credentials.credentials, settings.secret_key, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = db.execute(select(User).where(User.username == username)).scalars().first()
+    user = get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
     return user
@@ -321,7 +331,7 @@ async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     )
     if existing_user:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username or email already registered",
         )
 
@@ -342,21 +352,20 @@ async def register(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
 @limiter.limit("5/minute")  # Prevent brute force attacks
 async def login(
     request: Request,
-    username: Annotated[str, Form()],
-    password: Annotated[str, Form()],
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Annotated[Session, Depends(get_db)],
 ):
     """
-    User login endpoint
+    User login endpoint (OAuth2 password flow, works with the Swagger UI Authorize button)
     TODO: Add:
     - Account lockout after failed attempts
     - Two-factor authentication
     - Login history tracking
     - Remember me functionality
     """
-    user = db.execute(select(User).where(User.username == username)).scalars().first()
+    user = get_user_by_username(db, form_data.username)
 
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -408,8 +417,8 @@ async def create_product(
 async def list_products(
     request: Request,
     db: Annotated[Session, Depends(get_db)],
-    skip: int = 0,
-    limit: int = 100,
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 100,
 ):
     """
     List products with pagination
@@ -431,10 +440,10 @@ async def list_products(
 @app.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: Annotated[Session, Depends(get_db)]):
     """Get product by ID"""
-    product = db.execute(select(Product).where(Product.id == product_id)).scalars().first()
+    product = db.get(Product, product_id)
 
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     return product
 
@@ -455,17 +464,13 @@ async def upload_file(
     - User quotas
     - File metadata storage in database
     """
-    if file.size and file.size > 5 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="File too large")
+    if file.size and file.size > MAX_UPLOAD_SIZE_BYTES:
+        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="File too large")
 
-    allowed_types = {"image/jpeg", "image/png", "image/gif", "text/plain", "application/pdf"}
-    if file.content_type not in allowed_types:
-        raise HTTPException(status_code=400, detail="File type not allowed")
+    if file.content_type not in ALLOWED_UPLOAD_TYPES:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File type not allowed")
 
-    upload_dir = Path("uploads")
-    upload_dir.mkdir(exist_ok=True)
-
-    file_path = upload_dir / f"{datetime.datetime.now().isoformat()}_{file.filename}"
+    file_path = Path(settings.upload_dir) / f"{datetime.datetime.now().isoformat()}_{file.filename}"
     content = await file.read()
 
     with open(file_path, "wb") as f:
@@ -494,7 +499,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            await manager.send_personal_message(f"You wrote: {data}", websocket)
+            await websocket.send_text(f"You wrote: {data}")
             await manager.broadcast(f"Someone wrote: {data}")
     except WebSocketDisconnect:
         manager.disconnect(websocket)
