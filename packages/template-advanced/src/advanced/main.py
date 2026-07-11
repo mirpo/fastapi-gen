@@ -205,11 +205,14 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def broadcast(self, message: str):
+        dead_connections = []
         for connection in self.active_connections:
             try:
                 await connection.send_text(message)
-            except:  # noqa: E722
-                self.active_connections.remove(connection)
+            except Exception:
+                dead_connections.append(connection)
+        for connection in dead_connections:
+            self.active_connections.remove(connection)
 
 
 manager = ConnectionManager()

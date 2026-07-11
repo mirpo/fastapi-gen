@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 from pathlib import Path
 
@@ -5,7 +6,16 @@ import jwt
 import pytest
 from fastapi.testclient import TestClient
 
-from advanced.main import Base, Settings, app, create_access_token, engine, limiter, settings
+from advanced.main import (
+    Base,
+    ConnectionManager,
+    Settings,
+    app,
+    create_access_token,
+    engine,
+    limiter,
+    settings,
+)
 
 client = TestClient(app)
 
@@ -285,6 +295,34 @@ def test_websocket():
         websocket.send_text("Hello WebSocket")
         data = websocket.receive_text()
         assert "You wrote: Hello WebSocket" in data
+
+
+class StubWebSocket:
+    """Minimal stand-in for a connected (or dead) WebSocket"""
+
+    def __init__(self, *, dead: bool = False):
+        self.dead = dead
+        self.messages = []
+
+    async def send_text(self, message: str):
+        if self.dead:
+            raise RuntimeError("connection closed")
+        self.messages.append(message)
+
+
+def test_broadcast_reaches_all_live_connections_and_prunes_dead():
+    """A dead connection must not make broadcast skip the next live one"""
+    manager = ConnectionManager()
+    dead = StubWebSocket(dead=True)
+    live1 = StubWebSocket()
+    live2 = StubWebSocket()
+    manager.active_connections = [dead, live1, live2]
+
+    asyncio.run(manager.broadcast("hello"))
+
+    assert live1.messages == ["hello"]
+    assert live2.messages == ["hello"]
+    assert manager.active_connections == [live1, live2]
 
 
 def test_api_documentation():
