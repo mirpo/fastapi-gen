@@ -1,3 +1,5 @@
+import os
+import subprocess
 import textwrap
 from pathlib import Path
 
@@ -24,7 +26,7 @@ class TestIsValidName:
 
     @pytest.mark.parametrize(
         "name",
-        ["my-app", "my.app", "my app", "", "hello/world", "app@2", "café"],
+        ["my-app", "my.app", "my app", "", "hello/world", "app@2", "café", "1app", "9lives", "class", "import"],
     )
     def test_rejects_invalid_names(self, name):
         assert not is_valid_name(name)
@@ -252,6 +254,30 @@ class TestReplaceModuleReferences:
         content = (dest / "tests" / "test_main.py").read_text()
         assert "import my_app" in content
         assert "from my_app.main import app" in content
+
+
+class TestGitInit:
+    def test_git_init_does_not_change_cwd(self, tmp_path):
+        runner = CliRunner()
+        cwd_before = os.getcwd()
+
+        result = runner.invoke(main, ["cwd_app", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert os.getcwd() == cwd_before
+        assert (tmp_path / "cwd_app" / ".git").exists()
+
+    def test_git_init_failure_prints_warning(self, tmp_path, monkeypatch):
+        def failing_run(*args, **kwargs):
+            return subprocess.CompletedProcess(args=args, returncode=128, stdout=b"", stderr=b"fatal: boom")
+
+        monkeypatch.setattr("cli.__main__.subprocess.run", failing_run)
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["warn_app", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert "git init failed" in result.output
 
 
 class TestCliFlags:

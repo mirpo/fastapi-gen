@@ -1,9 +1,10 @@
 import urllib.parse
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-from nlp.main import app
+from nlp.main import NLPService, app, settings
 
 
 @pytest.fixture(scope="session")
@@ -385,3 +386,55 @@ def test_endpoint_error_handling(client):
     for endpoint in endpoints_to_test:
         response = client.post(endpoint, json={})
         assert response.status_code in [400, 422, 500]  # Should not crash
+
+
+def test_embeddings_not_initialized_returns_503():
+    """An uninitialized sentence transformer must surface as 503, not 500"""
+    service = NLPService(settings)
+    with pytest.raises(HTTPException) as exc_info:
+        service.get_embeddings(["hello"])
+    assert exc_info.value.status_code == 503
+
+
+def test_similarity_not_initialized_returns_503():
+    """An uninitialized sentence transformer must surface as 503, not 500"""
+    service = NLPService(settings)
+    with pytest.raises(HTTPException) as exc_info:
+        service.calculate_similarity("first", "second")
+    assert exc_info.value.status_code == 503
+
+
+class FakeTensor:
+    def to(self, _device):
+        return self
+
+
+class FakeGenerationTokenizer:
+    eos_token_id = 0
+
+    def encode(self, _text, return_tensors):
+        return FakeTensor()
+
+    def decode(self, _tokens, skip_special_tokens):
+        return "generated"
+
+
+class FakeGenerationModel:
+    def __init__(self, captured):
+        self.captured = captured
+
+    def generate(self, _inputs, **kwargs):
+        self.captured.update(kwargs)
+        return ["tokens"]
+
+
+def test_generate_text_honors_zero_temperature():
+    """An explicit temperature of 0.0 must not fall back to the configured default"""
+    service = NLPService(settings)
+    captured = {}
+    service.tokenizers["generation"] = FakeGenerationTokenizer()
+    service.models["generation"] = FakeGenerationModel(captured)
+
+    service.generate_text("hi", max_new_tokens=None, temperature=0.0)
+
+    assert captured["temperature"] == 0.0

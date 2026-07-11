@@ -1,4 +1,4 @@
-import os
+import keyword
 import re
 import shutil
 import subprocess
@@ -14,8 +14,6 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0+dev"
 
-_pattern = r"^[a-zA-Z0-9_]+$"
-
 _EXCLUDE_PATTERNS = {
     "__pycache__",
     ".pytest_cache",
@@ -30,7 +28,8 @@ _REPLACEABLE_SUFFIXES = {".py", ".toml", ".md", ""}
 
 
 def is_valid_name(name) -> bool:
-    return re.match(_pattern, name) is not None
+    # The name becomes the Python package, so it must be an importable module name
+    return name.isascii() and name.isidentifier() and not keyword.iskeyword(name)
 
 
 def discover_templates(templates_root: Path) -> dict[str, tuple[Path, str]]:
@@ -115,7 +114,11 @@ def _build_cli():
     def cli(name: str, template: str, output_dir: str | None, *, no_git: bool):
         """This script creates new FastAPI project with NAME using TEMPLATE."""
         if not is_valid_name(name):
-            click.echo(f"Error. Invalid name {name}. Name must match: {_pattern}")
+            click.echo(
+                f"Error. Invalid name {name}. "
+                "Name must be a valid Python identifier: letters, digits and underscores, "
+                "not starting with a digit and not a Python keyword."
+            )
             sys.exit(1)
 
         click.echo(f"Creating new project: '{name}' using template '{template}'...")
@@ -141,8 +144,9 @@ def _build_cli():
         replace_module_references(dest_path, template_module, name)
 
         if not no_git:
-            os.chdir(dest_path)
-            subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
+            git_result = subprocess.run(["git", "init"], cwd=dest_path, capture_output=True)  # noqa: PLW1510
+            if git_result.returncode != 0:
+                click.echo("Warning: git init failed; continuing without a git repository.")
 
         welcome_message = f"""
 {click.style("Success!", fg="green", bold=True)} Created {name} at {dest_path}
