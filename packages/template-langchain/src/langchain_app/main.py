@@ -90,6 +90,18 @@ class LangChainService:
             logger.error(f"Failed to initialize model: {e}")
             raise
 
+    def _llm_with_overrides(self, max_new_tokens: int | None, temperature: float | None):
+        """Apply per-request generation parameters on top of the shared pipeline"""
+        pipeline_kwargs = {}
+        if max_new_tokens is not None:
+            pipeline_kwargs["max_new_tokens"] = max_new_tokens
+        if temperature is not None:
+            pipeline_kwargs["temperature"] = temperature
+            pipeline_kwargs["do_sample"] = temperature > 0
+        if not pipeline_kwargs:
+            return self.llm
+        return self.llm.bind(pipeline_kwargs=pipeline_kwargs)
+
     def generate_text(self, text: str, max_new_tokens: int | None = None, temperature: float | None = None) -> str:
         """Generate text using the loaded model"""
         if not self.llm:
@@ -98,7 +110,7 @@ class LangChainService:
         try:
             template = "{text}"
             prompt = PromptTemplate(input_variables=["text"], template=template)
-            chain = prompt | self.llm
+            chain = prompt | self._llm_with_overrides(max_new_tokens, temperature)
             result = chain.invoke({"text": text}).strip()
             return result
         except Exception as e:
@@ -115,7 +127,7 @@ class LangChainService:
         try:
             template = "Context: {context}\nQuestion: {question}\nAnswer:"
             prompt = PromptTemplate(input_variables=["context", "question"], template=template)
-            chain = prompt | self.llm
+            chain = prompt | self._llm_with_overrides(max_new_tokens, temperature)
             result = chain.invoke({"context": context, "question": question}).strip()
             return result
         except Exception as e:
@@ -157,11 +169,16 @@ async def health_check():
 
 
 @app.post("/text-generation", response_model=GenerationResponse)
-async def text_generation(
+def text_generation(
     request: TextGenerationRequest,
     service: LangChainService = Depends(get_langchain_service),
 ) -> GenerationResponse:
-    """Generate text based on input prompt"""
+    """
+    Generate text based on input prompt
+
+    Declared as `def` (not `async def`): FastAPI runs it in a worker thread,
+    so slow synchronous inference does not block the event loop.
+    """
     try:
         result = service.generate_text(
             request.text,
@@ -181,17 +198,17 @@ async def text_generation(
 
 
 @app.get("/text-generation")
-async def text_generation_get(
+def text_generation_get(
     text: str,
     service: LangChainService = Depends(get_langchain_service),
 ) -> GenerationResponse:
     """Generate text based on query parameter"""
     request = TextGenerationRequest(text=text)
-    return await text_generation(request, service)
+    return text_generation(request, service)
 
 
 @app.post("/question-answering", response_model=QAResponse)
-async def question_answering(
+def question_answering(
     request: QuestionAnsweringRequest,
     service: LangChainService = Depends(get_langchain_service),
 ) -> QAResponse:
@@ -217,11 +234,11 @@ async def question_answering(
 
 
 @app.get("/question-answering")
-async def question_answering_get(
+def question_answering_get(
     context: str,
     question: str,
     service: LangChainService = Depends(get_langchain_service),
 ) -> QAResponse:
     """Answer questions based on query parameters"""
     request = QuestionAnsweringRequest(context=context, question=question)
-    return await question_answering(request, service)
+    return question_answering(request, service)

@@ -69,6 +69,17 @@ def test_text_generation_post_with_params(client):
     assert "model_used" in data
 
 
+def test_text_generation_honors_max_new_tokens(client):
+    """max_new_tokens in the request must actually limit generation length"""
+    text = "Once upon a time"
+    response = client.post("/text-generation", json={"text": text, "max_new_tokens": 1})
+
+    assert response.status_code == 200
+    answer = response.json()["answer"]
+    # The answer echoes the prompt; a single generated token adds only a few characters
+    assert len(answer) <= len(text) + 20
+
+
 def test_question_answering_get_missing_params(client):
     """Test QA endpoint with missing parameters"""
     response = client.get("/question-answering")
