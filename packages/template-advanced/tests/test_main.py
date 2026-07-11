@@ -1,8 +1,8 @@
 import datetime
 
+import jwt
 import pytest
 from fastapi.testclient import TestClient
-from jose import jwt
 
 from advanced.main import Base, Settings, app, create_access_token, engine, limiter, settings
 
@@ -160,6 +160,17 @@ def test_protected_endpoint_no_token():
 def test_protected_endpoint_invalid_token():
     headers = {"Authorization": "Bearer invalid_token"}
     response = client.get("/auth/me", headers=headers)
+    assert response.status_code == 401
+
+
+def test_protected_endpoint_expired_token():
+    """Expired tokens are rejected with 401"""
+    register("expireduser")
+    token = create_access_token(
+        data={"sub": "expireduser"},
+        expires_delta=datetime.timedelta(minutes=-5),
+    )
+    response = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
 
 
