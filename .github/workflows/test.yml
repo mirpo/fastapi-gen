@@ -95,7 +95,7 @@ jobs:
         with:
           template: llama
           python-version: ${{ matrix.python-version }}
-          post-install: ${{ matrix.os == 'ubuntu-latest' && 'uv sync --no-binary-package llama-cpp-python --refresh-package llama-cpp-python --reinstall-package llama-cpp-python' || '' }}
+          post-install: ${{ matrix.os == 'ubuntu-latest' && 'uv sync --no-cache --no-binary-package llama-cpp-python --reinstall-package llama-cpp-python' || '' }}
         env:
           CFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
           CXXFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
