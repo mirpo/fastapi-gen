@@ -3,6 +3,7 @@ import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
+import langchain_app.main as main_module
 from langchain_app.main import app
 
 
@@ -19,6 +20,16 @@ def test_health_check(client):
     assert data["status"] == "healthy"
     assert "model" in data
     assert "device" in data
+
+
+def test_health_reports_unavailable_before_init(monkeypatch):
+    """Health must fail when the model service is not initialized"""
+    monkeypatch.setattr(main_module, "langchain_service", None)
+    plain_client = TestClient(app)
+
+    response = plain_client.get("/health")
+
+    assert response.status_code == 503
 
 
 def test_text_generation_get_missing_param(client):

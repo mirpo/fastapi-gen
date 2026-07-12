@@ -1,8 +1,17 @@
 from fastapi.testclient import TestClient
 
-from hello_world.main import app
+from hello_world.main import Settings, app
 
 client = TestClient(app)
+
+
+def test_settings_have_defaults_without_env_file(monkeypatch):
+    """The app must start even when no .env file is present"""
+    monkeypatch.delenv("API_VERSION", raising=False)
+
+    settings = Settings(_env_file=None)
+
+    assert settings.api_version == "1.0.0"
 
 
 def test_root_200():

@@ -32,7 +32,7 @@ class Settings(BaseSettings):
         # `.env.prod` takes priority over `.env_dev`
         env_file=(".env_dev", ".env.prod"),
     )
-    api_version: str
+    api_version: str = "1.0.0"
 
 
 settings = Settings()

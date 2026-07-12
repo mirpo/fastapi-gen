@@ -163,9 +163,9 @@ def get_langchain_service() -> LangChainService:
 
 
 @app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "model": settings.text_generation_model, "device": settings.get_device()}
+async def health_check(service: LangChainService = Depends(get_langchain_service)):
+    """Health check endpoint; 503 until the model service is initialized"""
+    return {"status": "healthy", "model": settings.text_generation_model, "device": service.device}
 
 
 @app.post("/text-generation", response_model=GenerationResponse)
