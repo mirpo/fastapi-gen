@@ -118,7 +118,8 @@ def _build_cli():
             click.echo(
                 f"Error. Invalid name {name}. "
                 "Name must be a valid Python identifier: letters, digits and underscores, "
-                "not starting with a digit and not a Python keyword."
+                "not starting with a digit and not a Python keyword.",
+                err=True,
             )
             sys.exit(1)
 
@@ -127,7 +128,7 @@ def _build_cli():
         base = Path(output_dir) if output_dir else Path.cwd()
         dest_path = base / name
         if dest_path.exists():
-            click.echo(f"Error. Folder {dest_path} already exists.")
+            click.echo(f"Error. Folder {dest_path} already exists.", err=True)
             sys.exit(1)
 
         template_dir, template_module = available[template]
@@ -146,13 +147,13 @@ def _build_cli():
             replace_module_references(dest_path, template_module, name)
         except Exception as exc:  # noqa: BLE001 - clean up whatever failed, then report it
             shutil.rmtree(dest_path, ignore_errors=True)
-            click.echo(f"Error. Project generation failed: {exc}. Removed incomplete {dest_path}.")
+            click.echo(f"Error. Project generation failed: {exc}. Removed incomplete {dest_path}.", err=True)
             sys.exit(1)
 
         if not no_git:
             git_result = subprocess.run(["git", "init"], cwd=dest_path, capture_output=True)  # noqa: PLW1510
             if git_result.returncode != 0:
-                click.echo("Warning: git init failed; continuing without a git repository.")
+                click.echo("Warning: git init failed; continuing without a git repository.", err=True)
 
         welcome_message = f"""
 {click.style("Success!", fg="green", bold=True)} Created {name} at {dest_path}
@@ -182,7 +183,6 @@ Then open {click.style("http://localhost:8000/docs", fg="cyan")} to see your API
 {click.style("Happy hacking!", fg="yellow", blink=True, bold=True)}
 """
         click.echo(welcome_message)
-        return 0
 
     return cli
 

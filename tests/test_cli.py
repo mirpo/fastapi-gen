@@ -290,6 +290,17 @@ class TestGitInit:
         assert "git init failed" in result.output
 
 
+class TestErrorOutput:
+    def test_error_messages_go_to_stderr(self, tmp_path):
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["my-invalid-name", "-o", str(tmp_path)])
+
+        assert result.exit_code == 1
+        assert "Invalid name" in result.stderr
+        assert "Invalid name" not in result.stdout
+
+
 class TestPartialFailureCleanup:
     def test_failed_generation_removes_partial_project(self, tmp_path, monkeypatch):
         def boom(*_args, **_kwargs):
