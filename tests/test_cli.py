@@ -1,3 +1,5 @@
+import os
+import subprocess
 import textwrap
 from pathlib import Path
 
@@ -24,7 +26,7 @@ class TestIsValidName:
 
     @pytest.mark.parametrize(
         "name",
-        ["my-app", "my.app", "my app", "", "hello/world", "app@2", "café"],
+        ["my-app", "my.app", "my app", "", "hello/world", "app@2", "café", "1app", "9lives", "class", "import"],
     )
     def test_rejects_invalid_names(self, name):
         assert not is_valid_name(name)
@@ -201,7 +203,8 @@ class TestReplaceModuleReferences:
         (dest / "Makefile").write_text(f"start:\n\tuvicorn {module_name}.main:app\n")
         (dest / "README.md").write_text(f"Run uvicorn {module_name}.main:app\nSee {module_name}/ dir\n")
         (dest / "pyproject.toml").write_text(
-            f'[project]\nname = "old-name"\n\n[project.scripts]\nstart = "{module_name}.main:app"\n'
+            f'[project]\nname = "old-name"\n\n[project.scripts]\nstart = "{module_name}.main:app"\n\n'
+            f'[tool.hatch.build.targets.wheel]\npackages = ["src/{module_name}"]\n'
         )
         return dest
 
@@ -243,15 +246,72 @@ class TestReplaceModuleReferences:
 
         assert '"my_app.main:app"' in (dest / "pyproject.toml").read_text()
 
-    def test_updates_bare_imports(self, tmp_path):
+    def test_updates_hatch_wheel_packages_path(self, tmp_path):
         dest = self._make_project(tmp_path)
-        (dest / "tests" / "test_main.py").write_text("import nlp\nfrom nlp.main import app\n")
 
         replace_module_references(dest, "nlp", "my_app")
 
-        content = (dest / "tests" / "test_main.py").read_text()
-        assert "import my_app" in content
-        assert "from my_app.main import app" in content
+        content = (dest / "pyproject.toml").read_text()
+        assert 'packages = ["src/my_app"]' in content
+        assert "src/nlp" not in content
+
+    def test_updates_bare_imports(self, tmp_path):
+        dest = self._make_project(tmp_path)
+        (dest / "tests" / "test_main.py").write_text("import nlp\n")
+
+        replace_module_references(dest, "nlp", "my_app")
+
+        assert (dest / "tests" / "test_main.py").read_text() == "import my_app\n"
+
+
+class TestGitInit:
+    def test_git_init_does_not_change_cwd(self, tmp_path):
+        runner = CliRunner()
+        cwd_before = os.getcwd()
+
+        result = runner.invoke(main, ["cwd_app", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert os.getcwd() == cwd_before
+        assert (tmp_path / "cwd_app" / ".git").exists()
+
+    def test_git_init_failure_prints_warning(self, tmp_path, monkeypatch):
+        def failing_run(*args, **kwargs):
+            return subprocess.CompletedProcess(args=args, returncode=128, stdout=b"", stderr=b"fatal: boom")
+
+        monkeypatch.setattr("cli.__main__.subprocess.run", failing_run)
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["warn_app", "-o", str(tmp_path)], catch_exceptions=False)
+
+        assert result.exit_code == 0
+        assert "git init failed" in result.output
+
+
+class TestErrorOutput:
+    def test_error_messages_go_to_stderr(self, tmp_path):
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["my-invalid-name", "-o", str(tmp_path)])
+
+        assert result.exit_code == 1
+        assert "Invalid name" in result.stderr
+        assert "Invalid name" not in result.stdout
+
+
+class TestPartialFailureCleanup:
+    def test_failed_generation_removes_partial_project(self, tmp_path, monkeypatch):
+        def boom(*_args, **_kwargs):
+            raise OSError("disk full")
+
+        monkeypatch.setattr("cli.__main__.copy_template", boom)
+        runner = CliRunner()
+
+        result = runner.invoke(main, ["doomed_app", "-o", str(tmp_path)])
+
+        assert result.exit_code == 1
+        assert not (tmp_path / "doomed_app").exists()
+        assert "generation failed" in result.output.lower()
 
 
 class TestCliFlags:
@@ -260,7 +320,9 @@ class TestCliFlags:
         result = runner.invoke(main, ["test_app", "--no-git", "-o", str(tmp_path)], catch_exceptions=False)
 
         assert result.exit_code == 0
-        assert not (tmp_path / "test_app" / ".git").exists()
+        dest = tmp_path / "test_app"
+        assert dest.exists()
+        assert not (dest / ".git").exists()
 
     def test_output_dir(self, tmp_path):
         runner = CliRunner()
@@ -269,12 +331,3 @@ class TestCliFlags:
         assert result.exit_code == 0
         assert (tmp_path / "test_app").exists()
         assert (tmp_path / "test_app" / "pyproject.toml").exists()
-
-    def test_output_dir_with_no_git(self, tmp_path):
-        runner = CliRunner()
-        result = runner.invoke(main, ["test_app", "-o", str(tmp_path), "--no-git"], catch_exceptions=False)
-
-        assert result.exit_code == 0
-        dest = tmp_path / "test_app"
-        assert dest.exists()
-        assert not (dest / ".git").exists()

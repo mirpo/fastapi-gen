@@ -89,8 +89,8 @@ cd my_app && make start
 
 **Key Features:**
 - JWT authentication with registration and login
-- Database integration with SQLAlchemy 2.0 async
-- Rate limiting and caching system
+- Database integration with SQLAlchemy 2.0
+- Rate limiting with slowapi
 - WebSocket support and file upload
 - Enhanced security and CORS configuration
 - Full test suite

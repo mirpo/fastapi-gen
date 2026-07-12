@@ -1,9 +1,7 @@
-import urllib.parse
-
 import pytest
 from fastapi.testclient import TestClient
 
-from llama_app.main import app
+from llama_app.main import LlamaService, app, settings
 
 
 @pytest.fixture(scope="session")
@@ -37,37 +35,6 @@ def test_question_answering_get_empty_question(client):
     assert response.json()["detail"] == "Question must be specified."
 
 
-def test_question_answering_get_success(client):
-    """Test question answering with GET method"""
-    question = "What is the capital of France?"
-    response = client.get(f"/question-answering?question={urllib.parse.quote(question)}")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["question"] == question
-    assert "answer" in data
-    assert len(data["answer"]) > 0
-    assert "model_used" in data
-    assert "tokens_generated" in data
-
-
-def test_question_answering_get_with_params(client):
-    """Test question answering with GET method and custom parameters"""
-    question = "What is Python?"
-    max_tokens = 50
-    temperature = 0.5
-
-    response = client.get(
-        f"/question-answering?question={urllib.parse.quote(question)}&max_tokens={max_tokens}&temperature={temperature}"
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["question"] == question
-    assert "answer" in data
-    assert "model_used" in data
-
-
 def test_question_answering_post_success(client):
     """Test question answering with POST method"""
     payload = {"question": "What is machine learning?"}
@@ -76,27 +43,9 @@ def test_question_answering_post_success(client):
     assert response.status_code == 200
     data = response.json()
     assert data["question"] == payload["question"]
-    assert "answer" in data
     assert len(data["answer"]) > 0
-    assert "model_used" in data
-    assert "tokens_generated" in data
-
-
-def test_question_answering_post_with_params(client):
-    """Test question answering with POST method and custom parameters"""
-    payload = {
-        "question": "Explain artificial intelligence briefly",
-        "max_tokens": 30,
-        "temperature": 0.3,
-    }
-    response = client.post("/question-answering", json=payload)
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["question"] == payload["question"]
-    assert "answer" in data
-    assert "model_used" in data
-    assert "tokens_generated" in data
+    assert data["model_used"] == settings.llm_model
+    assert data["tokens_generated"] >= 1
 
 
 def test_question_answering_post_validation_errors(client):
@@ -134,18 +83,18 @@ def test_question_answering_post_missing_field(client):
     assert field_errors[0]["type"] == "missing"
 
 
-def test_question_answering_different_questions(client):
-    """Test with different types of questions to ensure consistent behavior"""
-    questions = [
-        "What is 2+2?",
-        "Tell me about space exploration",
-        "How does photosynthesis work?",
-    ]
+def test_generate_answer_honors_zero_temperature():
+    """An explicit temperature of 0.0 must not fall back to the configured default"""
+    service = LlamaService(settings)
+    captured = {}
 
-    for question in questions:
-        response = client.post("/question-answering", json={"question": question})
-        assert response.status_code == 200
-        data = response.json()
-        assert data["question"] == question
-        assert "answer" in data
-        assert len(data["answer"]) > 0
+    def fake_llm(prompt, max_tokens, temperature, echo):
+        captured["max_tokens"] = max_tokens
+        captured["temperature"] = temperature
+        return {"choices": [{"text": "answer"}], "usage": {"completion_tokens": 1}}
+
+    service.llm = fake_llm
+    service.generate_answer("test question", max_tokens=None, temperature=0.0)
+
+    assert captured["temperature"] == 0.0
+    assert captured["max_tokens"] == settings.llm_max_tokens

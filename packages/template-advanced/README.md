@@ -6,7 +6,7 @@
 
 *This project was bootstrapped with [FastAPI Gen](https://github.com/mirpo/fastapi-gen)*
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-green.svg)](https://fastapi.tiangolo.com)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red.svg)](https://sqlalchemy.org)
 [![JWT](https://img.shields.io/badge/JWT-Authentication-orange.svg)](https://jwt.io)
 
@@ -16,7 +16,7 @@
 
 ## What You'll Build
 
-A complete enterprise-grade FastAPI application with JWT authentication, database integration, rate limiting, caching, WebSocket support, and secure file upload handling.
+A complete enterprise-grade FastAPI application with JWT authentication, database integration, rate limiting, WebSocket support, and secure file upload handling.
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ A complete enterprise-grade FastAPI application with JWT authentication, databas
 make start
 
 # Or manually:
-uvicorn main:app --reload
+uv run uvicorn advanced.main:app --reload
 ```
 
 Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your interactive API documentation.
@@ -39,22 +39,16 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 - Token management with expiration
 
 **Database Integration**
-- SQLAlchemy 2.0 with async support
+- SQLAlchemy 2.0 ORM
 - Auto migrations (tables created on startup)
 - User and Product models ready to extend
 - Proper connection and session management
 
 **Rate Limiting & Security**
 - Per-endpoint rate limits with slowapi
-- DDoS protection
+- Brute-force protection on login
 - CORS configuration
 - Input validation and secure error responses
-
-**Performance & Caching**
-- In-memory caching for development
-- Redis-ready integration
-- Strategic cache keys for products and users
-- TTL management and cache invalidation
 
 **Real-Time Features**
 - WebSocket connection management
@@ -65,7 +59,7 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to see your intera
 **File Upload System**
 - Type validation (images, PDFs, text)
 - 5MB size limit
-- Secure storage with timestamped filenames
+- Sanitized, collision-free stored filenames
 - Cloud storage ready (S3/GCS comments included)
 
 ## API Endpoints
@@ -79,9 +73,9 @@ GET  /auth/me           # Get current user (protected)
 
 ### Database Operations
 ```http
-POST /products/         # Create product (protected, cached)
-GET  /products/         # List products (cached, rate limited)
-GET  /products/{id}     # Get product (cached)
+POST /products/         # Create product (protected)
+GET  /products/         # List products (rate limited)
+GET  /products/{id}     # Get product
 ```
 
 ### File Operations
@@ -102,30 +96,34 @@ GET  /health            # Enhanced health check
 
 ## Development Commands
 
-| Command      | Description                                  |
-| ------------ | -------------------------------------------- |
-| `make start` | Run app in development mode with auto-reload |
-| `make test`  | Run comprehensive test suite                 |
-| `make lint`  | Run code quality checks with Ruff            |
+| Command         | Description                                  |
+| --------------- | -------------------------------------------- |
+| `make install`  | Install dependencies                         |
+| `make start`    | Run app in development mode with auto-reload |
+| `make test`     | Run comprehensive test suite                 |
+| `make lint`     | Run code quality checks with Ruff            |
+| `make lint-fix` | Auto-fix lint and formatting issues          |
 
 ## Configuration
 
-Create `.env_dev` file:
+The app reads its configuration from `.env_dev` (development) and `.env.prod` (production overrides):
+
 ```bash
-API_VERSION=1.0.0
 SECRET_KEY=your-secret-key-for-jwt-tokens
-DATABASE_URL=sqlite+aiosqlite:///./app.db
+
+# Optional, defaults to local SQLite
+DATABASE_URL=sqlite:///./app.db
+
+# Optional, browser origins allowed via CORS (JSON list, defaults to http://localhost:3000)
+CORS_ORIGINS=["https://app.example.com"]
 ```
 
-For production with PostgreSQL:
-```bash
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost/dbname
-uv pip install asyncpg
-```
+`SECRET_KEY` signs the JWT tokens — always set a strong unique value in production.
+Point `DATABASE_URL` at PostgreSQL for production (e.g. `postgresql://user:pass@localhost/dbname`).
 
 ## Testing
 
-Run comprehensive test suite covering authentication, CRUD, rate limiting, WebSocket, and file upload:
+Run comprehensive test suite covering authentication, CRUD, WebSocket, and file upload:
 
 ```bash
 make test
@@ -138,16 +136,22 @@ advanced/
 ├── src/
 │   └── advanced/
 │       ├── __init__.py
-│       └── main.py      # Main FastAPI app with all features
+│       ├── auth.py      # JWT tokens, password hashing, current-user dependency
+│       ├── config.py    # Settings loaded from the environment
+│       ├── database.py  # Engine, session factory, get_db dependency
+│       ├── main.py      # FastAPI app, middleware, endpoints
+│       ├── models.py    # SQLAlchemy ORM models
+│       ├── realtime.py  # WebSocket connection manager
+│       └── schemas.py   # Pydantic request/response models
 ├── tests/
-│   ├── test_main.py     # Comprehensive test suite
-│   └── __init__.py
+│   ├── __init__.py
+│   ├── conftest.py      # Test configuration (throwaway database)
+│   └── test_main.py     # Comprehensive test suite
+├── .env_dev             # Development configuration (SECRET_KEY etc.)
 ├── pyproject.toml       # Project configuration (uv)
-├── Makefile            # Development commands
+├── Makefile             # Development commands
 ├── .gitignore
-└── README.md           # This file
-
-# Auto-generated at runtime:
-├── uploads/             # File upload directory
-└── app.db              # SQLite database
+├── README.md            # This file
+├── uploads/             # File upload directory (created at runtime)
+└── app.db               # SQLite database (created at runtime)
 ```

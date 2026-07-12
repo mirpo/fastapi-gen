@@ -10,10 +10,13 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.139.0",
-  "uvicorn[standard]==0.50.0",
-  "llama-cpp-python==0.3.33",
+  "uvicorn[standard]==0.51.0",
+  "llama-cpp-python==0.3.34",
   "pydantic-settings==2.14.2",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llama_app"]
 
 [dependency-groups]
 dev = [

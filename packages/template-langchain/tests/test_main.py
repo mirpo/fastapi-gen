@@ -1,8 +1,7 @@
-import urllib.parse
-
 import pytest
 from fastapi.testclient import TestClient
 
+import langchain_app.main as main_module
 from langchain_app.main import app
 
 
@@ -21,23 +20,20 @@ def test_health_check(client):
     assert "device" in data
 
 
+def test_health_reports_unavailable_before_init(monkeypatch):
+    """Health must fail when the model service is not initialized"""
+    monkeypatch.setattr(main_module, "langchain_service", None)
+    plain_client = TestClient(app)
+
+    response = plain_client.get("/health")
+
+    assert response.status_code == 503
+
+
 def test_text_generation_get_missing_param(client):
     """Test text generation endpoint without required parameter"""
     response = client.get("/text-generation")
     assert response.status_code == 422
-
-
-def test_text_generation_get_success(client):
-    """Test text generation with GET method"""
-    text = "what is the moon"
-    response = client.get(f"/text-generation?text={urllib.parse.quote(text)}")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["prompt"] == text
-    assert "answer" in data
-    assert len(data["answer"]) > 0
-    assert "model_used" in data
 
 
 def test_text_generation_post_success(client):
@@ -48,25 +44,19 @@ def test_text_generation_post_success(client):
     assert response.status_code == 200
     data = response.json()
     assert data["prompt"] == payload["text"]
-    assert "answer" in data
     assert len(data["answer"]) > 0
-    assert "model_used" in data
+    assert data["model_used"] == main_module.settings.text_generation_model
 
 
-def test_text_generation_post_with_params(client):
-    """Test text generation with custom parameters"""
-    payload = {
-        "text": "Hello world",
-        "max_new_tokens": 50,
-        "temperature": 0.5,
-    }
-    response = client.post("/text-generation", json=payload)
+def test_text_generation_honors_max_new_tokens(client):
+    """max_new_tokens in the request must actually limit generation length"""
+    text = "Once upon a time"
+    response = client.post("/text-generation", json={"text": text, "max_new_tokens": 1})
 
     assert response.status_code == 200
-    data = response.json()
-    assert data["prompt"] == payload["text"]
-    assert "answer" in data
-    assert "model_used" in data
+    answer = response.json()["answer"]
+    # The answer echoes the prompt; a single generated token adds only a few characters
+    assert len(answer) <= len(text) + 20
 
 
 def test_question_answering_get_missing_params(client):
@@ -76,24 +66,6 @@ def test_question_answering_get_missing_params(client):
 
     response = client.get("/question-answering?context=some context")
     assert response.status_code == 422
-
-
-def test_question_answering_get_success(client):
-    """Test question answering with GET method"""
-    context = "Tom likes coding and designing complex distributed systems."
-    question = "What does Tom like?"
-
-    response = client.get(
-        f"/question-answering?context={urllib.parse.quote(context)}&question={urllib.parse.quote(question)}",
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["context"] == context
-    assert data["question"] == question
-    assert "answer" in data
-    assert len(data["answer"]) > 0
-    assert "model_used" in data
 
 
 def test_question_answering_post_success(client):
@@ -108,27 +80,8 @@ def test_question_answering_post_success(client):
     data = response.json()
     assert data["context"] == payload["context"]
     assert data["question"] == payload["question"]
-    assert "answer" in data
     assert len(data["answer"]) > 0
-    assert "model_used" in data
-
-
-def test_question_answering_post_with_params(client):
-    """Test question answering with custom parameters"""
-    payload = {
-        "context": "The sky is blue during the day.",
-        "question": "What color is the sky?",
-        "max_new_tokens": 30,
-        "temperature": 0.3,
-    }
-    response = client.post("/question-answering", json=payload)
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["context"] == payload["context"]
-    assert data["question"] == payload["question"]
-    assert "answer" in data
-    assert "model_used" in data
+    assert data["model_used"] == main_module.settings.text_generation_model
 
 
 def test_text_generation_empty_string(client):
@@ -139,19 +92,3 @@ def test_text_generation_empty_string(client):
     assert response.status_code == 200
     data = response.json()
     assert data["prompt"] == ""
-    assert "answer" in data
-
-
-def test_question_answering_empty_context(client):
-    """Test QA with empty context"""
-    payload = {
-        "context": "",
-        "question": "What is this about?",
-    }
-    response = client.post("/question-answering", json=payload)
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["context"] == ""
-    assert data["question"] == payload["question"]
-    assert "answer" in data

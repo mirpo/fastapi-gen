@@ -10,13 +10,16 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.139.0",
-  "uvicorn[standard]==0.50.0",
-  "transformers[torch]==5.13.0",
+  "uvicorn[standard]==0.51.0",
+  "transformers[torch]==5.13.1",
   "sentence-transformers==5.6.0",
   "pydantic-settings==2.14.2",
-  "torch==2.12.1",
+  "torch==2.13.0",
   "accelerate==1.14.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nlp"]
 
 [dependency-groups]
 dev = [

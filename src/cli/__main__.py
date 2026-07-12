@@ -1,4 +1,4 @@
-import os
+import keyword
 import re
 import shutil
 import subprocess
@@ -14,8 +14,6 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0+dev"
 
-_pattern = r"^[a-zA-Z0-9_]+$"
-
 _EXCLUDE_PATTERNS = {
     "__pycache__",
     ".pytest_cache",
@@ -30,7 +28,8 @@ _REPLACEABLE_SUFFIXES = {".py", ".toml", ".md", ""}
 
 
 def is_valid_name(name) -> bool:
-    return re.match(_pattern, name) is not None
+    # The name becomes the Python package, so it must be an importable module name
+    return name.isascii() and name.isidentifier() and not keyword.iskeyword(name)
 
 
 def discover_templates(templates_root: Path) -> dict[str, tuple[Path, str]]:
@@ -81,6 +80,7 @@ def replace_module_references(dest_path: Path, old_module: str, new_module: str)
         updated = content.replace(f"{old_module}.", f"{new_module}.")
         updated = updated.replace(f"{old_module}/", f"{new_module}/")
         updated = updated.replace(f"import {old_module}", f"import {new_module}")
+        updated = updated.replace(f"src/{old_module}", f"src/{new_module}")
         if updated != content:
             path.write_text(updated)
 
@@ -115,7 +115,12 @@ def _build_cli():
     def cli(name: str, template: str, output_dir: str | None, *, no_git: bool):
         """This script creates new FastAPI project with NAME using TEMPLATE."""
         if not is_valid_name(name):
-            click.echo(f"Error. Invalid name {name}. Name must match: {_pattern}")
+            click.echo(
+                f"Error. Invalid name {name}. "
+                "Name must be a valid Python identifier: letters, digits and underscores, "
+                "not starting with a digit and not a Python keyword.",
+                err=True,
+            )
             sys.exit(1)
 
         click.echo(f"Creating new project: '{name}' using template '{template}'...")
@@ -123,26 +128,32 @@ def _build_cli():
         base = Path(output_dir) if output_dir else Path.cwd()
         dest_path = base / name
         if dest_path.exists():
-            click.echo(f"Error. Folder {dest_path} already exists.")
+            click.echo(f"Error. Folder {dest_path} already exists.", err=True)
             sys.exit(1)
 
         template_dir, template_module = available[template]
 
         dest_path.mkdir(parents=True)
 
-        click.echo("Copying template files...")
-        copy_template(template_dir, dest_path)
+        try:
+            click.echo("Copying template files...")
+            copy_template(template_dir, dest_path)
 
-        click.echo(f"Renaming package to '{name}'...")
-        pyproject_path = dest_path / "pyproject.toml"
-        if pyproject_path.exists():
-            rename_package_in_pyproject(pyproject_path, name)
+            click.echo(f"Renaming package to '{name}'...")
+            pyproject_path = dest_path / "pyproject.toml"
+            if pyproject_path.exists():
+                rename_package_in_pyproject(pyproject_path, name)
 
-        replace_module_references(dest_path, template_module, name)
+            replace_module_references(dest_path, template_module, name)
+        except Exception as exc:  # noqa: BLE001 - clean up whatever failed, then report it
+            shutil.rmtree(dest_path, ignore_errors=True)
+            click.echo(f"Error. Project generation failed: {exc}. Removed incomplete {dest_path}.", err=True)
+            sys.exit(1)
 
         if not no_git:
-            os.chdir(dest_path)
-            subprocess.run(["git", "init"], capture_output=True)  # noqa: PLW1510
+            git_result = subprocess.run(["git", "init"], cwd=dest_path, capture_output=True)  # noqa: PLW1510
+            if git_result.returncode != 0:
+                click.echo("Warning: git init failed; continuing without a git repository.", err=True)
 
         welcome_message = f"""
 {click.style("Success!", fg="green", bold=True)} Created {name} at {dest_path}
@@ -172,7 +183,6 @@ Then open {click.style("http://localhost:8000/docs", fg="cyan")} to see your API
 {click.style("Happy hacking!", fg="yellow", blink=True, bold=True)}
 """
         click.echo(welcome_message)
-        return 0
 
     return cli
 

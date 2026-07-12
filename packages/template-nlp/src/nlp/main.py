@@ -208,7 +208,7 @@ class NLPService:
     def summarize_text(self, text: str, max_length: int | None = None) -> dict[str, Any]:
         """Summarize text using the loaded pipeline"""
         try:
-            actual_max_length = max_length or 150
+            actual_max_length = max_length if max_length is not None else 150
             result = self.pipelines["summarize"](
                 "summarize: " + text, max_new_tokens=actual_max_length, do_sample=False
             )
@@ -236,8 +236,8 @@ class NLPService:
     ) -> dict[str, Any]:
         """Generate text using the loaded model"""
         try:
-            actual_max_new_tokens = max_new_tokens or 100
-            actual_temperature = temperature or self.settings.temperature
+            actual_max_new_tokens = max_new_tokens if max_new_tokens is not None else 100
+            actual_temperature = temperature if temperature is not None else self.settings.temperature
 
             tokenizer = self.tokenizers["generation"]
             model = self.models["generation"]
@@ -289,10 +289,10 @@ class NLPService:
 
     def get_embeddings(self, texts: list[str]) -> dict[str, Any]:
         """Get sentence embeddings for texts"""
-        try:
-            if not self.sentence_transformer:
-                raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
+        if not self.sentence_transformer:
+            raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
 
+        try:
             embeddings = self.sentence_transformer.encode(texts)
             return {
                 "embeddings": embeddings.tolist(),
@@ -328,10 +328,10 @@ class NLPService:
 
     def calculate_similarity(self, text1: str, text2: str) -> dict[str, Any]:
         """Calculate similarity between two texts"""
-        try:
-            if not self.sentence_transformer:
-                raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
+        if not self.sentence_transformer:
+            raise HTTPException(status_code=503, detail="Sentence transformer not initialized")
 
+        try:
             embeddings = self.sentence_transformer.encode([text1, text2])
             similarity = self.sentence_transformer.similarity(embeddings[0], embeddings[1]).item()
             return {"similarity": round(similarity, 5)}
@@ -392,7 +392,7 @@ async def health_check(service: NLPService = Depends(get_nlp_service)):
 
 # Summarization endpoints
 @app.post("/summarize", response_model=SummarizeResponse)
-async def summarize_post(
+def summarize_post(
     request: SummarizeRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> SummarizeResponse:
@@ -406,7 +406,7 @@ async def summarize_post(
 
 
 @app.get("/summarize", response_model=SummarizeResponse)
-async def summarize_get(
+def summarize_get(
     text: str,
     max_length: int | None = None,
     service: NLPService = Depends(get_nlp_service),
@@ -420,12 +420,12 @@ async def summarize_get(
         raise HTTPException(status_code=400, detail="Text to summarize is too short. Min length is 200.")
 
     request = SummarizeRequest(text=text, max_length=max_length)
-    return await summarize_post(request, service)
+    return summarize_post(request, service)
 
 
 # NER endpoints
 @app.post("/ner", response_model=NERResponse)
-async def ner_post(
+def ner_post(
     request: NERRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> NERResponse:
@@ -439,7 +439,7 @@ async def ner_post(
 
 
 @app.get("/ner")
-async def ner_get(
+def ner_get(
     text: str,
     service: NLPService = Depends(get_nlp_service),
 ):
@@ -453,7 +453,7 @@ async def ner_get(
 
 # Text generation endpoints
 @app.post("/text-generation", response_model=TextGenerationResponse)
-async def text_generation_post(
+def text_generation_post(
     request: TextGenerationRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> TextGenerationResponse:
@@ -467,7 +467,7 @@ async def text_generation_post(
 
 
 @app.get("/text-generation", response_model=TextGenerationResponse)
-async def text_generation_get(
+def text_generation_get(
     text: str,
     max_new_tokens: int | None = None,
     temperature: float | None = None,
@@ -482,12 +482,12 @@ async def text_generation_get(
         max_new_tokens=max_new_tokens,
         temperature=temperature,
     )
-    return await text_generation_post(request, service)
+    return text_generation_post(request, service)
 
 
 # Question Answering endpoints
 @app.post("/question-answering", response_model=QuestionAnsweringResponse)
-async def question_answering_post(
+def question_answering_post(
     request: QuestionAnsweringRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> QuestionAnsweringResponse:
@@ -503,19 +503,19 @@ async def question_answering_post(
 
 
 @app.get("/question-answering", response_model=QuestionAnsweringResponse)
-async def question_answering_get(
+def question_answering_get(
     context: str,
     question: str,
     service: NLPService = Depends(get_nlp_service),
 ) -> QuestionAnsweringResponse:
     """Question answering"""
     request = QuestionAnsweringRequest(context=context, question=question)
-    return await question_answering_post(request, service)
+    return question_answering_post(request, service)
 
 
 # Embeddings endpoints
 @app.post("/embeddings", response_model=EmbeddingResponse)
-async def embeddings_post(
+def embeddings_post(
     request: EmbeddingRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> EmbeddingResponse:
@@ -531,7 +531,7 @@ async def embeddings_post(
 
 # Sentiment analysis endpoints
 @app.post("/sentiment", response_model=SentimentResponse)
-async def sentiment_post(
+def sentiment_post(
     request: SentimentRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> SentimentResponse:
@@ -547,7 +547,7 @@ async def sentiment_post(
 
 # Zero-shot classification endpoints
 @app.post("/classify", response_model=ZeroShotResponse)
-async def classify_post(
+def classify_post(
     request: ZeroShotRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> ZeroShotResponse:
@@ -563,7 +563,7 @@ async def classify_post(
 
 # Similarity endpoints
 @app.post("/similarity", response_model=SimilarityResponse)
-async def similarity_post(
+def similarity_post(
     request: SimilarityRequest,
     service: NLPService = Depends(get_nlp_service),
 ) -> SimilarityResponse:

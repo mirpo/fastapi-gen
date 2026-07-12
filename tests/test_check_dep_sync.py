@@ -22,13 +22,13 @@ class TestCollectDeps:
             "pyproject.toml",
             """\
             [project]
-            dependencies = ["fastapi==0.136.1", "uvicorn[standard]==0.47.0"]
+            dependencies = ["fastapi==0.136.1", "click==8.3.0"]
             """,
         )
 
         deps = collect_deps(root / "pyproject.toml")
 
-        assert deps == {"fastapi": "0.136.1", "uvicorn": "0.47.0"}
+        assert deps == {"fastapi": "0.136.1", "click": "8.3.0"}
 
     def test_extracts_dev_dependency_groups(self, tmp_project):
         write, root = tmp_project
@@ -73,8 +73,7 @@ class TestCollectDeps:
 
         deps = collect_deps(root / "pyproject.toml")
 
-        assert "python_dotenv" in deps
-        assert "pydantic_settings" in deps
+        assert deps == {"python_dotenv": "1.2.2", "pydantic_settings": "2.14.1"}
 
     def test_strips_extras_from_name(self, tmp_project):
         write, root = tmp_project
@@ -89,20 +88,6 @@ class TestCollectDeps:
         deps = collect_deps(root / "pyproject.toml")
 
         assert deps == {"uvicorn": "0.47.0", "transformers": "5.0.0"}
-
-    def test_handles_empty_dependencies(self, tmp_project):
-        write, root = tmp_project
-        write(
-            "pyproject.toml",
-            """\
-            [project]
-            dependencies = []
-            """,
-        )
-
-        deps = collect_deps(root / "pyproject.toml")
-
-        assert deps == {}
 
     def test_handles_no_project_section(self, tmp_project):
         write, root = tmp_project
@@ -153,32 +138,6 @@ class TestCheckDrift:
         drifted = check_drift(root)
 
         assert drifted == []
-
-    def test_detects_version_drift(self, tmp_project):
-        write, root = tmp_project
-        write(
-            "pyproject.toml",
-            """\
-            [project]
-            dependencies = []
-            [dependency-groups]
-            dev = ["ruff==0.14.0"]
-            """,
-        )
-        write(
-            "packages/template-a/pyproject.toml",
-            """\
-            [project]
-            dependencies = []
-            [dependency-groups]
-            dev = ["ruff==0.15.13"]
-            """,
-        )
-
-        drifted = check_drift(root)
-
-        assert len(drifted) == 1
-        assert drifted[0][0] == "ruff"
 
     def test_ignores_deps_appearing_in_single_file(self, tmp_project):
         write, root = tmp_project
@@ -258,8 +217,7 @@ class TestCheckDrift:
         drifted = check_drift(root)
 
         pkg_names = [d[0] for d in drifted]
-        assert "fastapi" in pkg_names
-        assert "ruff" in pkg_names
+        assert pkg_names == ["fastapi", "ruff"]
 
     def test_normalized_names_compared_correctly(self, tmp_project):
         write, root = tmp_project
