@@ -136,7 +136,13 @@ advanced/
 ├── src/
 │   └── advanced/
 │       ├── __init__.py
-│       └── main.py      # Main FastAPI app with all features
+│       ├── auth.py      # JWT tokens, password hashing, current-user dependency
+│       ├── config.py    # Settings loaded from the environment
+│       ├── database.py  # Engine, session factory, get_db dependency
+│       ├── main.py      # FastAPI app, middleware, endpoints
+│       ├── models.py    # SQLAlchemy ORM models
+│       ├── realtime.py  # WebSocket connection manager
+│       └── schemas.py   # Pydantic request/response models
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py      # Test configuration (throwaway database)

@@ -4,8 +4,6 @@ from pathlib import Path
 from typing import Annotated
 from uuid import uuid4
 
-import bcrypt
-import jwt
 from fastapi import (
     Depends,
     FastAPI,
@@ -19,92 +17,32 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from fastapi.security import OAuth2PasswordRequestForm
 
 # Rate limiting
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-# Database
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, create_engine, select
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
-from sqlalchemy.sql import func
-
-
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        # `.env.prod` takes priority over `.env_dev`
-        env_file=(".env_dev", ".env.prod"),
-    )
-    secret_key: str
-    # TODO: Point at PostgreSQL for production, e.g.
-    # DATABASE_URL="postgresql://user:password@localhost/dbname"
-    database_url: str = "sqlite:///./app.db"
-    # Origins allowed to call this API from a browser.
-    # Set as a JSON list, e.g. CORS_ORIGINS='["https://app.example.com"]'
-    cors_origins: list[str] = ["http://localhost:3000"]
-    # Where uploaded files are stored; TODO: replace with cloud storage (S3, GCS)
-    upload_dir: str = "uploads"
-
-
-settings = Settings()
-
-# Authentication setup
-# The JWT signing key comes from the environment via Settings (see .env_dev)
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+from advanced.auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    create_access_token,
+    get_current_user,
+    get_password_hash,
+    get_user_by_username,
+    verify_password,
+)
+from advanced.config import settings
+from advanced.database import Base, engine, get_db
+from advanced.models import Product, User
+from advanced.realtime import manager
+from advanced.schemas import ProductCreate, ProductResponse, Token, UserCreate, UserResponse
 
 # Upload policy
 MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024
 ALLOWED_UPLOAD_TYPES = {"image/jpeg", "image/png", "image/gif", "text/plain", "application/pdf"}
-
-# Database setup - SQLite for simplicity, see Settings.database_url
-engine = create_engine(settings.database_url)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-
-class User(Base):
-    """
-    User model for authentication
-    TODO: Extend with additional fields as needed:
-    - profile_picture, bio, last_login
-    - roles table relationship for RBAC
-    - email verification status
-    """
-
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-
-class Product(Base):
-    """
-    Sample Product model for CRUD operations
-    TODO: Extend with:
-    - Categories relationship
-    - Inventory tracking
-    - Image URLs
-    - User ownership (foreign key to User)
-    """
-
-    __tablename__ = "products"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, nullable=False)
-    description = Column(String)
-    price = Column(Integer)  # stored as integer cents; see ProductResponse.cents_to_dollars
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 @asynccontextmanager
@@ -139,151 +77,6 @@ app.add_middleware(
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-
-class UserCreate(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
-    password: str = Field(..., min_length=6)
-
-
-class UserResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    username: str
-    email: str
-    is_active: bool
-    created_at: datetime.datetime
-
-
-class ProductCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str | None = Field(None, max_length=500)
-    price: float = Field(..., gt=0)
-
-
-class ProductResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    name: str
-    description: str | None
-    price: float
-    created_at: datetime.datetime
-
-    @field_validator("price", mode="before")
-    @classmethod
-    def cents_to_dollars(cls, value: float) -> float:
-        # Product.price is stored as integer cents
-        return value / 100
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class ConnectionManager:
-    """
-    WebSocket connection manager for real-time features
-    TODO: Extend with:
-    - Room-based connections (user groups, channels)
-    - Message persistence
-    - Connection authentication
-    - Scaling across multiple servers with Redis pub/sub
-    """
-
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def broadcast(self, message: str):
-        dead_connections = []
-        for connection in self.active_connections:
-            try:
-                await connection.send_text(message)
-            except Exception:
-                dead_connections.append(connection)
-        for connection in dead_connections:
-            self.active_connections.remove(connection)
-
-
-manager = ConnectionManager()
-
-
-def get_db():
-    """Database session dependency"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # bcrypt has a 72-byte limit, truncate if necessary
-    password_bytes = plain_password.encode("utf-8")[:72]
-    return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
-
-
-def get_password_hash(password: str) -> str:
-    # bcrypt has a 72-byte limit, truncate if necessary
-    password_bytes = password.encode("utf-8")[:72]
-    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
-
-
-def create_access_token(data: dict, expires_delta: datetime.timedelta):
-    """
-    Create JWT access token
-    TODO: Add refresh token support:
-    - Separate refresh token with longer expiry
-    - Token revocation list (blacklist)
-    - Different permissions in token payload
-    """
-    to_encode = data.copy()
-    to_encode.update({"exp": datetime.datetime.now(datetime.UTC) + expires_delta})
-    return jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
-
-
-def get_user_by_username(db: Session, username: str) -> User | None:
-    return db.execute(select(User).where(User.username == username)).scalars().first()
-
-
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: Annotated[Session, Depends(get_db)],
-) -> User:
-    """
-    Get current authenticated user
-    TODO: Add role-based access control:
-    - Check user permissions
-    - Support for API keys
-    - Session management
-    """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except jwt.InvalidTokenError:
-        raise credentials_exception
-
-    user = get_user_by_username(db, username)
-    if user is None:
-        raise credentials_exception
-    return user
 
 
 @app.get("/")

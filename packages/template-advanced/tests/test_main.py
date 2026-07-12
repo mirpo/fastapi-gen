@@ -6,16 +6,11 @@ import jwt
 import pytest
 from fastapi.testclient import TestClient
 
-from advanced.main import (
-    Base,
-    ConnectionManager,
-    Settings,
-    app,
-    create_access_token,
-    engine,
-    limiter,
-    settings,
-)
+from advanced.auth import create_access_token
+from advanced.config import Settings, settings
+from advanced.database import Base, engine
+from advanced.main import app, limiter
+from advanced.realtime import ConnectionManager
 
 client = TestClient(app)
 
@@ -100,6 +95,7 @@ def test_register_duplicate_user():
     "override",
     [
         {"email": "invalid-email"},
+        {"email": "user name@example.com"},
         {"password": "123"},
         {"username": "ab"},
     ],
