@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from hello_world.main import Settings, app
@@ -72,32 +73,22 @@ def test_create_item_422():
         json={"foo": "bar"},
     )
 
-    assert response.is_client_error
-    # or
     assert response.status_code == 422
 
 
-def test_create_item_validation_errors():
-    # Test empty name
-    response = client.post(
-        "/items/",
-        json={"name": "", "price": 10.0},
-    )
-    assert response.status_code == 422
+@pytest.mark.parametrize(
+    ("payload", "invalid_field"),
+    [
+        ({"name": "", "price": 10.0}, "name"),
+        ({"name": "test", "price": -5.0}, "price"),
+        ({"name": "test", "price": 10.0, "tax": 150.0}, "tax"),
+    ],
+)
+def test_create_item_validation_errors(payload, invalid_field):
+    response = client.post("/items/", json=payload)
 
-    # Test negative price
-    response = client.post(
-        "/items/",
-        json={"name": "test", "price": -5.0},
-    )
     assert response.status_code == 422
-
-    # Test invalid tax range
-    response = client.post(
-        "/items/",
-        json={"name": "test", "price": 10.0, "tax": 150.0},
-    )
-    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["body", invalid_field]
 
 
 def test_update_item_200():
@@ -122,8 +113,6 @@ def test_update_item_422():
         json={"name": "foobar", "description": "the foo bar", "price": "1.23"},
     )
 
-    assert response.is_client_error
-    # or
     assert response.status_code == 422
 
 
@@ -141,11 +130,15 @@ def test_read_item200_2():
     assert response.json() == {"item_id": 1, "q": "super-query"}
 
 
-def test_send_notification_200():
+def test_send_notification_200(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
     response = client.post("/send-notification/")
 
     assert response.is_success
     assert response.json() == {"message": "Notification sent in background"}
+    # TestClient runs background tasks before returning: the log line must exist
+    assert "notification sent" in (tmp_path / "app.log").read_text()
 
 
 def test_error_example_no_error():

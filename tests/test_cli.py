@@ -257,13 +257,11 @@ class TestReplaceModuleReferences:
 
     def test_updates_bare_imports(self, tmp_path):
         dest = self._make_project(tmp_path)
-        (dest / "tests" / "test_main.py").write_text("import nlp\nfrom nlp.main import app\n")
+        (dest / "tests" / "test_main.py").write_text("import nlp\n")
 
         replace_module_references(dest, "nlp", "my_app")
 
-        content = (dest / "tests" / "test_main.py").read_text()
-        assert "import my_app" in content
-        assert "from my_app.main import app" in content
+        assert (dest / "tests" / "test_main.py").read_text() == "import my_app\n"
 
 
 class TestGitInit:
@@ -322,7 +320,9 @@ class TestCliFlags:
         result = runner.invoke(main, ["test_app", "--no-git", "-o", str(tmp_path)], catch_exceptions=False)
 
         assert result.exit_code == 0
-        assert not (tmp_path / "test_app" / ".git").exists()
+        dest = tmp_path / "test_app"
+        assert dest.exists()
+        assert not (dest / ".git").exists()
 
     def test_output_dir(self, tmp_path):
         runner = CliRunner()
@@ -331,12 +331,3 @@ class TestCliFlags:
         assert result.exit_code == 0
         assert (tmp_path / "test_app").exists()
         assert (tmp_path / "test_app" / "pyproject.toml").exists()
-
-    def test_output_dir_with_no_git(self, tmp_path):
-        runner = CliRunner()
-        result = runner.invoke(main, ["test_app", "-o", str(tmp_path), "--no-git"], catch_exceptions=False)
-
-        assert result.exit_code == 0
-        dest = tmp_path / "test_app"
-        assert dest.exists()
-        assert not (dest / ".git").exists()
