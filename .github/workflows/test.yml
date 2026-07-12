@@ -99,4 +99,4 @@ jobs:
         env:
           CFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
           CXXFLAGS: ${{ matrix.os == 'macos-latest' && '-march=armv8.2-a+simd' || '' }}
-          CMAKE_ARGS: ${{ matrix.os == 'macos-latest' && '-DGGML_METAL=OFF' || '-DGGML_AVX2=OFF -DGGML_AVX=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF' }}
+          CMAKE_ARGS: ${{ matrix.os == 'macos-latest' && '-DGGML_METAL=OFF' || '-DGGML_NATIVE=OFF -DGGML_AVX2=OFF -DGGML_AVX=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF' }}
