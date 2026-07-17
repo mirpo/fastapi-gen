@@ -11,7 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.139.2",
   "uvicorn[standard]==0.51.0",
-  "transformers[torch]==5.13.1",
+  "transformers[torch]==5.14.1",
   "sentence-transformers==5.6.0",
   "pydantic-settings==2.14.2",
   "torch==2.13.0",
