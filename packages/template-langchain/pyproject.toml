@@ -25,7 +25,7 @@ packages = ["src/langchain_app"]
 
 [dependency-groups]
 dev = [
-  "ruff==0.15.22",
+  "ruff==0.16.0",
   "pytest==9.1.1",
   "pytest-asyncio==1.4.0",
   "httpx==0.28.1",
