@@ -13,7 +13,7 @@ dependencies = [
   "uvicorn[standard]==0.52.4",
   "transformers[torch]==5.15.1",
   "pydantic-settings==2.15.0",
-  "torch==2.13.0",
+  "torch==2.14.0",
   "langchain==1.3.16",
   "langchain-community==0.4.2",
   "langchain-huggingface==1.2.2",
