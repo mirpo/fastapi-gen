@@ -15,7 +15,7 @@ dependencies = [
   "sentence-transformers==6.0.0",
   "pydantic-settings==2.15.0",
   "torch==2.13.0",
-  "accelerate==1.14.0",
+  "accelerate==1.15.0",
 ]
 
 [tool.hatch.build.targets.wheel]
