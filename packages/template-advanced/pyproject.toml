@@ -13,7 +13,7 @@ dependencies = [
   "uvicorn[standard]==0.52.4",
   "pydantic-settings==2.15.0",
   "sqlalchemy==2.0.52",
-  "pyjwt==2.13.0",
+  "pyjwt==2.14.0",
   "bcrypt==5.0.0",
   "slowapi==0.1.10",
   "python-multipart==0.0.32",
