@@ -10,11 +10,11 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.141.1",
-  "uvicorn[standard]==0.52.4",
+  "uvicorn[standard]==0.53.0",
   "transformers[torch]==5.17.0",
   "sentence-transformers==6.0.1",
   "pydantic-settings==2.15.0",
-  "torch==2.13.0",
+  "torch==2.14.0",
   "accelerate==1.15.0",
 ]
 
