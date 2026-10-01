@@ -9,9 +9,9 @@ description = "FastAPI Hello World application"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi==0.141.1",
-  "uvicorn[standard]==0.52.4",
-  "python-dotenv==1.2.3",
+  "fastapi==0.142.2",
+  "uvicorn[standard]==0.54.0",
+  "python-dotenv==1.2.4",
   "pydantic-settings==2.15.0",
 ]
 
