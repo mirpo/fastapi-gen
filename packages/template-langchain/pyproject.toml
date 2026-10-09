@@ -14,9 +14,9 @@ dependencies = [
   "transformers[torch]==5.18.0",
   "pydantic-settings==2.15.0",
   "torch==2.13.0",
-  "langchain==1.4.3",
+  "langchain==1.4.4",
   "langchain-community==0.4.2",
-  "langchain-huggingface==1.2.2",
+  "langchain-huggingface==1.2.3",
   "accelerate==1.15.0",
 ]
 
