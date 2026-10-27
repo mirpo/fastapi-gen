@@ -25,8 +25,8 @@ packages = ["src/advanced"]
 
 [dependency-groups]
 dev = [
-  "ruff==0.15.22",
-  "pytest==9.1.1",
+  "ruff==0.17.3",
+  "pytest==9.2.0",
   "httpx==0.28.1",
 ]
 
