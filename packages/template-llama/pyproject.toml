@@ -9,10 +9,10 @@ description = "FastAPI application with local LLM (llama.cpp)"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "fastapi==0.141.1",
-  "uvicorn[standard]==0.52.4",
+  "fastapi==0.162.0",
+  "uvicorn[standard]==0.54.0",
   "llama-cpp-python==0.3.36",
-  "pydantic-settings==2.15.0",
+  "pydantic-settings==2.16.2",
 ]
 
 [tool.hatch.build.targets.wheel]
