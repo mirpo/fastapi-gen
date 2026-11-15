@@ -16,7 +16,7 @@ dependencies = [
   "pyjwt==2.15.0",
   "bcrypt==5.0.0",
   "slowapi==0.1.10",
-  "python-multipart==0.0.32",
+  "python-multipart==0.0.33",
   "email-validator==2.3.0",
 ]
 
