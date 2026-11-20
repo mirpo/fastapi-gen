@@ -12,7 +12,7 @@ dependencies = [
   "fastapi==0.163.1",
   "uvicorn[standard]==0.54.0",
   "pydantic-settings==2.16.3",
-  "sqlalchemy==2.1.8",
+  "sqlalchemy==2.1.9",
   "pyjwt==2.15.1",
   "bcrypt==5.0.0",
   "slowapi==0.1.10",
